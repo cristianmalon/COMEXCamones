@@ -1,0 +1,238 @@
+﻿@model  CAMTEX.Entidades.E_UbicacionAlmacen
+<div id="frmRegistroUbicacionesInv">
+    <div class="form-horizontal">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-horizontal">
+                    <!-- Filtro -->
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <label>Ubicacion :</label>
+                            @Html.EditorFor(model => model.Ubicacion, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                     <!--   <div class="col-md-12" style="padding-top: 15px;">
+                            <button type="button"
+                                    class="btn btn-default btn-sm"
+                                    name="btnGuardarUbicacion" id="btnGuardarUbicacion">
+                                <span class="glyphicon glyphicon-save"></span>&nbsp;Guardar
+                            </button>
+                            <button type="button"
+                                    class="btn btn-danger btn-sm"
+                                    name="btnCancelarUbicacion" id="btnCancelarUbicacion">
+                                <span class="glyphicon glyphicon-cancel"></span>&nbsp;Cancelar
+                            </button>
+                        </div>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+        @Html.HiddenFor(p => p.IdPeriodoInventario)
+        <div id="gridUbicaciones"></div>
+
+    </div>
+</div>
+<script>
+
+    $(document).ready(function () {
+        loadgridUbicaciones();
+       /* $("#btnGuardarUbicacion").on("click", function (e) {
+            if ($("#Ubicacion").val() == '') {
+                AlertMessage("DEBE REGISTRAR LA UBICACION");
+                return false;
+            }
+
+            var E_PersonalInventario = {
+                IdPeriodoInventario: $('#frmRegistroUbicacionesInv').find('input[id="IdPeriodoInventario"]').val(),
+                Ubicacion: $("#Ubicacion").val(),
+            }
+            $.ajax({
+                datatype: 'json',
+                contentType: "application/json",
+                url: '/Inventario/Registrar_UbicacionInventario',
+                type: 'POST',
+                data: JSON.stringify({ entidad: E_PersonalInventario }),
+                beforeSend: function () {
+                    bloquoteObject();
+                },
+                success: function (data) {
+                    debugger;
+                    console.log(data);
+                    if (!data.rpta) {
+                        if (data.errores == "") AlertMessage(data.result);
+
+                    } else {
+                        $("#Ubicacion").val("");
+                        AlertMessage(data.result);
+                        ActualizargridUbicaciones();
+                    }
+
+                    desbloqObject();
+                }
+            }).fail(function (jqxhr, textStatus, error) {
+                var err = textStatus + ', ' + error;
+                console.log("Request Failed: " + err);
+                desbloqObject();
+            });
+
+
+        })
+
+        $("#btnCancelarUbicacion").on("click", function (e) {
+            $("#Ubicacion").val("");
+        })*/
+    });
+
+    var columnsConfigU = [
+        { dataField: 'CodAlmacen', caption: 'Codigo Almacen' },
+        { dataField: 'Ubicacion', caption: 'Ubicacion' },
+    ];
+
+
+    function loadgridUbicaciones() {
+
+        const DxSource = new DevExpress.data.CustomStore({
+            load() {
+                var values = { IdPeriodoInventario: $('#frmRegistroUbicacionesInv').find('input[id="IdPeriodoInventario"]').val() }
+                return sendRequest(`/Inventario/Listar_UbicacionInventario`, 'POST', JSON.stringify(values))
+                    .then((response) => {
+                        if (response.result && response.Datos) {
+                            // Deserializar los datos
+                            const data = JSON.parse(response.Datos);
+                            console.log("Datos procesados:", data);
+                            return { data: data, totalCount: data.length };
+                        } else {
+                            return { data: [], totalCount: 0 };
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error al cargar datos:", error);
+                        throw error;
+                    });
+            },
+
+        });
+
+        const dataGrid =
+            $('#gridUbicaciones').dxDataGrid({
+
+                dataSource: DxSource,
+                editing: {
+                    mode: 'popup',
+                    useIcons: true,
+                },
+                onEditorPreparing: {},
+                onrRowInserted(e) {
+                    e.component.navigateToRow(e.key);
+                },
+                columns: columnsConfigU,
+                export: {
+                    enabled: false,
+                },
+                onExporting(e) {
+                    const workbook = new ExcelJS.Workbook();
+                    const worksheet = workbook.addWorksheet('data');
+
+                    DevExpress.excelExporter.exportDataGrid({
+                        component: e.component,
+                        worksheet,
+                        autoFilterEnabled: true,
+                    }).then(() => {
+                        workbook.xlsx.writeBuffer().then((buffer) => {
+                            saveAs(new Blob([buffer], { type: 'application/octet-stream' }), 'data.xlsx');
+                        });
+                    });
+                    e.cancel = true;
+                },
+                hoverStateEnabled: true,
+                filterRow: { visible: true },
+                showColumnLines: true,
+                showRowLines: true,
+                rowAlternationEnabled: true,
+                showBorders: true,
+                selection: {
+                    mode: 'single',
+                },
+                paging: {
+                    pageSize: 5,
+                },
+
+
+            }).dxDataGrid('instance');
+
+
+
+
+
+
+        /*
+
+        var grid = $("#gridUbicaciones").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: {
+                        type: "POST",
+                        url: "/Inventario/Listar_UbicacionInventario",
+                        contentType: "application/json",
+                        dataType: 'json'
+                    },
+                    parameterMap: function (options, operation) {
+                        return JSON.stringify({
+                            IdPeriodoInventario: $('#frmRegistroUbicacionesInv').find('input[id="IdPeriodoInventario"]').val(),
+                            PageNumber: options.page, //(options.page == 0) ? 0 : (options.page - 1),
+                            pageSize: options.pageSize,
+                        });
+                    }
+                },
+                schema: {
+                    data: "lista",
+                    total: "pageSize",
+                    type: 'json',
+                    model: {
+                        fields: {
+                            IdUbicacionAlmacen: { type: "number" },
+                            Ubicacion: { type: "string" },
+                            CodAlmacen: { type: "string" }
+                        }
+                    }
+                },
+                pageSize: 10,
+                serverPaging: true,
+                serverFiltering: true,
+                serverSorting: true
+            },
+            scrollable: true,
+            pageable: false,
+            selectable: true,
+            noRecords: {
+                template: '<br /> ' +
+                    ' <div> ' +
+                    ' <div class="mainbox col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3"> ' +
+                    ' <div class="alert alert-info alert-dismissable" align="center"> ' +
+                    ' NO SE ENCONTRARON REGISTROS ' +
+                    ' </div> ' +
+                    ' </div> ' +
+                    ' </div>'
+            },
+
+            columns: [{
+                field: "CodAlmacen",
+                title: "CodAlmacen",
+                width: 120
+            },
+            {
+                field: "Ubicacion",
+                title: "Ubicacion",
+                width: 150
+            }
+            ]
+        }).data("kendoGrid");*/
+
+
+    }
+    function ActualizargridUbicaciones() {
+        var grid = $('#gridUbicaciones').dxDataGrid('instance');
+        grid.refresh();
+        loadgridUbicaciones();
+    }
+
+</script>

@@ -1,0 +1,26 @@
+﻿
+@{
+    Layout = null; // No necesitamos un layout para esta vista
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Logout and Close</title>
+    <script type="text/javascript">
+        window.onload = function() {
+            window.close();
+
+            // Si la pestaña no se cierra, redirige a una página de confirmación
+            setTimeout(function() {
+                alert('No se pudo cerrar la pestaña automáticamente. Por favor, ciérrela manualmente.');
+                window.location.href = '@Url.Action("Login", "Account")';
+            }, 1000);
+        };
+    </script>
+</head>
+<body>
+</body>
+</html>
+
+

@@ -1,0 +1,252 @@
+﻿@model  CAMTEX.Entidades.E_PersonalInventario
+<div id="frmRegistroPersonalInv">
+    <div class="form-horizontal">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-horizontal">
+                    <!-- Filtro -->
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <label>DNI :</label>
+                            @Html.EditorFor(model => model.DNI, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                        <div class="col-md-12">
+                            <label>Nombre :</label>
+                            @Html.EditorFor(model => model.Descripcion, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                        <!--<div class="col-md-12" style="padding-top: 15px;">
+                            <button type="button"
+                                    class="btn btn-default btn-sm"
+                                    name="btnGuardarPersonal" id="btnGuardarPersonal">
+                                <span class="glyphicon glyphicon-save"></span>&nbsp;Guardar
+                            </button>
+                            <button type="button"
+                                    class="btn btn-danger btn-sm"
+                                    name="btnCancelarRegPersonal" id="btnCancelarRegPersonal">
+                                <span class="glyphicon glyphicon-cancel"></span>&nbsp;Cancelar
+                            </button>
+                        </div>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+        @Html.HiddenFor(p => p.IdPeriodoInventario)
+        <div id="gridPersonal"></div>
+
+    </div>
+</div>
+<script>
+
+    $(document).ready(function () {
+        loadGridPersonal();
+       /* $("#btnGuardarPersonal").on("click", function (e) {
+            if ($("#DNI").val() == '') {
+                AlertMessage("DEBE REGISTRAR EL DNI");
+                return false;
+            }
+            if ($("#Descripcion").val() == '') {
+                AlertMessage("DEBE REGISTRAR EL NOMBRE");
+                return false;
+            }
+
+            var E_PersonalInventario = {
+                IdPeriodoInventario: $('#frmRegistroPersonalInv').find('input[id="IdPeriodoInventario"]').val(),
+                DNI: $("#DNI").val(),
+                Descripcion: $("#Descripcion").val() ,
+            }
+            $.ajax({
+                datatype: 'json',
+                contentType: "application/json",
+                url: '/Inventario/Registrar_PersonalInventario',
+                type: 'POST',
+                data: JSON.stringify({ entidad: E_PersonalInventario }),
+                beforeSend: function () {
+                    bloquoteObject();
+                },
+                success: function (data) {
+                    debugger;
+                    console.log(data);
+                    if (!data.rpta) {
+                        if (data.errores == "") AlertMessage(data.result);
+
+                    } else {
+                        $("#DNI").val("");
+                        $("#Descripcion").val("");
+                        AlertMessage(data.result);
+                        ActualizarGridPersonal();
+                    }
+
+                    desbloqObject();
+                }
+            }).fail(function (jqxhr, textStatus, error) {
+                var err = textStatus + ', ' + error;
+                console.log("Request Failed: " + err);
+                desbloqObject();
+            });
+
+
+        })
+
+        $("#btnCancelarRegPersonal").on("click", function (e) {
+            $("#DNI").val("");
+            $("#Descripcion").val("");
+        })*/
+    });
+
+
+    var columnsConfigP = [
+        { dataField: 'DNI', caption: 'DNI' },
+        { dataField: 'Descripcion', caption: 'Personal' },
+    ];
+    
+
+    function loadGridPersonal() {
+        
+
+        $(() => {
+
+            const DxSource = new DevExpress.data.CustomStore({
+                load() {
+                    var values = { IdPeriodoInventario: $('#frmRegistroPersonalInv').find('input[id="IdPeriodoInventario"]').val() }
+                    return sendRequest(`/Inventario/Listar_PersonalInventario`, 'POST', JSON.stringify(values))
+                        .then((response) => {
+                            if (response.result && response.Datos) {
+                                // Deserializar los datos
+                                const data = JSON.parse(response.Datos);
+                                console.log("Datos procesados:", data);
+                                return { data: data, totalCount: data.length };
+                            } else {
+                                return { data: [], totalCount: 0 };
+                            }
+                        })
+                        .catch((error) => {
+                            console.error("Error al cargar datos:", error);
+                            throw error;
+                        });
+                },
+
+            });
+
+            const dataGrid =
+                $('#gridPersonal').dxDataGrid({
+
+                    dataSource: DxSource,
+                    editing: {
+                        mode: 'popup',
+                        useIcons: true,
+                    },
+                    onEditorPreparing: {},
+                    onrRowInserted(e) {
+                        e.component.navigateToRow(e.key);
+                    },
+                    columns: columnsConfigP,
+                    export: {
+                        enabled: false,
+                    },
+                    onExporting(e) {
+                        const workbook = new ExcelJS.Workbook();
+                        const worksheet = workbook.addWorksheet('data');
+
+                        DevExpress.excelExporter.exportDataGrid({
+                            component: e.component,
+                            worksheet,
+                            autoFilterEnabled: true,
+                        }).then(() => {
+                            workbook.xlsx.writeBuffer().then((buffer) => {
+                                saveAs(new Blob([buffer], { type: 'application/octet-stream' }), 'data.xlsx');
+                            });
+                        });
+                        e.cancel = true;
+                    },
+                    hoverStateEnabled: true,
+                    filterRow: { visible: true },
+                    showColumnLines: true,
+                    showRowLines: true,
+                    rowAlternationEnabled: true,
+                    showBorders: true,
+                    selection: {
+                        mode: 'single',
+                    },
+                    paging: {
+                        pageSize: 10,
+                    },
+
+
+                }).dxDataGrid('instance');
+
+        })
+
+
+
+
+        /*
+        var grid = $("#gridPersonal").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: {
+                        type: "POST",
+                        url: "/Inventario/Listar_PersonalInventario",
+                        contentType: "application/json",
+                        dataType: 'json'
+                    },
+                    parameterMap: function (options, operation) {
+                        return JSON.stringify({
+                            IdPeriodoInventario: $('#frmRegistroPersonalInv').find('input[id="IdPeriodoInventario"]').val(),
+                            PageNumber: options.page, //(options.page == 0) ? 0 : (options.page - 1),
+                            pageSize: options.pageSize,
+                        });
+                    }
+                },
+                schema: {
+                    data: "lista",
+                    total: "pageSize",
+                    type: 'json',
+                    model: {
+                        fields: {
+                            IdPersonal: { type: "number" },
+                            DNI: { type: "string" },
+                            Descripcion: { type: "string" }
+                        }
+                    }
+                },
+                pageSize: 10,
+                serverPaging: true,
+                serverFiltering: true,
+                serverSorting: true
+            },
+            scrollable: true,
+            pageable: false,
+            selectable: true,
+            noRecords: {
+                template: '<br /> ' +
+                    ' <div> ' +
+                    ' <div class="mainbox col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3"> ' +
+                    ' <div class="alert alert-info alert-dismissable" align="center"> ' +
+                    ' NO SE ENCONTRARON REGISTROS ' +
+                    ' </div> ' +
+                    ' </div> ' +
+                    ' </div>'
+            },
+
+            columns: [{
+                field: "DNI",
+                title: "DNI",
+                width: 120
+            },
+            {
+                field: "Descripcion",
+                title: "Personal",
+                width: 150
+            }
+            ]
+        }).data("kendoGrid");*/
+
+
+    }
+    function ActualizarGridPersonal() {
+        var grid = $('#gridPersonal').dxDataGrid('instance');
+        grid.refresh();
+        loadGridPersonal();
+    }
+
+</script>

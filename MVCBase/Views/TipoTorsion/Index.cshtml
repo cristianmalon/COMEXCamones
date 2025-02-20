@@ -1,0 +1,328 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<div id="frmTipoTorsion">
+    <div class="form-horizontal">
+        <div class="panel panel-default">
+            <div class="panel-body">
+
+
+
+                <div id="gridContainer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    $(() => {
+        const DxSource = new DevExpress.data.CustomStore({
+            key: 'Codigo',
+            load() {
+                return sendRequest(`/TipoTorsion/ListarTipoTorsion`);
+            },
+            insert(values) {
+                values.USUARIO_REG = '@User.Identity.Name';
+
+                console.log(values);
+                return sendRequest(`/TipoTorsion/InsertTipoTorsion`, 'POST', JSON.stringify(values));
+            },
+            update(key, values) {
+                values.Codigo = key;
+                values.USUARIO_ACT = '@User.Identity.Name';
+                console.log(values);
+                return sendRequest(`/TipoTorsion/UpdateTipoTorsion`, 'PUT', JSON.stringify(values));
+            },
+            remove(key) {
+                var values = { Codigo: key }
+                //values.IdUbicacion = key;
+                return sendRequest(`/TipoTorsion/DeleteTipoTorsion`, 'DELETE', JSON.stringify(values));
+            },
+        });
+
+
+        //se cambio IdMaquina por CodigoFibra del value de update y remove y el keyExpr
+        const dataGrid =
+            $('#gridContainer').dxDataGrid({
+                dataSource: DxSource,
+                //keyExpr: 'CodigoFibra',
+
+
+                editing: {
+                    mode: 'popup',
+                    allowUpdating: true,
+                    useIcons: true,
+                    allowAdding: true,
+                    allowDeleting: true,//sirve para confirmar tu eliminacion
+                    popup: {
+                        title: 'Tipo Torsion',
+                        showTitle: true,
+                        width: 670,
+                        height: 350,
+                    },
+
+                    form: {
+                        items: [{
+                            itemType: 'group',
+                            colCount: 2,
+                            colSpan: 2,
+                            //items: ['NombreFibra', 'NombreComercial', 'CodigoFibra', 'Abreviatura', 'CodigoOrigen', 'NombreOrigen', 'EsLicrado', 'DiasVigente', 'USUARIO_REG', 'ESTADO_DES'],
+                            //items: ['NombreFibra', 'NombreComercial', 'CodigoFibra', 'Abreviatura', 'CodigoOrigen', 'NombreOrigen', 'EsLicrado', 'DiasVigente'],
+
+
+                            items: [
+
+                                {
+                                    dataField: 'Codigo',
+                                    editorOptions: {
+                                        disabled: true, // Initially enabled
+                                        placeholder: "AUTOGENERADO"
+                                    },
+                                    cssClass: "labelCod",
+
+                                },
+                                {
+                                    itemType: 'empty', // Esto agrega un espacio vacío en la segunda columna
+                                },
+                                {
+                                    dataField: 'Descripcion',
+                                    validationRules: [{
+                                        type: 'required'
+                                    }],
+                                    editorOptions: {
+                                        width: 280
+                                    },
+                                },
+                                {
+
+                                    itemType: 'empty', // Esto agrega un espacio vacío en la segunda columna
+                                },
+
+                                {
+                                    dataField: 'RangoTorcion',
+                                    validationRules: [{
+                                        type: 'required',
+                                    }],//falta manejar el texbox para que solo admita numeros se utliza la propiedaa mask
+                                    editorOptions: {
+                                        width: 80
+                                    },
+                                },
+                                {
+
+                                    itemType: 'empty', // Esto agrega un espacio vacío en la segunda columna
+                                },
+
+                                {
+                                    dataField: 'SegRangoTorcion',
+                                    validationRules: [{
+                                        type: 'required'
+                                    }],
+                                    editorOptions: {
+                                        width: 80//falta manejar el texbox para que solo admita numeros se utliza la propiedaa mask
+                                    },
+
+                                },
+                                /*{
+                                    dataField: 'CodigoOrigen',
+                                },*/
+
+                            ],
+
+                        }],
+
+
+
+                    },
+                },
+
+
+
+                onRowInserted(e) {
+                    e.component.navigateToRow(e.key);
+                },
+
+                columns: [
+                    
+                    {
+                        dataField: 'Codigo',
+                        caption: 'Codigo',
+                        alignment: 'left',
+                    },
+                    {
+                        dataField: 'Descripcion',
+                        caption: 'Nombre',//los label se manejan como los nombres de las  columnas
+
+                    },
+
+                    {
+                        dataField: 'RangoTorcion',
+                        caption: 'Rango Torcion',
+                        visible: false, // Oculta la columna 'Contaminado'
+
+
+
+                    },
+                    {
+                        dataField: 'SegRangoTorcion',
+                        caption: 'Segundo Rango Torcion',
+                        visible: false, // Oculta la columna 'Contaminado'
+
+
+                    },
+                    'ESTADO',
+                    {
+                        dataField: 'FECHA_REG',
+                        caption: 'Fecha Creación',
+                        dataType: 'datetime',
+                        alignment: 'left',
+                        format: "MM/dd/yyyy"
+                    },
+
+                    {
+                        dataField: 'USUARIO_REG',
+                        caption: 'Usuario Registro',
+                        alignment: 'left',
+                    },
+                ],
+                toolbar: {
+                    items: [
+
+                        {
+                            location: "before", // Ubicación antes de los botones existentes
+                            text: "Tipo Torsion", // Texto del título
+                            cssClass: "toolbar-title", // Clase de estilo personalizada
+
+                        },
+                        {
+                            location: "after",
+                            widget: "dxButton",
+                            options: {
+                                icon: "add",
+                                text: "AGREGAR",
+                                onClick: function () {
+                                    dataGrid.addRow();
+                                },
+                                stylingMode: "outlined", // Cambia el estilo del botón a outlined
+                                // Modifica el color del botón
+                                elementAttr: {
+                                    class: "ClsAgregar custom-button-style" // Puedes cambiar "dx-color-blue" por otro color de tu elección
+                                }
+                            },
+                        }, {
+                            location: 'after',
+                            widget: 'dxButton',
+                            options: {
+                                icon: 'refresh',
+                                text: "ACTUALIZAR",
+                                onClick() {
+                                    dataGrid.refresh();
+                                },
+                                stylingMode: "outlined", // Cambia el estilo del botón a outlined
+                                // Modifica el color del botón
+                                elementAttr: {
+                                    class: "ClsRefresh custom-button-style" // Puedes cambiar "dx-color-blue" por otro color de tu elección
+                                }
+                            },
+                        },
+                        'exportButton',
+                    ],
+                },
+                export: {
+                    enabled: true,
+
+                },
+                onExporting(e) {
+                    const workbook = new ExcelJS.Workbook();
+                    const worksheet = workbook.addWorksheet('data');
+
+                    DevExpress.excelExporter.exportDataGrid({
+                        component: e.component,
+                        worksheet,
+                        autoFilterEnabled: true,
+                    }).then(() => {
+                        workbook.xlsx.writeBuffer().then((buffer) => {
+                            saveAs(new Blob([buffer], { type: 'application/octet-stream' }), 'data.xlsx');
+                        });
+                    });
+                    e.cancel = true;
+                },
+
+                hoverStateEnabled: true,
+                filterRow: { visible: true },
+                showColumnLines: true,
+                showRowLines: true,
+                rowAlternationEnabled: true,
+                showBorders: true,
+                selection: {
+                    mode: 'single',
+                },
+                paging: {
+                    pageSize: 10,  // Set the number of rows per page as per your requirement
+                },
+            }).dxDataGrid('instance');
+
+    })
+
+
+</script>
+
+<style>
+    .toolbar-title {
+        color: white;
+        padding: 10px !important;
+    }
+    .labelCod > div {
+        background-color: #f1f3f4;
+    }
+
+    .ClsAgregar {
+        font-weight: 600 !important;
+        color: #fff;
+        background-color: #5cb85c;
+        border-color: #4cae4c;
+    }
+
+        .ClsAgregar:hover,
+        .ClsAgregar:focus {
+            background-color: #4d984d; /* Color de fondo del botón al hacer hover o focus */
+        }
+
+    .ClsEditar {
+        font-weight: 600 !important;
+        color: #fff;
+        background-color: #f0ad4e;
+        border-color: #eea236;
+    }
+
+        .ClsEditar:hover,
+        .ClsEditar:focus {
+            background-color: #d18c37; /* Color de fondo del botón al hacer hover o focus */
+        }
+
+    .ClsRefresh {
+        font-weight: 600 !important;
+        color: #fff;
+        background-color: #337ab7;
+        border-color: #2e6da4;
+    }
+
+        .ClsRefresh:hover,
+        .ClsRefresh:focus {
+            background-color: #1c4e7e; /* Color de fondo del botón al hacer hover o focus */
+        }
+
+    .custom-button-style .dx-icon {
+        color: white !important;
+    }
+
+    .custom-dx-buttonDetalle {
+        font-weight: 600 !important;
+        color: white !important;
+        background-color: #57889c !important;
+        border-color: #4e7a8c !important;
+    }
+</style>

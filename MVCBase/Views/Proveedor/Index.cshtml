@@ -1,0 +1,420 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div id="frmFibra">
+    <div class="form-horizontal">
+        <div class="panel panel-default">
+            <div class="panel-body">
+
+                <div id="gridContainer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<script>
+
+
+
+
+
+
+    var columnsConfig = [
+        {
+            dataField: 'PrvCCod', caption: 'Codigo', alignment: 'left',
+        },
+        {
+            dataField: 'PrvDDes', caption: 'Descripcion', alignment: 'left',
+
+        },
+        {
+            dataField: 'PrvDRuc', caption: 'RUC', alignment: 'left',
+        },
+        {
+            dataField: 'PrvDDir', caption: 'Direccion', alignment: 'left',
+        },
+        {
+            dataField: 'PrvDTel', caption: 'Telefono', alignment: 'left',
+        },
+        {
+            dataField: 'PrvSEst', caption: 'Estado', alignment: 'left',
+        },
+        {
+            dataField: 'PrvCSap', caption: 'SAP', alignment: 'left',
+        },
+        {
+            dataField: 'IdProveedor', caption: 'Id Proveedor', alignment: 'left',
+        },
+       
+    ];
+
+
+
+
+
+
+
+
+    $(() => {
+        const DxSource = new DevExpress.data.CustomStore({
+            key: 'PrvCCod',
+
+            load() {
+                return sendRequest(`/Proveedor/ListarProveedor`).then(data => {
+                    return data;
+                });
+            },
+        });
+
+
+
+
+        const dataGrid =
+            $('#gridContainer').dxDataGrid({
+                allowExpandAll: true,
+                expandAll: true,
+                keyExpr: 'PrvCCod',
+
+                allowSorting: false,
+                allowFiltering: true,
+                allowColumnResizing: true,
+                showRowTotals: true,
+                showColumnTotals: true,
+                showRowGrandTotals: true,
+                showTotals: true,
+
+                showGrandTotals: false,
+                showColumnGrandTotals: false,
+                height: 700,
+                fieldChooser: {
+                    enabled: false,
+                },
+
+                dataSource: {
+
+                    store: DxSource,
+                    pageSize: 10, // Set the desired page size
+                    pageIndex: 0 // Set the initial page index
+                },
+
+
+                onEditorPreparing: {},
+                onrRowInserted(e) {
+                    e.component.navigateToRow(e.key);
+                },
+                columns: columnsConfig,
+
+
+                toolbar: {
+                    items: [
+
+                        {
+                            location: "before", // Ubicación antes de los botones existentes
+                            template: function () {
+                                return $("<div>")
+                                    .addClass("toolbar-item")
+                                    .append($("<img>")
+                                        .attr("src", "/img/logo.png") // Ruta de la imagen
+                                        .addClass("toolbar-icon") // Clase de estilo para la imagen
+                                    )
+                                    .append($("<span>")
+                                        .text("Proveedor") // Texto del título
+                                        .addClass("toolbar-title") // Clase de estilo personalizada
+                                    );
+                            },
+                            cssClass: "toolbar-title-container" // Clase para el contenedor del título
+                        }, {
+                            location: 'after',
+                            widget: 'dxButton',
+                            options: {
+                                icon: 'refresh',
+                                text: "ACTUALIZAR",
+                                onClick() {
+                                    dataGrid.refresh();
+                                },
+                                stylingMode: "outlined", // Cambia el estilo del botón a outlined
+                                // Modifica el color del botón
+                                elementAttr: {
+                                    class: "ClsRefresh custom-button-style" // Puedes cambiar "dx-color-blue" por otro color de tu elección
+                                }
+                            },
+                        },
+                        
+                        'exportButton',
+                    ],
+                },
+
+                export: {
+                    enabled: true,
+
+                },
+
+
+                onExporting(e) {
+                    const workbook = new ExcelJS.Workbook();
+                    const worksheet = workbook.addWorksheet('data');
+
+                    DevExpress.excelExporter.exportDataGrid({
+                        component: e.component,
+                        worksheet,
+                        autoFilterEnabled: true,
+                    }).then(() => {
+                        workbook.xlsx.writeBuffer().then((buffer) => {
+                            saveAs(new Blob([buffer], { type: 'application/octet-stream' }), 'data.xlsx');
+                        });
+                    });
+                    e.cancel = true;
+                },
+                hoverStateEnabled: false,
+                filterRow: { visible: true },
+                showColumnLines: true,
+                showRowLines: true,
+                rowAlternationEnabled: true,
+                showBorders: true,
+                selection: {
+                    mode: 'single',
+                },
+                paging: {
+                    pageSize: 10,  // Set the number of rows per page as per your requirement
+                },
+
+
+
+            }).dxDataGrid('instance');
+
+
+    })
+
+
+
+
+
+
+</script>
+
+
+
+
+
+<style>
+
+
+
+    .toolbar-icon {
+        width: 150px; /* Ajusta el tamaño de la imagen */
+        height: 60px;
+        margin-right: 5px; /* Espacio entre la imagen y el texto */
+        margin-left: 10px; /* Espacio entre la imagen y el borde izquierdo */
+        vertical-align: middle; /* Alineación vertical */
+    }
+
+    .toolbar-title {
+        font-weight: bold; /* Estilo de texto */
+        font-size: 16px;
+    }
+
+    .toolbar-item {
+        display: flex;
+        align-items: center;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    .demo-container {
+        display: flex;
+        flex-wrap: wrap; /* Asegura que los elementos se envuelvan si el espacio es insuficiente */
+        gap: 10px; /* Añade espacio entre los gráficos, puedes ajustar el valor */
+    }
+
+        .demo-container > div {
+            flex: 1;
+            min-width: 0;
+            max-width: 100%; /* Asegura que no se salga del contenedor */
+        }
+
+
+
+    .ClsTitulo {
+        -webkit-text-stroke-width: 2px;
+        font-weight: bolder;
+        -webkit-text-stroke-color: gray;
+        text-shadow: 0px 2px 4px red;
+    }
+    /*EITAR EL BOTON*/
+    .custom-selectbox1 .dx-texteditor-input {
+        font-size: 16px;
+        color: black; /* Cambia el color del texto */
+        font-weight: bold; /* Hace que el texto sea en negrita */
+    }
+
+
+
+
+
+
+
+
+
+
+    .dx-area-column-cell .dx-scrollable-content.dx-scrollable-content td {
+        text-align: center !important;
+    }
+
+    .grid-container0 {
+        display: flex; /* Usar flexbox para alinear los grids en una fila */
+        gap: 10px; /* Espacio entre los grids */
+    }
+
+    #gridContainer {
+        overflow-x: auto;
+        flex-grow: 3; /* Asignamos un factor de crecimiento de 2 al primer gridContainer */
+    }
+
+
+    .grid {
+        flex: 1;
+        min-width: 0; /* Evita que los grids se desborden */
+        overflow: hidden; /* Asegura que el contenido no se desborde */
+    }
+
+
+    #gridContainer .dx-datagrid-header-panel {
+        padding: 0;
+        background-color: #002762;
+    }
+
+
+
+    .toolbar-title {
+        color: white;
+        font-size: 25px;
+        padding: 10px !important;
+    }
+
+    .labelCod > div {
+        background-color: #f1f3f4;
+        text-align: center;
+    }
+
+    .deshabilitado {
+        background-color: #f1f3f4;
+    }
+
+    .my-swal-container {
+        z-index: 10000; /* Puedes ajustar este valor según sea necesario */
+    }
+
+
+    .ClsAgregar {
+        font-weight: 600 !important;
+        color: #fff;
+        background-color: #5cb85c;
+        border-color: #4cae4c;
+    }
+
+        .ClsAgregar:hover,
+        .ClsAgregar:focus {
+            background-color: #4d984d; /* Color de fondo del botón al hacer hover o focus */
+        }
+
+    .ClsEditar {
+        font-weight: 600 !important;
+        color: #fff;
+        background-color: #f0ad4e;
+        border-color: #eea236;
+    }
+
+        .ClsEditar:hover,
+        .ClsEditar:focus {
+            background-color: #d18c37; /* Color de fondo del botón al hacer hover o focus */
+        }
+
+    .ClsRefresh {
+        font-weight: 600 !important;
+        color: #fff;
+        background-color: #337ab7;
+        border-color: #2e6da4;
+    }
+
+        .ClsRefresh:hover,
+        .ClsRefresh:focus {
+            background-color: #1c4e7e; /* Color de fondo del botón al hacer hover o focus */
+        }
+
+    .custom-button-style .dx-icon {
+        color: white !important;
+    }
+
+    .custom-dx-buttonDetalle {
+        font-weight: 600 !important;
+        color: white !important;
+        background-color: #57889c !important;
+        border-color: #4e7a8c !important;
+    }
+
+
+    #gridContainer .dx-datagrid-headers .dx-header-row {
+        -webkit-text-stroke-width: 0.5px;
+        -webkit-text-stroke-color: white;
+        text-shadow: 0px 2px 4px black;
+    }
+
+
+
+
+    /*CENTRAR TODO LOS TITULOS*/
+    .dx-row.dx-column-lines.dx-header-row td {
+        text-align: center !important;
+    }
+
+    .dx-datagrid-headers.dx-datagrid-nowrap.dx-header-multi-row .dx-datagrid-table.dx-datagrid-table-fixed {
+        -webkit-text-stroke-width: 0.5px;
+        -webkit-text-stroke-color: white;
+        text-shadow: 0px 2px 4px black;
+    }
+
+    #gridContainer .dx-datagrid-table.dx-datagrid-table-fixed tr.dx-row.dx-data-row.dx-column-lines {
+        font-size: 23px;
+        border: 2px solid #58a6d33b;
+    }
+
+    .dx-row.dx-column-lines.dx-header-row {
+        font-weight: bolder;
+        font-size: 25px;
+    }
+</style>

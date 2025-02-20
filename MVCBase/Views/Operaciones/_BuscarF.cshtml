@@ -1,0 +1,394 @@
+﻿@model CAMTEX.Entidades.Factura
+
+
+
+<div id="frmRegistrar_@ViewBag.Id">
+    <div class="form-horizontal">
+        <div class="row">
+            <div class="col-md-12">
+                <div style="height:20px;"></div>
+                <div class="form-horizontal">
+                    <div class="form-group form-inline">
+                        <div class="col-md-3" style="display: none">
+                            <span class="input-group-btn">
+                                <label>Factura:</label>
+                                <input class="form-control input-sm text-box single-line" disabled="disabled"
+                                       id="txtNumeroFactura_@ViewBag.Id" value="@Model.U_DIN_NFACT">
+                            </span>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Cliente:</label>
+                            <input type="text" id="txtProveedor_@ViewBag.Id" class="form-control"
+                                   value="@Model.U_DIN_PROV" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group form-inline">
+                        <div class="col-md-3">
+                            <label for="txtTipo">Tipo:</label>
+                            <input type="text" id="txtTipo_@ViewBag.Id" class="form-control"
+                                   value="" readonly>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="txtCond">Condición:</label>
+                            <input type="text" id="txtCond_@ViewBag.Id" class="form-control"
+                                   value="@Model.U_DIN_COND" readonly>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="txtFecha">Fecha:</label>
+                            <input type="text" id="txtFecha_@ViewBag.Id" class="form-control"
+                                   value="@Model.U_DIN_FFACT" readonly>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="txtMoneda">Moneda:</label>
+                            <input type="text" id="txtMoneda_@ViewBag.Id" class="form-control"
+                                   value="@Model.U_DIN_MON" readonly>
+                        </div>
+                    </div>
+                    <div id="popupContainer"></div>
+                    <hr style="border-top: 2px solid #33333347;" />
+                    <div class="dx-viewport demo-container">
+                        <div class="tabpanel-demo">
+                            <div id="tabpanelS_@ViewBag.Id"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="container mt-3">
+    <!-- Menú de pestañas -->
+    <ul class="nav nav-tabs" id="tabMenu_@ViewBag.Id">
+        <li class="nav-item">
+            <a class="nav-link active" href="#" data-target="tab1_@ViewBag.Id">Guias Remisión</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" data-target="tab2_@ViewBag.Id">Datos Exportación</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" data-target="tab3_@ViewBag.Id">Contenedores</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" data-target="tab4_@ViewBag.Id">Facturas Relacionadas</a>
+        </li>
+    </ul>
+
+    <!-- Contenedores de paneles -->
+    <div id="tab1_@ViewBag.Id" class="tab-contentss active">
+        <div id="gridContainerG_@ViewBag.Id"></div>
+    </div>
+
+    <div id="tab2_@ViewBag.Id" class="tab-contentss" style="display: none;">
+        <div class="container">
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <label>Nro Operación</label>
+                    <input type="text" id="txtNOp_@ViewBag.Id" class="form-control" readonly>
+                </div>
+                <div class="col-md-3">
+                    <label>Referencia Cliente</label>
+                    <input type="text" id="txtCliente_@ViewBag.Id" class="form-control" readonly>
+                </div>
+                <div class="col-md-3" style="display:none">
+                    <label>B/L AWB</label>
+                    <input type="text" id="txtBL_@ViewBag.Id" class="form-control" readonly>
+                </div>
+                <div class="col-md-3" style="display:none">
+                    <label>B/L AWB</label>
+                    <input type="text" id="txtBL_@ViewBag.Id" class="form-control" readonly>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <label>B/L AWB</label>
+                    <input type="text" id="txtBL_@ViewBag.Id" class="form-control" readonly>
+                </div>
+                <div class="col-md-3">
+                    <label>DUA</label>
+                    <input type="text" id="txtDUA_@ViewBag.Id" class="form-control" readonly>
+                </div>
+                <div class="col-md-3">
+                    <label>Depósito</label>
+                    <input type="text" id="txtDeposito_@ViewBag.Id" class="form-control" readonly>
+                </div>
+                <div class="col-md-3">
+                    <label>Garantía</label>
+                    <input type="text" id="txtGarantia_@ViewBag.Id" class="form-control" readonly>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-3">
+                    <label>Pais Destino</label>
+                    <input type="text" id="txtPais_@ViewBag.Id" class="form-control" readonly>
+                </div>
+                <div class="col-md-3">
+                    <label>Fecha Env. Cliente</label>
+                    <input type="text" id="txtFechaEnvCl_@ViewBag.Id" class="form-control" readonly>
+                </div>
+                <div class="col-md-3">
+                    <label>Fecha Aprob Cliente</label>
+                    <input type="text" id="txtFechaAprob_@ViewBag.Id" class="form-control" readonly>
+                </div>
+                <div class="col-md-3">
+                    <label>Fecha Despacho</label>
+                    <input type="text" id="txtFechaDesp_@ViewBag.Id" class="form-control" readonly>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-3">
+                    <label>Línea Naviera</label>
+                    <input type="text" id="txtLineaNaviera_@ViewBag.Id" class="form-control" readonly>
+                </div>
+                <div class="col-md-3">
+                    <label>Flete Internacional</label>
+                    <input type="text" id="txtFlete_@ViewBag.Id" class="form-control" readonly>
+                </div>
+                <div class="col-md-3">
+                    <label>Booking Reserva</label>
+                    <input type="text" id="txtBook_@ViewBag.Id" class="form-control" readonly>
+                </div>
+                <div class="col-md-3">
+                    <label>ETD</label>
+                    <input type="text" id="txtETD_@ViewBag.Id" class="form-control" readonly>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <label>Incoterm</label>
+                    <input type="text" id="txtIncoterm_@ViewBag.Id" class="form-control" readonly>
+                </div>
+                <div class="col-md-3">
+                    <label>Vía</label>
+                    <input type="text" id="txtVia_@ViewBag.Id" class="form-control" readonly>
+                </div>
+                <div class="col-md-3">
+                    <label>Agente Aduana</label>
+                    <input type="text" id="txtAAduana_@ViewBag.Id" class="form-control" readonly>
+                </div>
+                <div class="col-md-3">
+                    <label>Agente Carga</label>
+                    <input type="text" id="txtACarga_@ViewBag.Id" class="form-control" readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <label>Operador Logístico</label>
+                    <input type="text" id="txtOLog_@ViewBag.Id" class="form-control" readonly>
+                </div>
+                <div class="col-md-3">
+                    <label>Transp. Interno</label>
+                    <input type="text" id="txtTraInte_@ViewBag.Id" class="form-control" readonly>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab3_@ViewBag.Id" class="tab-contentss" style="display: none;">
+        <div class="form-group form-inline"><div class="col-md-3"><label>CONTENEDORES</label></div></div>
+        <div id="gridContainerC_@ViewBag.Id"></div>
+    </div>
+
+
+    <div id="tab4_@ViewBag.Id" class="tab-contentss" style="display: none;">
+        <div class="form-group form-inline"><div class="col-md-3"><label>FACTURAS RELACIONADAS</label></div></div>
+        <div id="gridContainerF_@ViewBag.Id"></div>
+    </div>
+</div>
+
+
+
+
+
+<script>
+
+    var id = "@ViewBag.Id"; // Obtener ID dinámico si es necesario
+
+    var idOrdenCompra = null;
+    console.log("id: ", id);
+    // Crear todos los dxDataGrid en sus respectivos contenedores
+   
+    $("#gridContainerG_" + id).dxDataGrid({
+        dataSource: [], // Data real
+        columns: ["Guias", "Descripcion", "P.U.","Qty.","Valor"],
+        showBorders: true
+    });
+
+    $("#gridContainerC_" + id).dxDataGrid({
+        dataSource: [], // Data real
+        columns: ["Contenedor"],
+        showBorders: true
+    });
+
+    $("#gridContainerF_" + id).dxDataGrid({
+        dataSource: [], // Data real
+        columns: ["Factura","Proveedor","Fecha","Concepto","Valor","Moneda"],
+        showBorders: true
+    });
+
+    // Ocultar todos los tabs excepto el primero
+    $(".tab-contentss").hide();
+    $("#tab1_" + id).show();
+
+    // Manejar clic en las pestañas
+    $("#tabMenu_" + id + " .nav-link").click(function (e) {
+        e.preventDefault();
+
+        var target = $(this).data("target");
+
+        // Ocultar todos los tabs y mostrar solo el seleccionado
+        $(".tab-contentss").hide();
+        $("#" + target).show();
+
+        // Marcar la pestaña activa
+        $("#tabMenu_" + id + " .nav-link").removeClass("active");
+        $(this).addClass("active");
+    });
+
+</script>
+
+
+<style>
+
+    .tab-contentss {
+        display: none;
+    }
+
+        .tab-contentss.active {
+            display: block;
+        }
+
+    .tabpanel-demo {
+        height: 100%;
+    }
+
+    .widget-container {
+        display: flex;
+        justify-content: center;
+        flex-grow: 1;
+        min-width: 360px;
+        padding: 16px 32px;
+    }
+
+    .tabpanel-demo .dx-tabpanel {
+        background-color: var(--dx-component-color-bg);
+    }
+
+    .dx-theme-material .widget-container {
+        background-color: rgba(191, 191, 191, 0.15);
+    }
+
+    .dx-tabpanel-tabs-position-left .dx-tabpanel-container,
+    .dx-tabpanel-tabs-position-right .dx-tabpanel-container {
+        width: 0;
+    }
+
+    .dx-viewport:not(.dx-theme-generic) .dx-tabpanel {
+        border-radius: 8px;
+        overflow: clip;
+    }
+
+    .dx-tabs-vertical {
+        min-width: 120px;
+    }
+
+    .options {
+        display: inline-flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        box-sizing: border-box;
+        width: 272px;
+        padding: 20px;
+        background-color: rgba(191, 191, 191, 0.15);
+    }
+
+    .caption {
+        font-weight: 500;
+        font-size: 18px;
+    }
+
+    .option {
+        margin-top: 20px;
+    }
+
+    .tabpanel-item {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 24px;
+    }
+
+    .task-item {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 100%;
+        height: 50px;
+        padding: 8px 12px 8px 8px;
+        border-radius: 4px;
+        box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.15);
+    }
+
+        .task-item::before {
+            content: "";
+            position: absolute;
+            top: 8px;
+            left: 6px;
+            bottom: 8px;
+            width: 3px;
+            border-radius: 4px;
+        }
+
+    .task-item-priority-high::before {
+        background-color: #e1bee7;
+    }
+
+    .task-item-priority-medium::before {
+        background-color: #ffe0b2;
+    }
+
+    .task-item-priority-low::before {
+        background-color: #c8e6c9;
+    }
+
+    .task-item-text,
+    .task-item-info {
+        margin: 0;
+        padding: 0 24px 0 16px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .task-item-info {
+        font-size: 12px;
+        opacity: 0.6;
+    }
+
+    .task-item-pseudo-button {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        font-size: 18px;
+        transform: translateY(-50%);
+        cursor: pointer;
+        opacity: 0.6;
+    }
+
+    .dx-color-scheme-contrast .task-item {
+        border: 1px solid #fff;
+    }
+
+    .dx-theme-fluent.dx-color-scheme-blue-dark .task-item {
+        background-color: #1f1f1f;
+    }
+</style>

@@ -1,0 +1,845 @@
+﻿
+@{
+    ViewBag.Title = "Bandeja";
+    Layout = "~/Views/Shared/_LayoutDev.cshtml";
+
+}
+
+<div id="frmRegistro">
+    <div class="form-horizontal">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Bandeja Inventario
+            </div>
+            <div class="panel-body">
+                <div class="form-horizontal">
+
+                    <div id="gridDetalle"></div>
+
+                    <script type="text/x-kendo-templateGridDetalle" id="templateGridDetalle">
+                            <div class="pull-left" style="width: 100%;">
+                            <div class="col-md-8">
+                                <div class="col-md-12">
+                                    <button type="button"
+                                            class="btn btn-default btn-sm"
+                                            data-url="@Url.Content("~/Inventario/RegistroInventario")"
+                                            name="bntAdd" id="bntAdd">
+                                        <span class="glyphicon glyphicon-save"></span>&nbsp;Registrar Inventario
+                                    </button>
+                                    <button type="button"
+                                        class="btn btn-default btn-sm"
+                                        data-url="@Url.Content("~/PedidoDetalle/EditarTela")"
+                                        name="btnEditar" id="btnEditaro">
+                                        <span class="glyphicon glyphicon-pencil"></span>&nbsp;Editar Inventario
+                                    </button>
+                                    <button type="button"
+                                        class="btn btn-primary btn-sm"
+                                        data-url="@Url.Content("~/Inventario/InventarioPersonal")"
+                                        name="btnRegistrarPersonal" id="btnRegistrarPersonal">
+                                        <span class="glyphicon glyphicon-save"></span>&nbsp;Registrar Personal
+                                    </button>
+                                    <button type="button"
+                                        class="btn btn-info btn-sm"
+                                        data-url="@Url.Content("~/Inventario/InventarioUbicaciones")"
+                                        name="btnRegistrarUbicaciones" id="btnRegistrarUbicaciones">
+                                        <span class="glyphicon glyphicon-save"></span>&nbsp;Registrar Ubicaciones
+                                    </button>
+
+                                </div>
+                                @*<div class="col-md-5">
+                                    <input class="form-control input-sm"  id="txtcodtela"  type="text" style="height: 20px !important;width: 95%;">
+                                </div>*@
+                            </div>
+                            </div>
+                    </script>
+                    <div id="divPedidoComercialContent">
+                        <div id="divErrorPedido" class="alert alert-danger alert-dismissible" style="display: none">
+                            <span class="k-icon k-i-warning"> </span>
+                            <strong>@MVCBase.Util.Utiles.MessageModelStateInvalid()</strong>
+                            <ul id="ulListaErrorPedido"></ul>
+                        </div>
+                    </div>
+
+
+                    <!-- Contenedor para el dxPopup -->
+                    <div id="popupContainerRI"></div>
+                    <div id="popupContainerRP"></div>
+                    <div id="popupContainerRU"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        loadGridDetalle();
+        /*
+        $("#btnRegistrarPersonal").on("click", function (e) {
+            var data = $("#gridDetalle").data("kendoGrid");
+            var item = data.dataItem(data.select());
+            if (item != undefined) {
+                BootstrapDialog.show({
+                    title: 'Mantenimiento Personal',
+                    message: $('<div><img src="../../Content/images/loading_modal.gif" class="image-center" /></div>').load(Enrutamiento($(this).attr('data-url'), 'Key='+item.IdPeriodoInventario))
+
+                });
+            } else {
+                AlertMessage("DEBE SELECCIONAR EL INVENTARIO");
+            }
+
+        })
+        $("#btnRegistrarUbicaciones").on("click", function (e) {
+            var data = $("#gridDetalle").data("kendoGrid");
+            var item = data.dataItem(data.select());
+            if (item != undefined) {
+                BootstrapDialog.show({
+                    title: 'Mantenimiento Ubicaciones',
+                    message: $('<div><img src="../../Content/images/loading_modal.gif" class="image-center" /></div>').load(Enrutamiento($(this).attr('data-url'), 'Key=' + item.IdPeriodoInventario))
+
+                });
+            } else {
+                AlertMessage("DEBE SELECCIONAR EL INVENTARIO");
+            }
+
+        })
+        $("#bntAdd").click(function () {
+
+            BootstrapDialog.show({
+                title: 'Registrar Inventario',
+                message: $('<div><img src="../../Content/images/loading_modal.gif" class="image-center" /></div>').load(Enrutamiento($(this).attr('data-url'))),
+                buttons: [
+                    {
+                        label: 'Cerrar',
+                        action: function (dialog) {
+                            dialog.close();
+                        }
+                    },
+                    {
+                        label: 'Aceptar',
+                        action: function (dialog) {
+                            if ($('#frmRegistroInv').find('select[id="CodAlmacen"]').val() == '') {
+                                AlertMessage("DEBE REGISTRAR ALMACEN");
+                                return false;
+                            }
+                            if ($('#frmRegistroInv').find('input[id="ResponsableDNI"]').val() == '') {
+                                AlertMessage("DEBE REGISTRAR dni");
+                                return false;
+                            }
+                            if ($('#frmRegistroInv').find('input[id="Responsable"]').val() == '') {
+                                AlertMessage("DEBE REGISTRAR RESPONSABLE");
+                                return false;
+                            }
+
+                            var E_PERIODO = {
+                                CodAlmacen: $('#frmRegistroInv').find('select[id="CodAlmacen"]').val(),
+                                ResponsableDNI: $('#frmRegistroInv').find('input[id="ResponsableDNI"]').val(),
+                                Responsable: $('#frmRegistroInv').find('input[id="Responsable"]').val(),
+                                Observacionapertura: $('#Observacionapertura').val(),
+                                ESTADO: "A"
+                            }
+
+                            $.ajax({
+                                datatype: 'json',
+                                contentType: "application/json",
+                                url: '/Inventario/Registrar_Inventario',
+                                type: 'POST',
+                                data: JSON.stringify({ entidad: E_PERIODO }),
+                                beforeSend: function () {
+                                    bloquoteObject();
+                                },
+                                success: function (data) {
+                                    debugger;
+                                    console.log(data);
+                                    if (!data.rpta) {
+                                        AlertMessage(data.result);
+
+                                    } else {
+                                        dialog.close();
+                                        AlertMessage(data.result);
+                                        ActualizarGrid();
+                                    }
+
+                                    desbloqObject();
+                                }
+                            }).fail(function (jqxhr, textStatus, error) {
+                                var err = textStatus + ', ' + error;
+                                console.log("Request Failed: " + err);
+                                desbloqObject();
+                            });
+                        },
+                        error: function (e) {
+                            console.log("Error obtener Datos Inventario : [ " + e + " ]")
+                        }
+                    }
+                ]
+            });
+
+
+        });*/
+    });
+
+    var columnsConfig = [
+        { dataField: 'FechaCreacion', caption: 'Fecha  Registro', dataType: 'datetime', format: "MM/dd/yyyy"},
+        { dataField: 'CodAlmacen', caption: 'Almacen'},
+        { dataField: 'Responsable', caption: 'Responsable'},
+        { dataField: 'ResponsableDNI', caption: 'DNI Responsable'},
+        { dataField: 'FlagInventario', caption: 'Estado'},
+    ];
+
+
+    function loadGridDetalle() {
+
+        $(() => {
+            const DxSource = new DevExpress.data.CustomStore({
+                key: 'IdPeriodoInventario',
+                load() {
+                    return sendRequest(`/Inventario/Listar_Paginado`);
+                },
+
+            });
+
+
+            const dataGrid =
+                $('#gridDetalle').dxDataGrid({
+
+                    dataSource: DxSource,
+                    editing: {
+                        mode: 'popup',
+                        useIcons: true,
+                    },
+                    onEditorPreparing: {},
+                    onrRowInserted(e) {
+                        e.component.navigateToRow(e.key);
+                    },
+                    columns: columnsConfig,
+                    toolbar: {
+                        items: [
+                            {
+                                location: "before", // Ubicación antes de los botones existentes
+                                text: "Bandeja Inventario", // Texto del título
+                                cssClass: "toolbar-title ", // Clase de estilo personalizada
+
+                            },
+                            {
+                                location: "after",
+                                widget: "dxButton",
+
+                                options: {
+                                    icon: "add",
+                                    text: "Registrar Inventario",
+                                    //cssClass: "ClsFibra", // Clase de estilo personalizada
+
+                                    onClick: function () {
+                                        PURegistrarInv(); // Llama a la función para mostrar el popup
+                                    },
+                                    stylingMode: "outlined", // Cambia el estilo del botón a outlined
+                                    // Modifica el color del botón
+                                    elementAttr: {
+                                        class: "ClsAgregar custom-button-style" // Puedes cambiar "dx-color-blue" por otro color de tu elección
+                                    }
+                                },
+                            },
+                            {
+                                location: "after",
+                                widget: "dxButton",
+                                options: {
+                                    icon: "edit",
+                                    text: "Editar Inventario",
+                                    onClick: function () {
+                                        const selectedRowIndex = dataGrid.option("focusedRowIndex");
+                                        if (selectedRowIndex !== undefined && selectedRowIndex !== -1) {
+
+                                            dataGrid.editRow(selectedRowIndex);
+
+                                        } else {
+                                            // Si no hay una fila seleccionada, muestra un mensaje o realiza otra acción
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Oops...',
+                                                text: 'Selecciona una fila antes de editar.',
+                                                customClass: {
+                                                    container: 'my-swal-container', // Clase personalizada para ajustar z-index
+                                                },
+                                            });
+                                        }
+                                    },
+                                    stylingMode: "outlined", // Cambia el estilo del botón a outlined
+                                    // Modifica el color del botón
+                                    elementAttr: {
+                                        class: "ClsEditar custom-button-style" // Puedes cambiar "dx-color-blue" por otro color de tu elección
+                                    }
+
+                                },
+                                visible: false // Establece la visibilidad a false para ocultar el botón
+                            },
+                            {
+                                location: "after",
+                                widget: "dxButton",
+
+                                options: {
+                                    icon: "add",
+                                    text: "Registrar Personal",
+                                    //cssClass: "ClsFibra", // Clase de estilo personalizada
+
+                                    onClick: function () {
+                                        PURegistrarPer(); // Llama a la función para mostrar el popup
+                                    },
+                                    stylingMode: "outlined", // Cambia el estilo del botón a outlined
+                                    // Modifica el color del botón
+                                    elementAttr: {
+                                        class: "ClsAgregar custom-button-style" // Puedes cambiar "dx-color-blue" por otro color de tu elección
+                                    }
+                                },
+                            },
+                            {
+                                location: "after",
+                                widget: "dxButton",
+
+                                options: {
+                                    icon: "add",
+                                    text: "Registrar Ubicaciones",
+                                    //cssClass: "ClsFibra", // Clase de estilo personalizada
+
+                                    onClick: function () {
+                                        PURegistrarUbi(); // Llama a la función para mostrar el popup
+                                    },
+                                    stylingMode: "outlined", // Cambia el estilo del botón a outlined
+                                    // Modifica el color del botón
+                                    elementAttr: {
+                                        class: "ClsAgregar custom-button-style" // Puedes cambiar "dx-color-blue" por otro color de tu elección
+                                    }
+                                },
+                                visible: false // Establece la visibilidad a false para ocultar el botón
+
+                            },
+
+                            'exportButton',
+                        ],
+                    },
+                    export: {
+                        enabled: true,
+                    },
+                    onExporting(e) {
+                        const workbook = new ExcelJS.Workbook();
+                        const worksheet = workbook.addWorksheet('data');
+
+                        DevExpress.excelExporter.exportDataGrid({
+                            component: e.component,
+                            worksheet,
+                            autoFilterEnabled: true,
+                        }).then(() => {
+                            workbook.xlsx.writeBuffer().then((buffer) => {
+                                saveAs(new Blob([buffer], { type: 'application/octet-stream' }), 'data.xlsx');
+                            });
+                        });
+                        e.cancel = true;
+                    },
+                    hoverStateEnabled: true,
+                    filterRow: { visible: true },
+                    showColumnLines: true,
+                    showRowLines: true,
+                    rowAlternationEnabled: true,
+                    showBorders: true,
+                    selection: {
+                        mode: 'single',
+                    },
+                    paging: {
+                        pageSize: 10,
+                    },
+
+
+                }).dxDataGrid('instance');
+
+
+        })
+
+
+        //cambiado a grid1
+        @*var grid1 = $("#gridDetalle1").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: {
+                        type: "POST",
+                        url: "/Inventario/Listar_Paginado",
+                        contentType: "application/json",
+                        dataType: 'json'
+                    },
+                    parameterMap: function (options, operation) {
+                        return JSON.stringify({
+                            PageNumber: options.page, //(options.page == 0) ? 0 : (options.page - 1),
+                            pageSize: options.pageSize,
+                        });
+                    }
+                },
+                schema: {
+                    data: "lista",
+                    total: "pageSize",
+                    type: 'json',
+                    model: {
+                        fields: {
+                            IdPeriodoInventario: { type: "number" },
+                            Anio: { type: "number" },
+                            FechaCreacion: { type: "date" },
+                            Observacionapertura: { type: "string" },
+                            CodAlmacen: { type: "string" },
+                            Responsable: { type: "string" },
+                            DNIResponsable: { type: "string" },
+                            FlagInventario: { type: "string" },
+                            CondicionINV: { type: "string" }
+                        }
+                    }
+                },
+                pageSize: 10,
+                serverPaging: true,
+                serverFiltering: true,
+                serverSorting: true
+            },
+            scrollable: true,
+            pageable: false,
+            selectable: true,
+            toolbar: kendo.template($("#templateGridDetalle").html()),
+            noRecords: {
+                template: '<br /> ' +
+                    ' <div> ' +
+                    ' <div class="mainbox col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3"> ' +
+                    ' <div class="alert alert-info alert-dismissable" align="center"> ' +
+                    ' NO SE ENCONTRARON REGISTROS ' +
+                    ' </div> ' +
+                    ' </div> ' +
+                    ' </div>'
+            },
+
+            columns: [{
+                field: "FechaCreacion",
+                title: "Fecha  Registro",
+                width: 80,
+                format: "{0:dd/MM/yyyy H:mm}"
+            }, {
+                field: "CodAlmacen",
+                title: "Almacen",
+                width: 120
+            },
+            {
+                field: "Responsable",
+                title: "Responsable",
+                width: 150
+            },
+            {
+                field: "DNIResponsable",
+                title: "DNI Responsable",
+                width: 100,
+            },
+            {
+                field: "FlagInventario",
+                title: "Estado",
+                width: 100,
+            }
+            ]
+        }).data("kendoGrid");
+        *@
+
+    }
+    function ActualizarGrid() {
+        var grid = $('#gridDetalle').dxDataGrid('instance');
+        grid.refresh();
+        loadGridDetalle();
+    }
+
+    function PURegistrarInv() {
+        $("#popupContainerRI").dxPopup({
+            width: 800,
+            height: 400,
+            showTitle: true,
+            title: "Registrar Inventario",
+            visible: false, // Mantén el popup oculto hasta que sea necesario
+            dragEnabled: true,
+            hideOnOutsideClick: true,
+            contentTemplate: function(contentElement) {
+                // Cargar el contenido mediante AJAX DE LA VISTA _REGISTROINVENTARIO
+                $.ajax({
+                    url: "@Url.Content("~/Inventario/RegistroInventario")",
+                    type: "GET",
+                    success: function(data) {
+                        contentElement.html(data);
+                    },
+                    error: function() {
+                        contentElement.html("<p>Error al cargar el contenido.</p>");
+                    }
+                });
+            },
+            toolbarItems: [
+                {
+                    widget: 'dxButton',
+                    toolbar: "bottom",
+                    location: 'after',
+                    options: {
+                        text: 'Agregar',
+                        onClick: function () {
+                            // Acción cuando se hace clic en "Aceptar"
+                            console.log('Aceptar clickeado');
+
+                            if ($('#frmRegistroInv').find('select[id="CodAlmacen"]').val() == '') {
+                                AlertMessage("DEBE REGISTRAR ALMACEN");
+                                return false;
+                            }
+                            if ($('#frmRegistroInv').find('input[id="ResponsableDNI"]').val() == '') {
+                                AlertMessage("DEBE REGISTRAR dni");
+                                return false;
+                            }
+                            if ($('#frmRegistroInv').find('input[id="Responsable"]').val() == '') {
+                                AlertMessage("DEBE REGISTRAR RESPONSABLE");
+                                return false;
+                            }
+
+                            var E_PERIODO = {
+                                CodAlmacen: $('#frmRegistroInv').find('select[id="CodAlmacen"]').val(),
+                                ResponsableDNI: $('#frmRegistroInv').find('input[id="ResponsableDNI"]').val(),
+                                Responsable: $('#frmRegistroInv').find('input[id="Responsable"]').val(),
+                                Observacionapertura: $('#Observacionapertura').val(),
+                                ESTADO: "A"
+                            }
+                            console.log("el valor del objeto es : ", E_PERIODO);
+                            $.ajax({
+                                datatype: 'json',
+                                contentType: "application/json",
+                                url: '/Inventario/Registrar_Inventario',
+                                type: 'POST',
+                                data: JSON.stringify({ entidad: E_PERIODO }),
+                                beforeSend: function () {
+                                    bloquoteObject();
+                                },
+                                success: function (data) {
+                                    debugger;
+                                    console.log(data);
+                                    if (!data.rpta) {
+                                        AlertMessage(data.result);
+
+                                    } else {
+                                        //dialog.close();
+                                        AlertMessage(data.result);
+                                        ActualizarGrid();
+                                    }
+
+                                    desbloqObject();
+                                }
+                            }).fail(function (jqxhr, textStatus, error) {
+                                var err = textStatus + ', ' + error;
+                                console.log("Request Failed: " + err);
+                                desbloqObject();
+                            });
+
+                            $("#popupContainerRI").dxPopup("hide");
+
+                        }
+                    }
+                },
+                {
+                    widget: 'dxButton',
+                    toolbar: "bottom",
+                    location: 'after',
+                    options: {
+                        text: 'Cancelar',
+                        onClick: function () {
+                            // Acción cuando se hace clic en "Cerrar"
+                            $("#popupContainerRI").dxPopup("hide");
+                        }
+                    }
+                }
+            ]
+        }).dxPopup("show");
+    }
+
+    function PURegistrarPer() {
+
+
+        var grid = $('#gridDetalle').dxDataGrid('instance');
+
+        // Obtener el ítem seleccionado
+        var selectedData = grid.getSelectedRowsData();
+        if (selectedData.length > 0) {
+
+            // dataGrid.editRow(selectedRowIndex);
+
+            console.log("selectedRowData", selectedData[0].IdPeriodoInventario);
+            $("#popupContainerRP").dxPopup({
+                width: 800,
+                height: 800,
+                showTitle: true,
+                title: "Registrar Personal",
+                visible: false, // Mantén el popup oculto hasta que sea necesario
+                dragEnabled: true,
+                hideOnOutsideClick: true,
+                contentTemplate: function(contentElement) {
+                    // Cargar el contenido mediante AJAX
+                    $.ajax({
+                        url: '@Url.Content("~/Inventario/InventarioPersonal")' + '?key=' + selectedData[0].IdPeriodoInventario,
+                        type: "GET",
+                        success: function(data) {
+                            contentElement.html(data);
+                        },
+                        error: function() {
+                            contentElement.html("<p>Error al cargar el contenido.</p>");
+                        }
+                    });
+                },
+                toolbarItems: [
+                    {
+                        widget: 'dxButton',
+                        toolbar: "bottom",
+                        location: 'after',
+                        options: {
+                            text: 'Agregar',
+                        },
+                        options: {
+                            text: 'Agregar',
+                            onClick: function () {
+                                if ($("#DNI").val() == '') {
+                                    AlertMessage("DEBE REGISTRAR EL DNI");
+                                    return false;
+                                }
+                                if ($("#Descripcion").val() == '') {
+                                    AlertMessage("DEBE REGISTRAR EL NOMBRE");
+                                    return false;
+                                }
+
+                                var E_PersonalInventario = {
+                                    IdPeriodoInventario: $('#frmRegistroPersonalInv').find('input[id="IdPeriodoInventario"]').val(),
+                                    DNI: $("#DNI").val(),
+                                    Descripcion: $("#Descripcion").val(),
+                                }
+                                $.ajax({
+                                    datatype: 'json',
+                                    contentType: "application/json",
+                                    url: '/Inventario/Registrar_PersonalInventario',
+                                    type: 'POST',
+                                    data: JSON.stringify({ entidad: E_PersonalInventario }),
+                                    beforeSend: function () {
+                                        bloquoteObject();
+                                    },
+                                    success: function (data) {
+                                        console.log(data);
+                                        if (!data.rpta) {
+                                            if (data.errores == "") AlertMessage(data.result);
+
+                                        } else {
+                                            $("#DNI").val("");
+                                            $("#Descripcion").val("");
+                                            AlertMessage(data.result);
+                                            ActualizarGridPersonal();
+                                        }
+
+                                        desbloqObject();
+                                    }
+                                }).fail(function (jqxhr, textStatus, error) {
+                                    var err = textStatus + ', ' + error;
+                                    console.log("Request Failed: " + err);
+                                    desbloqObject();
+                                });
+                                $("#popupContainerRP").dxPopup("hide");
+                            }
+                        },
+
+                    },
+                    {
+                        widget: 'dxButton',
+                        toolbar: "bottom",
+                        location: 'after',
+                        options: {
+                            text: 'Cancelar',
+                            onClick: function () {
+                                // Acción cuando se hace clic en "Cerrar"
+                                $("#popupContainerRP").dxPopup("hide");
+                            }
+                        }
+                    }
+                ]
+            }).dxPopup("show");
+
+
+        } else {
+            // Si no hay una fila seleccionada, muestra un mensaje o realiza otra acción
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Selecciona una fila antes de registrar.',
+                customClass: {
+                    container: 'my-swal-container', // Clase personalizada para ajustar z-index
+                },
+            });
+        }
+    }
+
+    function PURegistrarUbi() {
+
+
+        var grid = $('#gridDetalle').dxDataGrid('instance');
+
+        // Obtener el ítem seleccionado
+        var selectedData = grid.getSelectedRowsData();
+        if (selectedData.length > 0) {
+
+            // dataGrid.editRow(selectedRowIndex);
+
+            console.log("selectedRowData", selectedData[0].IdPeriodoInventario);
+            $("#popupContainerRU").dxPopup({
+                width: 800,
+                height: 600,
+                showTitle: true,
+                title: "Registrar Ubicación",
+                visible: false, // Mantén el popup oculto hasta que sea necesario
+                dragEnabled: true,
+                hideOnOutsideClick: true,
+                contentTemplate: function(contentElement) {
+                    // Cargar el contenido mediante AJAX
+                    $.ajax({
+                        url: '@Url.Content("~/Inventario/InventarioUbicaciones")' + '?key=' + selectedData[0].IdPeriodoInventario,
+                        type: "GET",
+                        success: function(data) {
+                            contentElement.html(data);
+                        },
+                        error: function() {
+                            contentElement.html("<p>Error al cargar el contenido.</p>");
+                        }
+                    });
+                },
+                toolbarItems: [
+                    {
+                        widget: 'dxButton',
+                        toolbar: "bottom",
+                        location: 'after',
+                        options: {
+                            text: 'Agregar',
+                            onClick: function () {
+                                if ($("#Ubicacion").val() == '') {
+                                    AlertMessage("DEBE REGISTRAR LA UBICACION");
+                                    return false;
+                                }
+
+                                var E_PersonalInventario = {
+                                    IdPeriodoInventario: $('#frmRegistroUbicacionesInv').find('input[id="IdPeriodoInventario"]').val(),
+                                    Ubicacion: $("#Ubicacion").val(),
+                                }
+                                $.ajax({
+                                    datatype: 'json',
+                                    contentType: "application/json",
+                                    url: '/Inventario/Registrar_UbicacionInventario',
+                                    type: 'POST',
+                                    data: JSON.stringify({ entidad: E_PersonalInventario }),
+                                    beforeSend: function () {
+                                        bloquoteObject();
+                                    },
+                                    success: function (data) {
+                                        debugger;
+                                        console.log(data);
+                                        if (!data.rpta) {
+                                            if (data.errores == "") AlertMessage(data.result);
+
+                                        } else {
+                                            $("#Ubicacion").val("");
+                                            AlertMessage(data.result);
+                                            ActualizargridUbicaciones();
+                                        }
+
+                                        desbloqObject();
+                                    }
+                                }).fail(function (jqxhr, textStatus, error) {
+                                    var err = textStatus + ', ' + error;
+                                    console.log("Request Failed: " + err);
+                                    desbloqObject();
+                                });
+                                $("#popupContainerRU").dxPopup("hide");
+                            }
+                        },
+                        options: {
+                            text: 'Agregar',
+                            onClick: function () {
+
+
+
+
+                                $("#popupContainerRU").dxPopup("hide");
+                            }
+                        },
+
+                    },
+                    {
+                        widget: 'dxButton',
+                        toolbar: "bottom",
+                        location: 'after',
+                        options: {
+                            text: 'Cancelar',
+                            onClick: function () {
+                                // Acción cuando se hace clic en "Cerrar"
+                                $("#popupContainerRU").dxPopup("hide");
+                            }
+                        }
+                    }
+                ]
+            }).dxPopup("show");
+
+
+        } else {
+            // Si no hay una fila seleccionada, muestra un mensaje o realiza otra acción
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Selecciona una fila antes de registrar.',
+                customClass: {
+                    container: 'my-swal-container', // Clase personalizada para ajustar z-index
+                },
+            });
+        }
+    }
+
+
+</script>
+
+<style>
+    .toolbar-title {
+        color: #002762;
+        padding: 10px !important;
+        font-weight: bolder;
+    }
+    .dx-datagrid-header-panel {
+        padding: 0px;
+        background-color: white !important;
+    }   
+    .dx-toolbar-after {
+        padding: 5px;
+    }
+    .ClsAgregar {
+        font-weight: 600 !important;
+        color: #fff;
+        background-color: #5cb85c;
+        border-color: #4cae4c;
+    }
+
+        .ClsAgregar:hover,
+        .ClsAgregar:focus {
+            background-color: #4d984d; /* Color de fondo del botón al hacer hover o focus */
+        }
+    .ClsEditar {
+        font-weight: 600 !important;
+        color: #fff;
+        background-color: #f0ad4e;
+        border-color: #eea236;
+    }
+
+        .ClsEditar:hover,
+        .ClsEditar:focus {
+            background-color: #d18c37; /* Color de fondo del botón al hacer hover o focus */
+        }
+    .custom-button-style .dx-icon {
+        color: white !important;
+    }
+
+    .dx-overlay-shader {
+        pointer-events: auto;
+        background-color: rgb(83 83 83 / 72%) !important;
+    }
+    
+
+</style>
+

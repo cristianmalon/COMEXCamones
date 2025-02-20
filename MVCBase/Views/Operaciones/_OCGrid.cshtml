@@ -1,0 +1,159 @@
+﻿<div id="frmBOC">
+    <div class="form-horizontal">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <div id="gridBOC"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<script>
+
+
+    $(() => {
+        const DxSource = new DevExpress.data.CustomStore({
+            load() {
+                return sendRequest(`/Operaciones/ListarOcGrid`);
+            },
+        });
+
+
+        //se cambio IdMaquina por CodigoFibra del value de update y remove y el keyExpr
+        //se cambio IdMaquina por CodigoFibra del value de update y remove y el keyExpr
+        const dataGrid2 =
+            $('#gridBOC').dxDataGrid({
+                dataSource: DxSource,
+                //keyExpr: 'CodigoFibra',
+
+
+
+                columnAutoWidth: true,
+
+
+
+                onRowInserted(e) {
+                    e.component.navigateToRow(e.key);
+                },
+                columns: [
+                    {
+                        dataField: "id",
+                        caption: 'id',
+
+                    },
+                    {
+                        dataField: "NumeroOrden",
+                        caption: 'Numero Orden',
+
+                    },  
+
+                    {
+                        dataField: "PrvCCod",
+                        caption: 'Codigo Proovedor',
+
+                    },
+
+
+                    {
+                        dataField: "MaeCCod",
+                        caption: 'Codigo Articulo',
+
+                    },
+
+
+                    {
+                        dataField: "MaeDDes",
+                        caption: 'Descripcion Articulo',
+
+                    },
+
+
+
+                    {
+                        dataField: "PrvDDes",
+                        caption: 'Descrpcion Proovedor',
+
+                    }, 
+                    {
+                        dataField: "TarDNem",
+                        caption: 'TarDNem',
+                    },
+                    {
+                        dataField: "CNPDDes",
+                        caption: 'CNPDDes',
+                    },
+                    {
+                        dataField: "OrcDMon",
+                        caption: 'OrcDMon',
+                    },
+                    //{
+                    //    dataField: "FechaCreacion",
+                    //    caption: 'Fecha Creación',
+                    //    dataType: "date",
+                    //    format: "yyyy-MM-dd"
+                    //},
+                ],
+
+
+
+
+
+
+                export: {
+                    enabled: true,
+
+                },
+                onExporting(e) {
+                    const workbook = new ExcelJS.Workbook();
+                    const worksheet = workbook.addWorksheet('data');
+
+                    DevExpress.excelExporter.exportDataGrid({
+                        component: e.component,
+                        worksheet,
+                        autoFilterEnabled: true,
+                    }).then(() => {
+                        workbook.xlsx.writeBuffer().then((buffer) => {
+                            saveAs(new Blob([buffer], { type: 'application/octet-stream' }), 'data.xlsx');
+                        });
+                    });
+                    e.cancel = true;
+                },
+                hoverStateEnabled: true,
+                filterRow: { visible: true },
+                showColumnLines: true,
+                showRowLines: true,
+                rowAlternationEnabled: true,
+                showBorders: true,
+                selection: {
+                    mode: 'single',
+                },
+                paging: {
+                    pageSize: 10,  // Set the number of rows per page as per your requirement
+                },
+            }).dxDataGrid('instance');
+
+
+
+    })
+
+
+</script>
+
+<style>
+
+    #gridBOC .dx-toolbar {
+        background-color: #002762;
+        padding: 10px 10px 5px 0px;
+    }
+</style>
+

@@ -1,0 +1,429 @@
+﻿@model  CAMTEX.Entidades.Files
+<div id="frmRegistrar">
+    <div class="form-horizontal">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-horizontal">
+
+                    <!--SECCION FILE-->
+                    <div class="form-group" style="display:none">
+                        <div class="col-md-6">
+                            <label>Codigo File</label>
+                            <input type="text" id="txtCFile" class="form-control-border" style="background-color: #eee; border: 1px solid #ccc; " readonly />
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-2">
+                            <label>File</label>
+                            <input type="text" id="txtFile" class="form-control" placeholder="Ingrese el código">
+                        </div>
+                        <div class="col-md-3">
+                            <label>Observación</label>
+                            <input type="text" id="txtObservacion" class="form-control" placeholder="Ingrese la observación">
+
+                        </div>
+                        <div class="col-md-2">
+                            <label>fecha Registro</label>
+                            <input type="text" id="txtFechaRegistro" class="form-control"
+                                   value="@(Model.FechaCreacion?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"))" readonly>
+                        </div>
+                        <div class="col-md-1">
+                            <label>Hora</label>
+                            <input type="text" id="txtHora" class="form-control"
+                                   value="@(Model.FechaCreacion?.ToString("HH:mm:ss") ?? DateTime.Now.ToString("HH:mm:ss"))" readonly>
+                        </div>
+                        <div class="col-md-2">
+                            <label>Usuario</label>
+                            <input type="text" id="txtUsuario" class="form-control" value="@Model.UsuarioCreacion" readonly>
+
+                        </div>
+                        <div class="col-md-1">
+                            <label>Estación</label>
+                            <input type="text" id="txtEstacion" class="form-control" value="@Model.Estacion" readonly>
+
+                        </div>
+                        <div class="col-md-1">
+                            <label>Estado</label>
+                            <input type="text" id="txtEstado" class="form-control" value="Activo" readonly>
+
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            <button type="button" id="btnGuardarFile" class="btn btn-primary">Guardar File</button>
+
+                        </div>
+                    </div>
+                    <!--FIN SECCION FILE-->
+
+
+                    <hr style="border-top: 2px solid #33333347;" />
+
+
+                    <div id="container">
+                        <div id="addButton"></div>
+                    </div>
+                    <div id="tabPanel"></div>
+
+                    <div id="popupContainer"></div>
+
+
+                    <hr style="border-top: 2px solid #33333347;" />
+
+
+                    <div class="text-right">
+                        <div id="btnGuardarTodasF"></div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+
+
+    $(() => {
+
+        let facturasAbiertas = [];
+
+        const tabPanel = $('#tabPanel').dxTabPanel({
+            dataSource: [],
+            itemTitleTemplate: titleTemplate,
+            itemTemplate: loadPartialView,
+            height: 550,
+            deferRendering: false,
+            noDataText: "No hay pestañas abiertas", // Mensaje personalizado
+            showNavButtons: true,
+            repaintChangesOnly: true,
+            onSelectionChanged: function (e) {
+                console.log("Pestaña activa AA:", e.component.option("selectedIndex"));
+                $(".tab-contentss").hide();
+                $("#tab1_" + e.addedItems[0].id).show();
+            }
+        }).dxTabPanel('instance');
+
+        function titleTemplate(itemData, itemIndex, itemElement) {
+            itemElement.append($('<span>').text(itemData.title));
+            itemElement.append(
+                $('<i>')
+                    .addClass('dx-icon dx-icon-close')
+                    .click(() => { closeButtonHandler(itemData); })
+            );
+        }
+
+        function loadPartialView(itemData, itemIndex, itemElement) {
+
+            var uniqueId = itemData.id;
+            var FacturaData = itemData.data;
+
+
+            $('<div>').addClass('tab-content').attr("data-id", uniqueId).appendTo(itemElement);
+
+            // Cargar la misma vista parcial en cada tab
+            $.ajax({
+                url: '/Operaciones/VRFactura',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    id: uniqueId,
+                    FacturaData: FacturaData // Aquí envías todo el objeto
+                }),
+                success: function (response) {
+                    itemElement.find('.tab-content').html(response);
+                },
+                error: function () {
+                    itemElement.find('.tab-content').html('<p>Error al cargar la vista.</p>');
+                }
+            });
+        }
+
+        /*
+        function inicializarTabInterno(uniqueId) {
+            // Asegurar que existe el contenedor antes de inicializar el panel interno
+            const tabInterno = $(`#tabpanelInterno_${uniqueId}`);
+            if (tabInterno.length) {
+                tabInterno.dxTabPanel({
+                    items: [
+                        { title: "Lotes", template: "tabLotes_" + uniqueId },
+                        { title: "Contenedores", template: "tabContenedores_" + uniqueId },
+                        { title: "Operaciones", template: "tabOperaciones_" + uniqueId },
+                        { title: "Facturas", template: "tabFacturas_" + uniqueId }
+                    ],
+                    width: "100%",
+                    height: 400,
+                    animationEnabled: true,
+                    swipeEnabled: true
+                });
+            }
+        }*/
+
+
+
+        function closeButtonHandler(itemData) {
+            DevExpress.ui.dialog.confirm("¿Estás seguro de que deseas quitar esta Factura?", "Confirmación")
+                .done(function (dialogResult) {
+                    if (dialogResult) { // Si el usuario confirma
+                        const tabPanelItems = tabPanel.option('dataSource');
+                        const index = tabPanelItems.findIndex(tab => tab.id === itemData.id);
+
+                        if (index !== -1) {
+
+                            //facturasAbiertas = facturasAbiertas.filter(codigo => codigo !== itemData.data.U_DIN_FCSOL);
+                            facturasAbiertas = facturasAbiertas.filter(codigo =>
+                                !(codigo.NumeroOrden === itemData.data.U_DIN_NFACT)
+                            );
+                            
+                            tabPanelItems.splice(index, 1);
+                            tabPanel.option('dataSource', tabPanelItems);
+
+                            if (index >= tabPanelItems.length && index > 0) {
+                                tabPanel.option('selectedIndex', index - 1);
+                            }
+                        }
+                    }
+                });
+        }
+
+
+        var popup = $('#popupContainer').dxPopup({
+            title: 'Buscar Factura',
+            width: 1100,
+            height: 700,
+            contentTemplate: function (contentElement) {
+                $.ajax({
+                    url: '/Operaciones/BuscarF',
+                    method: 'GET',
+                    success: function (result) {
+                        contentElement.append(result);
+                        contentElement.append('<div class="dx-popup-bottom-buttons">' +
+                            '<div id="btnAdd"></div>' +
+                            '<div id="btnClose"></div>' +
+                            '</div>');
+
+                        $('#btnAdd').dxButton({
+                            text: 'Seleccionar',
+                            onClick: function () {
+                                var grid = $("#gridBF").dxDataGrid("instance");
+                                var selectedRow = grid.getSelectedRowsData()[0];
+                                if (!selectedRow) {
+                                    alert("Por favor, selecciona una Factura.");
+                                    return;
+                                }
+
+                                var numeroOrden = selectedRow.U_DIN_NFACT;
+
+                                var existeOrden = facturasAbiertas.some(oc => oc.NumeroOrden === numeroOrden );
+                                console.log("facturasAbiertas:", facturasAbiertas);
+                                console.log("numeroOrden:", numeroOrden);
+                                if (existeOrden) {
+                                    DevExpress.ui.dialog.alert("Esta Factura ya está abierta.", "Aviso");
+                                    return;
+                                }
+                                var tabPanelItems = tabPanel.option('dataSource');
+
+                                var uniqueId = `tab_${Date.now()}`;
+                                var newTab = {
+                                    id: uniqueId,
+                                    title: numeroOrden,
+                                    data: selectedRow // Pasamos todo el objeto seleccionado
+                                };
+                                tabPanelItems.push(newTab);
+                                tabPanel.option('dataSource', tabPanelItems);
+                                tabPanel.option('selectedIndex', tabPanelItems.length - 1);
+
+
+                                // Agregar al array de órdenes abiertas para evitar duplicados
+                                facturasAbiertas.push({ NumeroOrden: numeroOrden});
+
+
+                                popup.hide();
+                            }
+                        });
+
+                        $('#btnClose').dxButton({
+                            text: 'Cerrar',
+                            onClick: function () {
+                                popup.hide();
+                            }
+                        });
+                    },
+                    error: function (error) {
+                        console.error('Error al cargar la vista parcial', error);
+                    }
+                });
+            },
+            onHidden: function () {
+                console.log('Ventana emergente cerrada');
+            }
+        }).dxPopup('instance');
+
+
+        $('#addButton').dxButton({
+            icon: 'add',
+            text: 'Agregar Factura',
+            type: 'default',
+            disabled: true,
+            onClick: function () {
+                popup.show();
+            }
+        });
+
+
+        $('#btnGuardarFile').click(function () {
+            var file = $('#txtFile').val().trim();
+            var observacion = $('#txtObservacion').val().trim();
+
+            if (!file) {
+                DevExpress.ui.dialog.alert("Debe ingresar un código de File antes de guardar.", "Error");
+                return;
+            }
+
+            // Deshabilitar el botón para evitar múltiples envíos
+            $('#btnGuardarFile').prop('disabled', true);
+            // Llamada AJAX al controlador
+            $.ajax({
+                url: '/Operaciones/InsertFilesE',  // Ruta del controlador y acción
+                type: 'POST',
+                data: {
+                    fileName: file,
+                    observacion: observacion
+                },
+                success: function (response) {
+                    console.log("response: ", response);
+                    DevExpress.ui.dialog.alert("File guardado correctamente.", "Éxito").done(function () {
+                        // Habilitar el botón de "Agregar O/C"
+                        $('#addButton').dxButton('instance').option('disabled', false);
+
+                        // Deshabilitar el botón de "Guardar File" y campos de entrada
+                        $('#txtFile').prop('disabled', true);
+                        $('#txtObservacion').prop('disabled', true);
+                    });
+
+                },
+                error: function () {
+                    DevExpress.ui.dialog.alert("Hubo un error al guardar el File.", "Error");
+                    $('#btnGuardarFile').prop('disabled', false); // Volver a habilitar el botón en caso de error
+                }
+            });
+        });
+
+
+
+        // Botón para guardar todas las órdenes abiertas
+        $('#btnGuardarTodasF').dxButton({
+            text: 'Guardar Facturas',
+            type: 'success',
+            onClick: function () {
+                const tabPanelItems = tabPanel.option('dataSource');
+
+                if (tabPanelItems.length === 0) {
+                    DevExpress.ui.dialog.alert("No hay Facturas para guardar.", "Advertencia");
+                    return;
+                }
+
+                // Obtener los números de orden abiertos
+                const ocAbiertas = tabPanelItems.map(tab => tab.title); // Extrae los títulos (números de orden)
+
+                // Crear el mensaje para el alert con saltos de línea en HTML
+                //let mensaje = `<b>File:</b> ${FileName}<br><br><b>Cantidad de O/C abiertas:</b> ${ocAbiertas.length}<br><br><b>Órdenes Guardadas:</b><br>`;
+                let mensaje = `<b>Cantidad de Facturas abiertas:</b> ${ocAbiertas.length}<br><br><b>Facturas Guardadas:</b><br>`;
+                mensaje += ocAbiertas.map(oc => `- ${oc}`).join("<br>");
+
+                // Mostrar el mensaje y cerrar el popup al confirmar
+                DevExpress.ui.dialog.alert(mensaje, "Guardado").done(function () {
+                    $('#popupContainerEP').dxPopup('instance').hide(); // Cierra el popup
+                });
+            }
+        });
+
+
+    });
+
+
+
+
+
+
+</script>
+
+
+
+<style>
+
+
+    .dx-tabs .dx-tabs-wrapper .dx-tab {
+        width: auto;
+        padding-left: 20px;
+    }
+
+    .dx-sortable-dragging .dx-tab {
+        box-sizing: border-box;
+        text-align: center;
+    }
+
+    .employeeInfo .employeePhoto {
+        height: 100px;
+        float: left;
+        padding: 10px 20px 10px 20px;
+    }
+
+    .caption {
+        padding: 0 0 10px 30px;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .task-list {
+        padding: 0 20px;
+    }
+
+        .task-list.dx-state-disabled {
+            opacity: 1;
+        }
+
+            .task-list.dx-state-disabled .dx-list-item {
+                opacity: 1;
+            }
+
+    .employeeInfo .employeeNotes {
+        min-height: 100px;
+        padding: 20px;
+        text-align: justify;
+        white-space: normal;
+    }
+
+    .dx-theme-generic .dx-tabs-wrapper .dx-item.dx-tab {
+        max-width: fit-content;
+        padding-left: 14px;
+        padding-right: 9px;
+        line-height: 1.618;
+    }
+
+    .dx-tabpanel .dx-tab .dx-icon.dx-icon-close {
+        display: inline-block;
+        margin-right: 0;
+        margin-left: 7px;
+        opacity: 0.6;
+    }
+
+    .dx-theme-generic .dx-tabpanel .dx-tab .dx-icon.dx-icon-close {
+        font-size: 15px;
+    }
+
+    .dx-theme-material .dx-tabpanel .dx-tab .dx-icon.dx-icon-close {
+        font-size: 18px;
+    }
+
+    .dx-theme-material .dx-tab-content {
+        flex-direction: row;
+    }
+
+    .dx-theme-material .employeeNotes {
+        margin: 0;
+    }
+</style>

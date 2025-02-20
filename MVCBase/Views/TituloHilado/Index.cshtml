@@ -1,0 +1,771 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<div id="frmTituloHilado">
+    <div class="form-horizontal">
+        <div class="panel panel-default">
+            <div class="panel-body">
+
+
+
+                <div id="gridContainer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    $(() => {
+        const DxSource = new DevExpress.data.CustomStore({
+            key: 'Codigo',
+            load() {
+                return sendRequest(`/TituloHilado/ListarTituloHilado`);
+            },
+
+            insert(values) {
+
+                console.log(values);
+                //values.unidad = $("#UnidadItem input").val();
+                values.Filamento = $("#FilamentoItem input").val();
+                values.ConverNE = $("#ConverNEItem input").val();
+                values.Nombre = $("#NombreItem input").val();
+                values.USUARIO_REG = '@User.Identity.Name';
+                values.Licrado = $("#LicradoItem input").val();
+                if (values.Licrado == "Si") {
+                    values.NumLicrado = 1;
+                }
+                if (values.Licrado == "No") {
+                    values.NumLicrado = 0;
+                }
+                var valorBuscado = values.TipoFabricacionDescripcion; // Cambia 'NombreApariencia' por el valor que deseas buscar
+
+                // Buscar el elemento en opcionesApariencia basado en el campo 'CodigoApariencia'
+                var elementoEncontrado = opcionesFabrica.find(item => item.Nombre === valorBuscado);
+                var codigoCorrespondiente = elementoEncontrado.Codigo;
+
+                values.TipoFabricacionCodigo = codigoCorrespondiente;
+                console.log("el valor del values transformado es:", values);
+                return sendRequest(`/TituloHilado/InsertTituloHilado`, 'POST', JSON.stringify(values));
+            },
+
+            update(key, values) {
+                //values.CodigoFibra = key;
+
+
+                console.log("el valor del values :", values);
+
+                console.log(values);
+                values.codigo = key;
+                //values.unidad = $("#UnidadItem input").val();
+                values.Filamento = $("#FilamentoItem input").val();
+                values.ConverNE = $("#ConverNEItem input").val();
+                values.Nombre = $("#NombreItem input").val();
+                values.USUARIO_ACT = '@User.Identity.Name';
+                values.Titulo = $("#TituloItem input").val();
+                values.Cabos = $("#CaboItem input").val();
+                values.Licrado = $("#LicradoItem input").val();
+                values.TipoFabricacionDescripcion = $("#TipFabrDescItem input").val();
+                if (values.Licrado == "Si") {
+                    values.NumLicrado = 1;
+                }
+                if (values.Licrado == "No") {
+                    values.NumLicrado = 0;
+                }
+                var valorBuscado = values.TipoFabricacionDescripcion; // Cambia 'NombreApariencia' por el valor que deseas buscar
+                console.log("el valorBuscado es: ", valorBuscado);
+
+                // Buscar el elemento en opcionesApariencia basado en el campo 'CodigoApariencia'
+                var elementoEncontrado = opcionesFabrica.find(item => item.Nombre === valorBuscado);
+
+                var codigoCorrespondiente = elementoEncontrado.Codigo;
+
+                values.TipoFabricacionCodigo = codigoCorrespondiente;
+                console.log("el valor del values transformado es:", values);
+
+
+
+                return sendRequest(`/TituloHilado/UpdateTituloHilado`, 'PUT', JSON.stringify(values));
+            },
+
+
+
+            remove(key) {
+                var values = { codigo: key }
+                //values.IdUbicacion = key;
+                return sendRequest(`/TituloHilado/DeleteTituloHilado`, 'DELETE', JSON.stringify(values));
+            },
+
+
+
+
+
+
+        });
+
+
+
+        const opcionesFabrica = []; // Declarar una constante
+
+        // Realizar la llamada AJAX
+        $.ajax({
+            url: '/TipoFabrica/ListarTipFabricaDet',
+            dataType: 'json',
+            method: 'GET',
+            success: function (response) {
+                // Manipular los datos de la respuesta y asignarlos a la constante
+                opcionesFabrica.push(...response.map(item => ({ Nombre: item.Nombre, Codigo: item.Codigo })));
+
+                //opcionesFabrica.push(...response.map(item => item.Nombre));
+                console.log("opcionesFabrica es", opcionesFabrica);
+
+                // Aquí puedes realizar cualquier otra operación que necesites con opcionesFabrica
+            },
+            error: function (xhr, status, error) {
+                throw new Error(error);
+            }
+        });
+
+
+        const opcionesUnidad = [
+            'Den', 'Ne', 'Nm', 'Tex', 'dTEX',
+        ];
+
+
+
+
+
+        const opcionesLicrado = [
+            'Si', 'No',
+        ];
+
+        //se cambio IdMaquina por CodigoFibra del value de update y remove y el keyExpr
+        const dataGrid =
+            $('#gridContainer').dxDataGrid({
+                dataSource: DxSource,
+                //keyExpr: 'CodigoFibra',
+
+
+                editing: {
+                    mode: 'popup',
+                    //allowUpdating: true,
+                    useIcons: true,
+                    allowAdding: true,
+                    allowDeleting: true,//sirve para confirmar tu eliminacion
+                    popup: {
+                        title: 'Titulo Hilado',
+                        showTitle: true,
+                        width: 670,
+                        height:550,
+                    },
+
+                    form: {
+                        items: [{
+                            itemType: 'group',
+                            colCount: 2,
+                            colSpan: 2,
+                            //items: ['NombreFibra', 'NombreComercial', 'CodigoFibra', 'Abreviatura', 'CodigoOrigen', 'NombreOrigen', 'EsLicrado', 'DiasVigente', 'USUARIO_REG', 'ESTADO_DES'],
+                            //items: ['NombreFibra', 'NombreComercial', 'CodigoFibra', 'Abreviatura', 'CodigoOrigen', 'NombreOrigen', 'EsLicrado', 'DiasVigente'],
+
+
+                            items: [
+
+                                {
+                                    dataField: 'Codigo',
+                                    cssClass: "labelCod",
+                                    editorOptions: {
+                                        disabled: true, // Initially enabled
+                                        placeholder: "AUTOGENERADO"
+                                    },
+                                },
+                                {
+                                    itemType: 'empty', // Esto agrega un espacio vacío en la segunda columna
+                                },
+                                {
+                                    dataField: 'TipoFabricacionDescripcion',
+                                    caption: 'Tipo Fabricacion',
+                                    width: 150,
+                                    editorType: 'dxSelectBox',  // Utilizando un dropdown
+                                    editorOptions: {
+                                        dataSource: opcionesFabrica,
+                                        displayExpr: 'Nombre',
+                                        valueExpr: 'Nombre',
+                                        elementAttr: {
+                                            id: 'TipFabrDescItem' // Cambia 'licradoItem' por el ID que desees
+                                        },
+                                    },
+                                    /*editorOptions: {
+                                        dataSource: {
+                                            key: "Codigo",
+                                            loadMode: "raw",
+                                            load: function () {
+                                                return $.ajax({
+                                                    url: '/TipoFabrica/ListarTipFabricaDet',
+                                                    dataType: 'json',
+                                                    method: 'GET',
+                                                    success: function (response) {
+
+                                                        console.log("el response es:", response);
+                                                        var opcionesFabrica = response.map(function (item) {
+                                                            return item.Nombre;
+                                                        });
+                                                        return response;
+                                                    },
+                                                    error: function (xhr, status, error) {
+                                                        throw new Error(error);
+                                                    }
+                                                });
+                                            }
+                                        },
+                                        displayExpr: 'Nombre',
+                                        valueExpr: 'Codigo',
+                                    },*/
+                                    validationRules: [{
+                                        type: 'required'
+                                    }],
+
+                                },
+
+                                {
+                                    dataField: 'Unidad',
+                                    validationRules: [{
+                                        type: 'required'
+                                    }],
+                                    editorType: 'dxSelectBox',  // Utilizando un dropdown
+                                    width: 150,
+                                    editorOptions: {
+                                        dataSource: opcionesUnidad,
+                                        elementAttr: {
+                                            id: 'UnidadItem' // Cambia 'licradoItem' por el ID que desees
+                                        },
+
+                                    },
+                                },
+                                {
+                                    dataField: 'Licrado',
+                                    //editorType: 'dxCheckBox', // Use dxCheckBox for boolean fields
+                                    editorType: 'dxSelectBox',
+                                    editorOptions: {
+                                        dataSource: opcionesLicrado,
+                                        elementAttr: {
+                                            id: 'LicradoItem' // Cambia 'licradoItem' por el ID que desees
+                                        },
+                                    },
+                                },
+                                {
+                                    itemType: 'empty', // Esto agrega un espacio vacío en la segunda columna
+                                },
+                                {
+                                    dataField: 'Titulo',
+                                    validationRules: [{
+                                        type: 'required'
+                                    }],
+                                    editorOptions: {
+                                        elementAttr: {
+                                            id: 'TituloItem' // Cambia 'licradoItem' por el ID que desees
+                                        },
+
+                                    },
+
+                                },
+                                {
+                                    itemType: 'empty', // Esto agrega un espacio vacío en la segunda columna
+                                },
+                                {
+                                    dataField: 'Filamento',
+                                    validationRules: [{
+                                        type: 'required'
+                                    }],
+                                    editorOptions: {
+                                        elementAttr: {
+                                            id: 'FilamentoItem' // Cambia 'licradoItem' por el ID que desees
+                                        },
+
+                                    },
+                                },
+                                {
+                                    dataField: 'ConverNE',
+                                    caption: 'Conver. Ne',
+                                    editorType:'dxTextBox',
+                                    width: 150,
+                                    cssClass: "labelConverNE",
+                                    editorOptions: {
+                                        readOnly: true, // Para hacer que el texto sea solo de lectura
+                                        elementAttr: {
+                                            id: 'ConverNEItem' // Cambia 'licradoItem' por el ID que desees
+                                        },
+
+                                    },
+
+                                },
+                                {
+                                    dataField: 'Cabos',
+                                    caption: 'Cabo',
+                                    width: 150,
+                                    editorOptions: {
+
+                                         elementAttr: {
+                                            id: 'CaboItem' // Cambia 'licradoItem' por el ID que desees
+                                        },
+                                    },
+
+                                },
+                                {
+                                    itemType: "button",
+                                    horizontalAlignment: "right",
+                                    buttonOptions: {
+                                        text: "Calcular",
+                                        onClick: function () {
+                                            // Acción al hacer clic en el botón
+                                            console.log("Botón de Ejemplo clickeado");
+
+
+                                            let calculoNe = 0;
+                                            console.log("cuanto es", $("#TituloItem input").val());
+                                            let TituloItem = $("#TituloItem input").val();
+                                            let tituloValue = $("#TituloItem input").val();
+                                            let FilamentoItem = $("#FilamentoItem input").val();
+                                            let UnidadItem = $("#UnidadItem input").val();
+                                            switch (UnidadItem) {
+                                                case 'Den':
+                                                    calculoNe = 5.314 / tituloValue;
+                                                    break;
+                                                case 'Ne':
+                                                    calculoNe = tituloValue;
+                                                    break;
+                                                case 'Nm':
+                                                    calculoNe = 1.693 * tituloValue;
+                                                    break;
+                                                case 'Tex':
+                                                    calculoNe = 591 / tituloValue;
+                                                    break;
+                                                case 'dTEX':
+                                                    calculoNe = 5.910 / tituloValue;
+                                                    break;
+                                                default:
+                                                    break;
+                                            }
+
+                                            if (UnidadItem === "Ne" || UnidadItem === "Nm") {
+                                                console.log("deshabilitado");
+                                                // Si el checkbox está desmarcado, agregar la clase "deshabilitado"
+                                                $("#FilamentoItem input").prop('disabled', true).addClass("deshabilitado");
+                                                $("#FilamentoItem input").val(0);
+                                            } else {
+                                                $("#FilamentoItem input").prop('disabled', false).removeClass("deshabilitado");
+
+                                            }
+
+                                            let NombreItem = $("#NombreItem input").val();
+                                            let caboItem = $("#CaboItem input").val();
+                                            if (UnidadItem === "Den" || UnidadItem === "Tex" || UnidadItem === "dTE") {
+
+                                                NombreItem = TituloItem + "/" + FilamentoItem + "/" + caboItem;
+
+                                            } else {
+                                                NombreItem = TituloItem + "/" + caboItem;
+                                            }
+
+
+                                            $("#NombreItem input").val(NombreItem);
+
+                                            console.log("calculoNe es", calculoNe);
+                                            $("#ConverNEItem input").val(calculoNe);
+
+
+                                        }
+                                    }
+                                },
+
+                                {
+                                    dataField: 'Nombre',
+                                    caption: 'Nombre',
+                                    width: 150,
+                                    editorType: 'dxTextBox',
+                                    cssClass: "labelNombre",
+                                    editorOptions: {
+                                        readOnly: true, // Para hacer que el texto sea solo de lectura
+                                        elementAttr: {
+                                            id: 'NombreItem' // Cambia 'licradoItem' por el ID que desees
+                                        },
+                                    },
+
+                                },
+                                {
+                                    itemType: 'empty', // Esto agrega un espacio vacío en la segunda columna
+                                },
+                                {
+                                    dataField: 'Observacion',
+                                    caption: 'Observacion',
+                                    width: 150,
+                                    editorOptions: {
+                                    },
+
+                                },
+
+
+                            ],
+
+                        }],
+
+
+
+                    },
+                },
+                onInitNewRow: function (e) {
+                    e.data.Titulo = '0'; // Establece el valor por defecto para el campo 'Titulo'
+                    e.data.Filamento = '0'; // Establece el valor por defecto para el campo 'Titulo'
+                    e.data.Cabos = '0'; // Establece el valor por defecto para el campo 'Titulo'
+                },
+                onEditorPreparing: function (e) {
+                    //id : FilamentoItem
+                   /* if (e.dataField === 'Unidad' && e.parentType === 'dataRow' && e.editorName === 'dxSelectBox') {
+
+                        e.editorOptions.onValueChanged = function (args) {
+                            console.log(args.value);
+                            if (args.value === "Ne" || args.value === "Nm") {
+                                console.log("deshabilitado");
+                                // Si el checkbox está desmarcado, agregar la clase "deshabilitado"
+                                $("#FilamentoItem input").prop('disabled', true).addClass("deshabilitado");
+                            } else {
+                                $("#FilamentoItem input").prop('disabled', false).removeClass("deshabilitado");
+
+                            }
+                        };
+
+                    }*/
+
+                    if (e.dataField === 'Unidad' && e.parentType === 'dataRow' && e.editorName === 'dxSelectBox') {
+
+                        e.editorOptions.onValueChanged = function (args) {
+                            const rowIndex = e.row.rowIndex;
+                            console.log("rowIndex es ", rowIndex);
+                            let calculoNe = 0;
+                            console.log("cuanto es", $("#TituloItem input").val());
+                            let TituloItem = $("#TituloItem input").val();
+                            let tituloValue = $("#TituloItem input").val();
+                            let FilamentoItem = $("#FilamentoItem input").val();
+
+                            switch (args.value) {
+                                case 'Den':
+                                    calculoNe = 5.314 / tituloValue;
+                                    break;
+                                case 'Ne':
+                                    calculoNe = tituloValue;
+                                    break;
+                                case 'Nm':
+                                    calculoNe = 1.693 * tituloValue;
+                                    break;
+                                case 'Tex':
+                                    calculoNe = 591 / tituloValue;
+                                    break;
+                                case 'dTEX':
+                                    calculoNe = 5.910 / tituloValue;
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                            if (args.value === "Ne" || args.value === "Nm") {
+                                console.log("deshabilitado");
+                                // Si el checkbox está desmarcado, agregar la clase "deshabilitado"
+                                $("#FilamentoItem input").prop('disabled', true).addClass("deshabilitado");
+                                $("#FilamentoItem input").val(0);
+                            } else {
+                                $("#FilamentoItem input").prop('disabled', false).removeClass("deshabilitado");
+
+                            }
+
+                            let NombreItem = $("#NombreItem input").val();
+                            let caboItem = $("#CaboItem input").val();
+                            if (args.value === "Den" || args.value === "Tex" || args.value === "dTE") {
+
+                                NombreItem = TituloItem + "/" + FilamentoItem + "/" + caboItem;
+
+                            } else {
+                                NombreItem = TituloItem + "/" + caboItem;
+                            }
+
+
+                            $("#NombreItem input").val(NombreItem);
+                            $("#UnidadItem input").val(args.value);
+                            console.log("UnidadItem es", $("#UnidadItem input").val());
+                            console.log("calculoNe es",calculoNe);
+                            $("#ConverNEItem input").val(calculoNe);
+                            $('#gridContainer').dxDataGrid('instance').cellValue(rowIndex, 'Unidad', args.value);
+
+                        };
+
+                    }
+
+
+                },
+
+
+
+
+
+
+
+                onRowInserted(e) {
+                    e.component.navigateToRow(e.key);
+                },
+
+                columns: [
+
+                    {
+                        dataField: 'Codigo',
+                        width: 90,
+
+                    },
+
+                    {
+                        dataField: 'TipoFabricacionDescripcion',
+                        caption: 'Tipo Fabricacion',
+                        width: 150,
+
+
+                    },
+                    'Nombre',
+
+                    {
+                        dataField: 'Titulo',
+                        dataType: 'decimal',
+                        alignment: 'left',
+                        format: { type: 'fixedPoint', precision: 4 }
+
+                    },
+
+                    {
+                        dataField: 'Filamento',
+                        alignment: 'left',
+                    },
+                    
+                    {
+                        dataField: 'Cabos',
+                        alignment: 'left',
+                    },
+                    {
+                        dataField: 'Observacion',
+                        visible: false, // Oculta la columna 'Contaminado'
+                        alignment: 'left',
+                    },
+                    {
+                        dataField: 'Unidad',
+                        alignment: 'left',
+                    },
+
+                    {
+                        dataField: 'ConverNE',
+                        caption: 'Converc. Ne',
+                        dataType: 'decimal',
+                        alignment: 'left',
+                        format: { type: 'fixedPoint', precision: 4 }
+                    },
+                    {
+                        dataField: 'Licrado',
+                        alignment: 'left',
+                    },
+
+                    {
+                        dataField: 'ESTADO',
+                        alignment: 'left',
+                    },
+                    {
+                        dataField: 'FECHA_REG',
+                        caption: 'Fecha Creación',
+                        dataType: 'datetime',
+                        alignment: 'left',
+                        format: "MM/dd/yyyy"
+                    },
+
+                    {
+                        dataField: 'USUARIO_REG',
+                        caption: 'Usuario Registro',
+                        alignment: 'left',
+                    },
+                ],
+                toolbar: {
+                    items: [
+
+                        {
+                            location: "before", // Ubicación antes de los botones existentes
+                            text: "Titulo Hilado", // Texto del título
+                            cssClass: "toolbar-title", // Clase de estilo personalizada
+
+                        },
+                        {
+                            location: "after",
+                            widget: "dxButton",
+                            options: {
+                                icon: "add",
+                                text: "AGREGAR",
+                                onClick: function () {
+                                    dataGrid.addRow();
+                                },
+                                stylingMode: "outlined", // Cambia el estilo del botón a outlined
+                                // Modifica el color del botón
+                                elementAttr: {
+                                    class: "ClsAgregar custom-button-style" // Puedes cambiar "dx-color-blue" por otro color de tu elección
+                                }
+                            },
+                        }, {
+                            location: "after",
+                            widget: "dxButton",
+                            options: {
+                                icon: "edit",
+                                text: "EDITAR",
+                                onClick: function () {
+                                    const selectedRowIndex = dataGrid.option("focusedRowIndex");
+                                    if (selectedRowIndex !== undefined && selectedRowIndex !== -1) {
+
+                                        dataGrid.editRow(selectedRowIndex);
+
+                                    } else {
+                                        // Si no hay una fila seleccionada, muestra un mensaje o realiza otra acción
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Oops...',
+                                            text: 'Selecciona una fila antes de editar.',
+                                            customClass: {
+                                                container: 'my-swal-container', // Clase personalizada para ajustar z-index
+                                            },
+                                        });
+                                    }
+                                },
+                                stylingMode: "outlined", // Cambia el estilo del botón a outlined
+                                // Modifica el color del botón
+                                elementAttr: {
+                                    class: "ClsEditar custom-button-style" // Puedes cambiar "dx-color-blue" por otro color de tu elección
+                                }
+
+                            },
+                        },  {
+                            location: 'after',
+                            widget: 'dxButton',
+                            options: {
+                                icon: 'refresh',
+                                text: "ACTUALIZAR",
+                                onClick() {
+                                    dataGrid.refresh();
+                                },
+                                stylingMode: "outlined", // Cambia el estilo del botón a outlined
+                                // Modifica el color del botón
+                                elementAttr: {
+                                    class: "ClsRefresh custom-button-style" // Puedes cambiar "dx-color-blue" por otro color de tu elección
+                                }
+                            },
+                        },
+                        'exportButton',
+                    ],
+                },
+                export: {
+                    enabled: true,
+
+                },
+                onExporting(e) {
+                    const workbook = new ExcelJS.Workbook();
+                    const worksheet = workbook.addWorksheet('data');
+
+                    DevExpress.excelExporter.exportDataGrid({
+                        component: e.component,
+                        worksheet,
+                        autoFilterEnabled: true,
+                    }).then(() => {
+                        workbook.xlsx.writeBuffer().then((buffer) => {
+                            saveAs(new Blob([buffer], { type: 'application/octet-stream' }), 'data.xlsx');
+                        });
+                    });
+                    e.cancel = true;
+                },
+
+                hoverStateEnabled: true,
+                filterRow: { visible: true },
+                showColumnLines: true,
+                showRowLines: true,
+                rowAlternationEnabled: true,
+                showBorders: true,
+                selection: {
+                    mode: 'single',
+                },
+                paging: {
+                    pageSize: 15,  // Set the number of rows per page as per your requirement
+                },
+                // En el evento onEditingStart del dxDataGrid
+
+
+            }).dxDataGrid('instance');
+
+    })
+
+</script>
+
+<style>
+    .toolbar-title {
+        color: white;
+        padding: 10px !important;
+    }
+    .labelCod > div {
+        background-color: #f1f3f4;
+    }
+
+    .labelConverNE > div input {
+        background-color: #f1f3f4;
+    }
+    .labelNombre > div input {
+        background-color: #f1f3f4;
+    }
+    .deshabilitado {
+        background-color: #f1f3f4;
+    }
+
+    .ClsAgregar {
+        font-weight: 600 !important;
+        color: #fff;
+        background-color: #5cb85c;
+        border-color: #4cae4c;
+    }
+
+        .ClsAgregar:hover,
+        .ClsAgregar:focus {
+            background-color: #4d984d; /* Color de fondo del botón al hacer hover o focus */
+        }
+
+    .ClsEditar {
+        font-weight: 600 !important;
+        color: #fff;
+        background-color: #f0ad4e;
+        border-color: #eea236;
+    }
+
+        .ClsEditar:hover,
+        .ClsEditar:focus {
+            background-color: #d18c37; /* Color de fondo del botón al hacer hover o focus */
+        }
+
+    .ClsRefresh {
+        font-weight: 600 !important;
+        color: #fff;
+        background-color: #337ab7;
+        border-color: #2e6da4;
+    }
+
+        .ClsRefresh:hover,
+        .ClsRefresh:focus {
+            background-color: #1c4e7e; /* Color de fondo del botón al hacer hover o focus */
+        }
+
+    .custom-button-style .dx-icon {
+        color: white !important;
+    }
+
+    .custom-dx-buttonDetalle {
+        font-weight: 600 !important;
+        color: white !important;
+        background-color: #57889c !important;
+        border-color: #4e7a8c !important;
+    }
+</style>

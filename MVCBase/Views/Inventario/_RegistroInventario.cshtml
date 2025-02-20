@@ -1,0 +1,31 @@
+﻿@model  CAMTEX.Entidades.E_PeriodoInventario
+<div id="frmRegistroInv">
+    <div class="form-horizontal">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-horizontal">
+                    <!-- Filtro -->
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            <label>Almacén :</label>
+                            @*@Html.EditorFor(model => model.CodAlmacen, new { htmlAttributes = new { @class = "form-control" } })*@
+                            @Html.DropDownListFor(model => model.CodAlmacen, new SelectList(Model.ListAlmacen, "CodAlmacen", "CodAlmacen"), "-- Seleecione --", new { @class = "form-control input-sm selectpicker", style = "width: 100%;", id = "CodAlmacen" })
+                        </div>
+                        <div class="col-md-6">
+                            <label>Responsable DNI :</label>
+                            @Html.EditorFor(model => model.ResponsableDNI, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                        <div class="col-md-12">
+                            <label>Responsable :</label>
+                            @Html.EditorFor(model => model.Responsable, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                        <div class="col-md-12">
+                            <label>Observaciones :</label>
+                            @Html.EditorFor(model => model.Observacionapertura, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

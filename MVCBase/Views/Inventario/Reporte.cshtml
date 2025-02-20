@@ -1,0 +1,628 @@
+﻿
+@model  CAMTEX.Entidades.E_PeriodoInventarioDetalle
+@{
+    ViewBag.Title = "Bandeja";
+    Layout = "~/Views/Shared/_LayoutDev.cshtml";
+
+}
+<script src="~/Content/Kendo/src/jszip.min.js"></script>
+<div id="frmRegistro">
+    <div class="form-horizontal">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Reporte Inventario
+            </div>
+           <!-- <div class="panel-body">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-md-4">
+                            <label>Almacén:</label>
+                            @Html.DropDownListFor(model => model.IdPeriodoInventario, new SelectList(Model.ListAlmacen, "IdPeriodoInventario", "WhsName"), "-- TODOS --", new { @class = "form-control input-sm selectpicker", style = "width: 100%;" })
+                        </div>
+                        <div class="col-md-4">
+                            @Html.Label("Personal")
+
+                            @Html.DropDownListFor(model => model.IdPersonal, new SelectList(Model.ListPersonal, "IdPersonal", "Descripcion"), "-- TODOS --", new { @class = "form-control input-sm selectpicker", style = "width: 100%;" })
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="form-horizontal">
+
+                    <div id="gridDetalle"></div>
+
+                    <script type="text/x-kendo-templateGridDetalle" id="templateGridDetalle">
+                            <div class="pull-left" style="width: 100%;">
+                            <div class="col-md-8">
+                                <div class="col-md-12">
+                                    <button type="button"
+                                            class="btn btn-default btn-sm"
+                                            data-url="@Url.Content("~/Inventario/RegistroInventario")"
+                                            name="bntAdd" id="bntAdd">
+                                        <span class="glyphicon glyphicon-save"></span>&nbsp;Registrar Inventario
+                                    </button>
+                                    <button type="button"
+                                        class="btn btn-default btn-sm"
+                                        data-url="@Url.Content("~/PedidoDetalle/EditarTela")"
+                                        name="btnEditar" id="btnEditaro">
+                                        <span class="glyphicon glyphicon-pencil"></span>&nbsp;Editar Inventario
+                                    </button>
+                                    <button type="button"
+                                        class="btn btn-primary btn-sm"
+                                        data-url="@Url.Content("~/Inventario/InventarioPersonal")"
+                                        name="btnRegistrarPersonal" id="btnRegistrarPersonal">
+                                        <span class="glyphicon glyphicon-save"></span>&nbsp;Registrar Personal
+                                    </button>
+                                    <button type="button"
+                                        class="btn btn-info btn-sm"
+                                        data-url="@Url.Content("~/Inventario/InventarioUbicaciones")"
+                                        name="btnRegistrarUbicaciones" id="btnRegistrarUbicaciones">
+                                        <span class="glyphicon glyphicon-save"></span>&nbsp;Registrar Ubicaciones
+                                    </button>
+
+                                </div>
+                                @*<div class="col-md-5">
+                                    <input class="form-control input-sm"  id="txtcodtela"  type="text" style="height: 20px !important;width: 95%;">
+                                </div>*@
+                            </div>
+                            </div>
+                    </script>
+                    <div id="divPedidoComercialContent">
+                        <div id="divErrorPedido" class="alert alert-danger alert-dismissible" style="display: none">
+                            <span class="k-icon k-i-warning"> </span>
+                            <strong>@MVCBase.Util.Utiles.MessageModelStateInvalid()</strong>
+                            <ul id="ulListaErrorPedido"></ul>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>-->
+
+            <div class="panel-body">
+                <div class="form-horizontal">
+                    <div class="dx-field">
+                        <div class="dx-field-label col-md-4">
+                            <label>Almacén:</label>
+                            <div id="Almacen"></div>
+                        </div>
+                        <div class="dx-field-label col-md-4">
+                            <label>Personal:</label>
+                            <div id="load-indicatorPersonal"></div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="form-horizontal">
+
+                    <div id="gridDetalle"></div>
+
+
+                </div>
+
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+
+<script>
+     var listaAlmacen = @Html.Raw(Json.Encode(Model.ListAlmacen));
+    console.log("listaAlmacen", listaAlmacen);
+    var initialPersonalData  = @Html.Raw(Json.Encode(Model.ListPersonal));
+    console.log("initialPersonalData", initialPersonalData);
+
+
+
+    $(document).ready(function () {
+        loadGridDetalle();
+
+
+
+        $(() => {
+            const $loadIndicator = $('<div>').dxLoadIndicator({ visible: false });
+            const $dropDownButtonImage = $('<img>', {
+                alt: 'Custom icon',
+                src: '/img/custom-dropbutton-icon.svg',
+                class: 'custom-icon',
+            });
+            $('#load-indicatorPersonal').dxSelectBox({
+                inputAttr: { 'aria-label': 'Load Indicator' },
+                dropDownButtonTemplate(data, element) {
+                    $(element).append($loadIndicator, $dropDownButtonImage);
+                },
+                dataSource: {
+                    loadMode: 'raw',
+                    load() {
+                        const loadIndicator = $loadIndicator.dxLoadIndicator('instance');
+                        const d = $.Deferred();
+
+                        $dropDownButtonImage.hide();
+                        loadIndicator.option('visible', true);
+
+                        setTimeout(() => {
+                            d.resolve(initialPersonalData);
+                            $dropDownButtonImage.show();
+                            loadIndicator.option('visible', false);
+                        }, 1000);
+                        return d.promise();
+                    },
+                },
+                displayExpr: 'Descripcion', // Campo a mostrar en el select box
+                valueExpr: 'IdPersonal', // Campo del valor
+                onValueChanged: function (e) {
+                    console.log("ACACAMBIO");
+                    ActualizarGrid();
+
+                }
+
+            });
+        });
+
+
+        $(() => {
+            const $Almacen = $('<div>').dxLoadIndicator({ visible: false });
+            const $dropDownButtonImage = $('<img>', {
+                alt: 'Custom icon',
+                src: '/img/custom-dropbutton-icon.svg',
+                class: 'custom-icon',
+            });
+
+            $('#Almacen').dxSelectBox({
+                inputAttr: { 'aria-label': 'Almacen' },
+                dropDownButtonTemplate(data, element) {
+                    $(element).append($Almacen, $dropDownButtonImage);
+                },
+                dataSource: {
+                    loadMode: 'raw',
+                    load() {
+                        const Almacen = $Almacen.dxLoadIndicator('instance');
+                        const d = $.Deferred();
+
+                        $dropDownButtonImage.hide();
+                        Almacen.option('visible', true);
+
+                        setTimeout(() => {
+                            d.resolve(listaAlmacen);
+                            $dropDownButtonImage.show();
+                            Almacen.option('visible', false);
+                        }, 1000);
+                        return d.promise();
+                    },
+                },
+                displayExpr: 'Descripcion', // Campo a mostrar en el select box
+                valueExpr: 'IdPeriodoInventario', // Campo del valor
+                placeholder: 'Seleccionar...',
+                //showClearButton: true,
+                searchEnabled: true,
+                onValueChanged: function (e) {
+
+                    // Limpiar el grid
+                    const grid = $('#gridDetalle').dxDataGrid('instance');
+                    grid.option('dataSource', []);
+                    // Reiniciar el dxSelectBox de "Personal"
+                    const loadIndicatorPersonal = $('#load-indicatorPersonal').dxSelectBox('instance');
+                    loadIndicatorPersonal.option('value', null);
+                    loadIndicatorPersonal.option('dataSource', []);
+                    
+
+                    $.ajax({
+                        datatype: 'json',
+                        contentType: "application/json",
+                        //url: '/InventarioDetalle/GetPersonalInventario?IdPeriodoInventario=' + $('#Almacen').dxSelectBox('instance').option('value'),
+                        url: '/InventarioDetalle/GetPersonalInventarioA?IdPeriodoInventario=' + e.value,
+                        type: 'Get',
+                        beforeSend: function () {
+                            bloquoteObject();
+                        },
+                        success: function (data) {
+                            if (!data.rpta) {
+                                AlertMessage(data.result);
+                                AlertMessage("prueba");
+                            } else {
+                                const personalData = data.result;
+                                console.log(personalData);
+
+                                // Actualizar el dxSelectBox para "Personal"
+                                const loadIndicatorPersonal = $('#load-indicatorPersonal').dxSelectBox('instance');
+                                loadIndicatorPersonal.option('dataSource', personalData);
+                                console.log("Datos nuevos del dataSource:", loadIndicatorPersonal.option('dataSource'));
+
+                                // Forzar la actualización del control
+                                loadIndicatorPersonal.repaint(); // Forzar actualización
+
+                            }
+                            desbloqObject();
+                        }
+                    }).fail(function (jqxhr, textStatus, error) {
+                        var err = textStatus + ', ' + error;
+                        console.log("Request Failed: " + err);
+                        desbloqObject();
+                    });
+                },
+                onContentReady: function (e) {
+                    // Esconde el indicador de carga cuando el contenido está listo
+                    $Almacen.hide();
+                }
+            });
+        });
+
+        $("#load-indicatorPersonal").change(function () {
+            console.log("ACA");
+            $('#lblCantidad').html("0");
+            ActualizarGrid();
+        });
+
+
+
+
+
+
+        $("#IdPeriodoInventario").change(function () {
+
+            $.ajax({
+                datatype: 'json',
+                contentType: "application/json",
+                url: '/InventarioDetalle/GetPersonalInventario?IdPeriodoInventario=' + ($("#IdPeriodoInventario").val() == "" ? "0" : $("#IdPeriodoInventario").val()),
+
+                //url: '/InventarioDetalle/GetPersonalInventario?IdPeriodoInventario=' + $("#IdPeriodoInventario").val(),
+                type: 'Get',
+                beforeSend: function () {
+                    bloquoteObject();
+                },
+                success: function (data) {
+                    if (!data.rpta) {
+                        AlertMessage(data.result);
+                        AlertMessage("prueba");
+                    } else {
+                        console.log(data);
+                        var Proyecto = data.result;
+
+                        //$("#Region").val(data.result.Region);
+                        //$("#PA").val(data.result.PA);
+                        //$("#TipoProyecto").val(data.result.TipoProyecto);
+                        debugger;
+                        //Cargamos Personal
+                        var cboPersonal = $("#frmRegistro").find("select[id='IdPersonal']");
+                        cboPersonal.empty();
+                        $(cboPersonal).append('<option value = "">-- SELECCIONAR --</option>');
+                        $.each(data.result, function (i, item) {
+                            $(cboPersonal).append('<option value="' + item.IdPersonal + '">' + item.Descripcion + '</option>');
+
+                        });
+                        loadGridDetalle()
+                        //$(cboPersonal).kendoDropDownList();
+                    }
+                    desbloqObject();
+                }
+            }).fail(function (jqxhr, textStatus, error) {
+                var err = textStatus + ', ' + error;
+                console.log("Request Failed: " + err);
+                desbloqObject();
+            });
+        });
+
+        $("#IdPersonal").change(function () {
+
+            loadGridDetalle()
+        });
+        
+    });
+
+
+    var columnsConfigR = [
+        { dataField: 'RowNum', caption: 'Número' },
+        { dataField: 'Situacion', caption: 'Situación' },
+        { dataField: 'FechaRegistro', caption: 'Fecha Registro', dataType: 'datetime', format: "MM/dd/yyyy" },
+        { dataField: 'CodArticulo', caption: 'Codigo Articulo' },
+        { dataField: 'ItemName', caption: 'Nombre' },
+        { dataField: 'KilosLecturado', caption: 'Kilos Lecturado' },
+        { dataField: 'AnioRollo', caption: 'Año Rollo'},
+        { dataField: 'NroRollo_anio', caption: 'Nro Rollo'},
+        { dataField: 'PartidaRollo', caption: 'Partida Rollo' },
+        { dataField: 'Ubicacion', caption: 'Ubicación' },
+        { dataField: 'Personal', caption: 'Personal'},
+    ];
+
+    function loadGridDetalle() {
+
+        $(() => {
+            const DxSource = new DevExpress.data.CustomStore({
+                //key: 'IdPeriodoInventarioDetalle',
+                load() {
+                    
+                    var IdPeriodoInventario = $('#Almacen').dxSelectBox('instance').option('value');
+                    var IdPersonal = $('#load-indicatorPersonal').dxSelectBox('instance').option('value');
+                    var values= { IdPeriodoInventario: IdPeriodoInventario, IdPersonal: IdPersonal}
+                    console.log("IdPeriodoInventario:", IdPeriodoInventario);
+                    console.log("IdPersonal:", IdPersonal);
+                    if (!IdPeriodoInventario || !IdPersonal) {
+                        return [];
+                    }
+                    return sendRequest(`/InventarioDetalle/ListarRolloForReporte?IdPeriodoInventario=${IdPeriodoInventario}&IdPersonal=${IdPersonal}`);
+                       
+                },               
+
+            });
+
+            const dataGrid =
+                $('#gridDetalle').dxDataGrid({
+
+                    dataSource: DxSource,
+                    editing: {
+                        mode: 'popup',
+                        useIcons: true,
+                    },
+                    onEditorPreparing: {},
+                    onrRowInserted(e) {
+                        e.component.navigateToRow(e.key);
+                    },
+                    columns: columnsConfigR,
+                    export: {
+                        enabled: false,
+                    },
+                    onExporting(e) {
+                        const workbook = new ExcelJS.Workbook();
+                        const worksheet = workbook.addWorksheet('data');
+
+                        DevExpress.excelExporter.exportDataGrid({
+                            component: e.component,
+                            worksheet,
+                            autoFilterEnabled: true,
+                        }).then(() => {
+                            workbook.xlsx.writeBuffer().then((buffer) => {
+                                saveAs(new Blob([buffer], { type: 'application/octet-stream' }), 'data.xlsx');
+                            });
+                        });
+                        e.cancel = true;
+                    },
+                    hoverStateEnabled: true,
+                    filterRow: { visible: true },
+                    showColumnLines: true,
+                    showRowLines: true,
+                    rowAlternationEnabled: true,
+                    showBorders: true,
+                    selection: {
+                        mode: 'single',
+                    },
+                    paging: {
+                        pageSize: 5,
+                    },
+
+
+                }).dxDataGrid('instance');
+
+
+
+        })
+
+
+        //alert(1234)
+        /*if ($('#gridDetalle').hasClass("k-grid")) {
+            $('#gridDetalle').data().kendoGrid.destroy();
+            $('#gridDetalle').empty();
+        }*/
+        /*
+        var grid = $("#gridDetalle").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: {
+                        type: "POST",
+                        url: "/InventarioDetalle/ListarRolloForReporte",
+                        contentType: "application/json",
+                        dataType: 'json'
+                    },
+                    parameterMap: function (options, operation) {
+                        return JSON.stringify({
+                            PageNumber: options.page, //(options.page == 0) ? 0 : (options.page - 1),
+                            pageSize: options.pageSize,
+                            IdPersonal: $(IdPersonal).val(),
+                            IdPeriodoInventario: $(IdPeriodoInventario).val(),
+                        });
+                    }
+                },
+                schema: {
+                    data: "lista",
+                    total: "pageSize",
+                    type: 'json',
+                    model: {
+                        fields: {
+                            //IdPeriodoInventario: { type: "number" },
+                            //Anio: { type: "number" },
+                            //FechaCreacion: { type: "date" },
+                            //Observacionapertura: { type: "string" },
+                            //CodAlmacen: { type: "string" },
+                            //Responsable: { type: "string" },
+                            //DNIResponsable: { type: "string" },
+                            //FlagInventario: { type: "string" },
+                            //CondicionINV: { type: "string" }
+
+                            //CodAlmacen: { type: "string" },
+                            //IdRollo: { type: "string" },
+                            //KilosRollo: { type: "number" },
+                            //KilosLecturado: { type: "number" },
+                            //FechaRegistro: { type: "date" },
+                            //NroRollo_anio: { type: "string" },
+                            //PartidaRollo: { type: "string" },
+                            //ItemName: { type: "string" },
+                            //Ubicacion: { type: "string" }
+                            IdRollo: { type: "string" },
+                            CodAlmacen: { type: "string" },
+                            ItemName: { type: "string" },
+                            CodTelaCom: { type: "string" },
+                            KilosLecturado: { type: "number" },
+                            AnioRollo: { type: "number" },
+                            NroRollo_anio: { type: "string" },
+                            PartidaRollo: { type: "string" },
+                            Ubicacion: { type: "string" },
+                            Personal: { type: "string" },
+                            FechaRegistro: { type: "date" },
+                        }
+                    }
+                },
+                pageSize: 100000,
+                //serverPaging: true,
+                //serverFiltering: true,
+                //serverSorting: true
+            },
+            height: 800,
+            scrollable: true,
+            pageable: true,
+            selectable: true,
+            toolbar: ['excel'],
+            filterable: {
+                mode: "row"
+            },
+            //toolbar: kendo.template($("#templateGridDetalle").html()),
+            noRecords: {
+                template: '<br /> ' +
+                    ' <div> ' +
+                    ' <div class="mainbox col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3"> ' +
+                    ' <div class="alert alert-info alert-dismissable" align="center"> ' +
+                    ' NO SE ENCONTRARON REGISTROS ' +
+                    ' </div> ' +
+                    ' </div> ' +
+                    ' </div>'
+            },
+
+            columns: [
+                {
+                    field: "RowNum",
+                    title: "RowNum",
+                    width: 80,
+                },
+                {
+                    field: "Situacion",
+                    title: "Situacion",
+                    width: 80,
+                    filterable: {
+                        cell: {
+                            operator: "contains",
+                            suggestionOperator: "contains",
+                            showOperators: false
+                        }
+                    },
+                },
+                {
+                    field: "FechaRegistro",
+                    title: "Fecha  Registro",
+                    width: 80,
+                    format: "{0:dd/MM/yyyy H:mm}"
+                },
+                {
+                    field: "CodAlmacen",
+                    title: "Almacen",
+                    width: 120,
+                    filterable: {
+                        cell: {
+                            operator: "contains",
+                            suggestionOperator: "contains",
+                            showOperators: false
+                        }
+                    }
+                },
+                {
+                    field: "ItemName",
+                    title: "ItemName",
+                    width: 100,
+                    filterable: {
+                        cell: {
+                            operator: "contains",
+                            suggestionOperator: "contains",
+                            showOperators: false
+                        }
+                    }
+                },
+                {
+                    field: "CodTelaCom",
+                    title: "CodTelaCom",
+                    width: 100,
+                    filterable: {
+                        cell: {
+                            operator: "contains",
+                            suggestionOperator: "contains",
+                            showOperators: false
+                        }
+                    }
+                },
+                //{
+                //    field: "KilosRollo",
+                //    title: "KilosRollo",
+                //    width: 150
+                //},
+                {
+                    field: "KilosLecturado",
+                    title: "KilosLecturado",
+                    width: 100,
+                    filterable: {
+                        cell: {
+                            operator: "contains",
+                            suggestionOperator: "contains",
+                            showOperators: false
+                        }
+                    }
+                },
+                {
+                    field: "AnioRollo",
+                    title: "AnioRollo",
+                    width: 100,
+                },
+
+
+                {
+                    field: "NroRollo_anio",
+                    title: "NroRollo_anio",
+                    width: 100,
+                    filterable: {
+                        cell: {
+                            operator: "contains",
+                            suggestionOperator: "contains",
+                            showOperators: false
+                        }
+                    }
+                },
+                {
+                    field: "PartidaRollo",
+                    title: "PartidaRollo",
+                    width: 100,
+                    filterable: {
+                        cell: {
+                            operator: "contains",
+                            suggestionOperator: "contains",
+                            showOperators: false
+                        }
+                    }
+                },
+
+                {
+                    field: "Ubicacion",
+                    title: "Ubicacion",
+                    width: 100,
+                    filterable: {
+                        cell: {
+                            operator: "contains",
+                            suggestionOperator: "contains"
+                        }
+                    }
+                },
+                {
+                    field: "Personal",
+                    title: "Personal",
+                    width: 100,
+                },
+            ]
+        }).data("kendoGrid");
+        */
+
+    }
+    function ActualizarGrid() {
+        var grid = $('#gridDetalle').dxDataGrid('instance');
+        grid.refresh();
+        loadGridDetalle();
+    }
+
+</script>

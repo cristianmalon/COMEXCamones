@@ -1,0 +1,494 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<div id="frmTipoLustre">
+    <div class="form-horizontal">
+        <div class="panel panel-default">
+            <div class="panel-body">
+
+
+
+                <div id="gridContainer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    $(() => {
+        const DxSource = new DevExpress.data.CustomStore({
+            key: 'CodigoTipoLustre',
+            load() {
+                return sendRequest(`/TipoLustre/ListarTipoLustre`);
+            },
+            insert(values) {
+                values.USUARIO_REG = '@User.Identity.Name';
+
+                console.log(values);
+                return sendRequest(`/TipoLustre/InsertTipoLustre`, 'POST', JSON.stringify(values));
+            },
+            update(key, values) {
+                values.USUARIO_ACT = '@User.Identity.Name';
+
+                values.CodigoTipoLustre = key;
+                console.log(values);
+                return sendRequest(`/TipoLustre/UpdateTipoLustre`, 'PUT', JSON.stringify(values));
+            },
+            remove(key) {
+                var values = { CodigoTipoLustre: key }
+                //values.IdUbicacion = key;
+                return sendRequest(`/TipoLustre/DeleteTipoLustre`, 'DELETE', JSON.stringify(values));
+            },
+        });
+
+
+        //se cambio IdMaquina por CodigoFibra del value de update y remove y el keyExpr
+        const dataGrid =
+            $('#gridContainer').dxDataGrid({
+                dataSource: DxSource,
+                //keyExpr: 'CodigoFibra',
+
+
+                editing: {
+                    mode: 'popup',
+                    allowUpdating: true,
+                    useIcons: true,
+                    allowAdding: true,
+                    allowDeleting: true,//sirve para confirmar tu eliminacion
+                    popup: {
+                        title: 'Tipo Lustre',
+                        showTitle: true,
+                        width: 670,
+                        height: 350,
+                    },
+
+                    form: {
+                        items: [{
+                            itemType: 'group',
+                            colCount: 2,
+                            colSpan: 2,
+                            //items: ['NombreFibra', 'NombreComercial', 'CodigoFibra', 'Abreviatura', 'CodigoOrigen', 'NombreOrigen', 'EsLicrado', 'DiasVigente', 'USUARIO_REG', 'ESTADO_DES'],
+                            //items: ['NombreFibra', 'NombreComercial', 'CodigoFibra', 'Abreviatura', 'CodigoOrigen', 'NombreOrigen', 'EsLicrado', 'DiasVigente'],
+
+
+                            items: [
+
+                                {
+                                    dataField: 'CodigoTipoLustre',
+                                    cssClass: "labelCod",
+
+                                    editorOptions: {
+                                        disabled: true, // Initially enabled
+                                        placeholder: "AUTOGENERADO"
+
+                                    },
+                                },
+                                {
+                                    itemType: 'empty', // Esto agrega un espacio vacío en la segunda columna
+                                },
+                                {
+                                    dataField: 'NombreTipoLustre',
+                                    validationRules: [{
+                                        type: 'required'
+                                    }],
+                                    editorOptions: {
+                                        width: 280
+                                    },
+                                },
+                                {
+                                    itemType: 'empty', // Esto agrega un espacio vacío en la segunda columna
+                                },
+                                {
+                                    dataField: 'Abreviatura',
+                                    validationRules: [{
+                                        type: 'required'
+                                    }]
+                                },
+                                /*{
+                                    dataField: 'CodigoOrigen',
+                                },*/
+
+                            ]
+                        }],
+
+
+
+                    },
+                },
+
+
+
+                onRowInserted(e) {
+                    e.component.navigateToRow(e.key);
+                },
+
+                columns: [
+                    'CodigoTipoLustre',
+                    'NombreTipoLustre',
+                    'Abreviatura',
+
+                    'ESTADO',
+                    {
+                        dataField: 'FECHA_REG',
+                        caption: 'Fecha Creación',
+                        dataType: 'datetime',
+                        alignment: 'left',
+                        format: "MM/dd/yyyy"
+                    },
+
+                    {
+                        dataField: 'USUARIO_REG',
+                        caption: 'Usuario Registro',
+                        alignment: 'left',
+                    },
+                    {
+                        caption: 'Fibra',
+                        width: 90,
+                        cellTemplate: function (container, options) {
+                            $("<div>")
+                                .dxButton({
+                                    text: "Fibra",
+                                    onClick: function () {
+                                        // Obtener la fila actual
+                                        var data = options.data;
+                                        console.log(data);
+                                        // Obtener la instancia del DxDataGrid maestro
+                                        /*var gridMaster = $("#gridContainer").dxDataGrid("instance");
+
+                                        if (gridMaster.isRowExpanded(data.CodigoFibra)) {
+                                            gridMaster.collapseRow(data.CodigoFibra);
+                                        } else {
+                                            gridMaster.expandRow(data.CodigoFibra);
+                                        }*/
+
+
+                                        // Crear el DxPopup
+                                        $("<div>")
+                                            .appendTo("body")
+                                            .dxPopup({
+                                                title: "Fibras Tipo de Lustre",
+                                                width: 800,
+                                                height: 500,
+                                                contentTemplate: function (contentContainer) {
+                                                    // Agregar el contenido del popup aquí según tus necesidades
+                                                    contentContainer.append("<p>Codigo : " + data.CodigoTipoLustre + "</p><br>");
+                                                    contentContainer.append("<p>Nombre: " + data.NombreTipoLustre + "</p><br>");
+                                                    console.log("data es:", data);
+                                                    $("<div>")
+                                                        .appendTo(contentContainer);
+
+                                                    var gridContainer = $("<div>").appendTo(contentContainer);
+                                                    var masterKey = options.data.CodigoTipoLustre; // Obtener el CodigoFibra del maestro
+                                                    var masterKeyValues;  // Variable para almacenar los valores relevantes de la carga inicial
+
+                                                    var customStore = new DevExpress.data.CustomStore({
+                                                        load: function (loadOptions) {
+                                                            return sendRequest(`/TipoLustre/ListarTipoLustreDet?masterKey=${masterKey}`)
+                                                                .done(function (data) {
+                                                                    // Almacena los valores relevantes de la carga inicial
+                                                                    masterKeyValues = data.map(function (item) {
+                                                                        return item.EmpCCod;
+                                                                    });
+                                                                });
+                                                        },
+                                                        insert: function (values, loadOptions) {
+                                                            console.log("el valor que trae values en el insert:", values);
+                                                            var newValuesModified = {
+                                                                Abreviatura: values.LFibra
+                                                            };
+                                                            console.log("el newValuesModified es: ", newValuesModified);
+                                                            console.log("el masterKeyValues es: ", masterKeyValues);
+                                                            console.log("el valoes es: ", values);
+                                                            console.log("el customstore es:", customStore);
+                                                            // Verificar si el nuevo valor ya existe en el detalle
+                                                            if (isDuplicateValue(newValuesModified, masterKeyValues)) {
+                                                                // Muestra un mensaje o realiza acciones adicionales si es un duplicado
+                                                                console.log('El valor ya existe en el detalle.');
+                                                                Swal.fire({
+                                                                    icon: 'error',
+                                                                    title: 'Oops...',
+                                                                    text: 'El valor ya existe en el detalle.',
+                                                                    customClass: {
+                                                                        container: 'my-swal-container', // Clase personalizada para ajustar z-index
+                                                                    },
+                                                                });
+                                                                return;
+                                                            }
+                                                            values.CodigoDatoFibra = data.CodigoTipoFibra;
+                                                            console.log(newValuesModified.Abreviatura);
+                                                            values.CodigoDatoFibra = newValuesModified.Abreviatura;
+                                                            return sendRequest(`/TipoLustre/InsertTipoLustreDet?masterKey=${masterKey}&CodigoDatoF=${newValuesModified.Abreviatura}`, 'POST')
+                                                                .then(response => {
+                                                                    // Verificar si el controlador del servidor devolvió un error
+                                                                    console.log("el response despues del cargar", response);
+                                                                    if (!response.rpta) {
+
+                                                                        // Mostrar un mensaje de error usando SweetAlert
+                                                                        Swal.fire({
+                                                                            icon: 'error',
+                                                                            title: 'Oops...',
+                                                                            text: 'El valor ya existe en el detalle.',
+                                                                            customClass: {
+                                                                                container: 'my-swal-container', // Clase personalizada para ajustar z-index
+                                                                            },
+                                                                        });
+                                                                    }
+                                                                })
+                                                                .catch(error => {
+                                                                    // Manejar cualquier error de la solicitud
+                                                                    console.error('Error en la solicitud:', error);
+                                                                });
+                                                        },
+                                                        remove: function (values, loadOptions) {
+                                                            console.log("el values de delete es:", values);
+                                                            console.log("el masterKey de delete es:", masterKey);
+                                                            values.CodigoTipoLustre = masterKey;
+
+                                                            console.log("el value de remove es:", values);
+                                                            //values.IdUbicacion = key;
+                                                            return sendRequest(`/TipoLustre/DeleteTipoLustreDet`, 'DELETE', JSON.stringify(values));
+                                                        },
+                                                    });
+
+                                                    gridContainer.dxDataGrid({
+                                                        dataSource: customStore,
+                                                        //columnAutoWidth: true,
+                                                        showBorders: true,
+                                                        editing: {
+                                                            allowUpdating: true,
+                                                            mode: "cell",
+                                                            useIcons: true,
+                                                            allowAdding: true,
+                                                            allowDeleting: true,
+                                                        },
+                                                        columns: [
+                                                            // Define tus columnas aquí          '/Fibra/ListarTipFibra'
+                                                            {
+                                                                dataField: 'codFLustre',
+                                                                caption: 'Codigo',
+                                                                width: 150,
+                                                                allowEditing: false // Esta línea hace que la columna no sea editable
+
+                                                            },
+                                                            {
+                                                                dataField: 'LFibra',
+                                                                caption: 'Fibra',
+                                                                editorType: 'dxSelectBox',  // Utilizando un dropdown
+                                                                editorOptions: {
+                                                                    dataSource: {
+                                                                        key: "CodigoFibra",
+                                                                        loadMode: "raw",
+                                                                        load: function () {
+                                                                            return $.ajax({
+                                                                                url: '/Fibra/ListarTipFibra',
+                                                                                dataType: 'json',
+                                                                                method: 'GET',
+                                                                                success: function (response) {
+
+
+
+                                                                                    console.log("el response es:", response);
+
+
+                                                                                    return response;
+                                                                                },
+                                                                                error: function (xhr, status, error) {
+                                                                                    throw new Error(error);
+                                                                                }
+                                                                            });
+                                                                        }
+                                                                    },
+                                                                    displayExpr: 'NombreFibra', // Propiedad del objeto para mostrar en el dropdown
+                                                                    valueExpr: 'CodigoFibra',
+                                                                },
+                                                                validationRules: [{
+                                                                    type: 'required'
+                                                                }],
+                                                                width: 400,
+                                                            },
+                                                        ],
+                                                    });
+                                                },
+
+                                                onHidden: function (e) {
+                                                    // Destruir el DxPopup cuando se oculta
+                                                    e.component.dispose();
+                                                    $('#gridContainer').dxDataGrid('instance').refresh();
+                                                }
+                                            })
+                                            .dxPopup("instance")
+                                            .show();
+                                    },
+
+                                })
+                                .addClass("custom-dx-buttonDetalle") // Agrega una clase personalizada para aplicar estilos adicionales si es necesario
+                                .appendTo(container);
+                        }
+                    },
+
+
+                ],
+                toolbar: {
+                    items: [
+                        {
+                            location: "before", // Ubicación antes de los botones existentes
+                            text: "Tipo Lustre", // Texto del título
+                            cssClass: "toolbar-title", // Clase de estilo personalizada
+
+                        },
+                        {
+                            location: "after",
+                            widget: "dxButton",
+                            options: {
+                                icon: "add",
+                                text: "AGREGAR",
+                                onClick: function () {
+                                    dataGrid.addRow();
+                                },
+                                stylingMode: "outlined", // Cambia el estilo del botón a outlined
+                                // Modifica el color del botón
+                                elementAttr: {
+                                    class: "ClsAgregar custom-button-style" // Puedes cambiar "dx-color-blue" por otro color de tu elección
+                                }
+                            },
+                        }, {
+                            location: 'after',
+                            widget: 'dxButton',
+                            options: {
+                                icon: 'refresh',
+                                text: "ACTUALIZAR",
+                                onClick() {
+                                    dataGrid.refresh();
+                                },
+                                stylingMode: "outlined", // Cambia el estilo del botón a outlined
+                                // Modifica el color del botón
+                                elementAttr: {
+                                    class: "ClsRefresh custom-button-style" // Puedes cambiar "dx-color-blue" por otro color de tu elección
+                                }
+                            },
+                        },
+                        'exportButton',
+                    ],
+                },
+                export: {
+                    enabled: true,
+
+                },
+                onExporting(e) {
+                    const workbook = new ExcelJS.Workbook();
+                    const worksheet = workbook.addWorksheet('data');
+
+                    DevExpress.excelExporter.exportDataGrid({
+                        component: e.component,
+                        worksheet,
+                        autoFilterEnabled: true,
+                    }).then(() => {
+                        workbook.xlsx.writeBuffer().then((buffer) => {
+                            saveAs(new Blob([buffer], { type: 'application/octet-stream' }), 'data.xlsx');
+                        });
+                    });
+                    e.cancel = true;
+                },
+
+                hoverStateEnabled: true,
+                filterRow: { visible: true },
+                showColumnLines: true,
+                showRowLines: true,
+                rowAlternationEnabled: true,
+                showBorders: true,
+                selection: {
+                    mode: 'single',
+                },
+                paging: {
+                    pageSize: 10,  // Set the number of rows per page as per your requirement
+                },
+            }).dxDataGrid('instance');
+
+    })
+
+
+    //SUPER FUNCION PARA NO CONTAR DUPLICADOS
+
+    function isDuplicateValue(newValues, masterKeyValues) {
+        // Verificar si el nuevo valor ya existe en el detalle
+        console.log("el masterkey es:", masterKeyValues);
+        console.log("el newValues es:", newValues);
+        var isDuplicate = masterKeyValues.some(function (item) {
+            // Verificar si hay un duplicado basándose en las condiciones necesarias
+            console.log("item", item);
+            console.log("newvalues", newValues.Abreviatura);
+            return newValues.Abreviatura === item;
+        });
+        console.log("isDuplicate es : ", isDuplicate);
+
+        return isDuplicate;
+    }
+
+</script>
+
+
+<style>
+    .toolbar-title {
+        color: white;
+        padding: 10px !important;
+    }
+    .labelCod > div {
+        background-color: #f1f3f4;
+    }
+
+
+    .my-swal-container {
+        z-index: 10000; /* Puedes ajustar este valor según sea necesario */
+    }
+
+    .ClsAgregar {
+        font-weight: 600 !important;
+        color: #fff;
+        background-color: #5cb85c;
+        border-color: #4cae4c;
+    }
+
+        .ClsAgregar:hover,
+        .ClsAgregar:focus {
+            background-color: #4d984d; /* Color de fondo del botón al hacer hover o focus */
+        }
+
+    .ClsEditar {
+        font-weight: 600 !important;
+        color: #fff;
+        background-color: #f0ad4e;
+        border-color: #eea236;
+    }
+
+        .ClsEditar:hover,
+        .ClsEditar:focus {
+            background-color: #d18c37; /* Color de fondo del botón al hacer hover o focus */
+        }
+
+    .ClsRefresh {
+        font-weight: 600 !important;
+        color: #fff;
+        background-color: #337ab7;
+        border-color: #2e6da4;
+    }
+
+        .ClsRefresh:hover,
+        .ClsRefresh:focus {
+            background-color: #1c4e7e; /* Color de fondo del botón al hacer hover o focus */
+        }
+
+    .custom-button-style .dx-icon {
+        color: white !important;
+    }
+
+    .custom-dx-buttonDetalle {
+        font-weight: 600 !important;
+        color: white !important;
+        background-color: #57889c !important;
+        border-color: #4e7a8c !important;
+    }
+</style>
