@@ -28,8 +28,8 @@
             },
         });
 
+        let selectedNumeroOrden = null; // Variable para almacenar el primer PrvCCod seleccionado
 
-        //se cambio IdMaquina por CodigoFibra del value de update y remove y el keyExpr
         //se cambio IdMaquina por CodigoFibra del value de update y remove y el keyExpr
         const dataGrid2 =
             $('#gridBOC').dxDataGrid({
@@ -104,6 +104,49 @@
                     //},
                 ],
 
+                onSelectionChanged(e) {
+                    //const selectedRows = e.selectedRowsData;
+
+                    //if (selectedRows.length === 0) {
+                    //    selectedPrvCCod = null; // Restablecer cuando no haya selección
+                    //    return;
+                    //}
+
+                    //if (!selectedPrvCCod) {
+                    //    selectedPrvCCod = selectedRows[0].PrvCCod; // Guardar el primer PrvCCod seleccionado
+                    //}
+
+                    //// Filtrar las filas que no coinciden con el PrvCCod seleccionado
+                    //const filteredSelection = selectedRows.filter(row => row.PrvCCod === selectedPrvCCod);
+
+                    //if (filteredSelection.length !== selectedRows.length) {
+                    //    DevExpress.ui.notify("Solo puedes seleccionar filas con el mismo Código de Proveedor.", "warning", 2000);
+
+                    //    // Desmarcar la selección de filas inválidas
+                    //    const gridInstance = e.component;
+                    //    gridInstance.deselectRows(selectedRows.map(row => row.id)); // Desmarca todo
+                    //    gridInstance.selectRows(filteredSelection.map(row => row.id)); // Solo deja las válidas
+                    //}
+
+                    const selectedRows = e.selectedRowsData;
+                    const gridInstance = e.component;
+
+                    if (selectedRows.length === 0) {
+                        // Restablecer filtro si no hay selección
+                        selectedNumeroOrden = null;
+                        gridInstance.clearFilter();
+                        return;
+                    }
+
+                    if (!selectedNumeroOrden) {
+                        selectedNumeroOrden = selectedRows[0].NumeroOrden; // Tomar el PrvCCod de la primera selección
+                    }
+
+                    gridInstance.filter(["NumeroOrden", "=", selectedNumeroOrden]);
+
+                    // Actualizar el resumen manualmente
+                    gridInstance.refresh();
+                },
 
 
 
@@ -135,11 +178,16 @@
                 rowAlternationEnabled: true,
                 showBorders: true,
                 selection: {
-                    mode: 'single',
+                    mode: 'multiple',
+                    showCheckBoxesMode: 'always', // Opcional: Mostrar checkboxes siempre
+                    allowSelectAll: false // Evita que se seleccione todo
+
                 },
                 paging: {
-                    pageSize: 10,  // Set the number of rows per page as per your requirement
+                    pageSize: 15,  // Set the number of rows per page as per your requirement
                 },
+                
+
             }).dxDataGrid('instance');
 
 

@@ -29,8 +29,10 @@ namespace CAMTEX.Repositorio
 
         public DataTable Listar(Producto entidad)
         {
+            entidad.cadenaCodigo = string.Join(",", entidad.cadenaCodigo.Split(',').Select(x => $"'{x}'"));
             oConn.AddParameter("@opcion", 1);
             oConn.AddParameter("@OcId", entidad.OcId);
+            oConn.AddParameter("@CadMae", entidad.cadenaCodigo);
             DataTable dt = oConn.ExecuteDataTable("[DBO].[sp_ListarProductos]");
             return dt;
         }

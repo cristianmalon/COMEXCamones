@@ -1,5 +1,9 @@
-﻿@model CAMTEX.Entidades.OrdenesCompra
+﻿@model List<CAMTEX.Entidades.OrdenesCompra>
+@{ // Extraer los valores de MaeCCod en un array dentro de la vista
+    var maeCCodArray = Model.Select(o => o.MaeCCod).ToList();
+    var maeCCodJson = Newtonsoft.Json.JsonConvert.SerializeObject(maeCCodArray); // Convertir a JSON
 
+}
 <div id="frmRegistrar_@ViewBag.Id">
     <div class="form-horizontal">
         <div class="row">
@@ -11,35 +15,35 @@
                             <span class="input-group-btn">
                                 <label>O/C:</label>
                                 <input class="form-control input-sm text-box single-line" disabled="disabled"
-                                       id="txtNumeroOrden_@ViewBag.Id" value="@Model.NumeroOrden">
+                                       id="txtNumeroOrden_@ViewBag.Id" value="@Model[0].NumeroOrden">
                             </span>
                         </div>
                         <div class="col-md-3">
                             <label>Prov:</label>
                             <input type="text" id="txtProveedor_@ViewBag.Id" class="form-control"
-                                   value="@Model.PrvDDes" readonly>
+                                   value="@Model[0].PrvDDes" readonly>
                         </div>
                     </div>
                     <div class="form-group form-inline">
                         <div class="col-md-3">
                             <label for="txtTipo">Tipo:</label>
                             <input type="text" id="txtTipo_@ViewBag.Id" class="form-control"
-                                  value="@Model.TarDNem" readonly>
+                                   value="@Model[0].TarDNem" readonly>
                         </div>
                         <div class="col-md-3">
                             <label for="txtCond">Condición:</label>
                             <input type="text" id="txtCond_@ViewBag.Id" class="form-control"
-                                   value="@Model.CNPDDes" readonly>
+                                   value="@Model[0].CNPDDes" readonly>
                         </div>
                         <div class="col-md-3">
                             <label for="txtFecha">Fecha:</label>
                             <input type="text" id="txtFecha_@ViewBag.Id" class="form-control"
-                                   value="@(Model.FechaCreacion?.ToString("yyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"))" readonly>
-                        </div> 
+                                   value="@(Model[0].FechaCreacion?.ToString("yyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"))" readonly>
+                        </div>
                         <div class="col-md-3">
                             <label for="txtMoneda">Moneda:</label>
                             <input type="text" id="txtMoneda_@ViewBag.Id" class="form-control"
-                                   value="@Model.OrcDMon" readonly>
+                                   value="@Model[0].OrcDMon" readonly>
                         </div>
                     </div>
                     <div id="popupContainer"></div>
@@ -197,6 +201,12 @@
 
     var idOrdenCompra = null;
     console.log("id: ", id);
+    var lista = @Html.Raw(maeCCodJson); // Convertir JSON en objeto JavaScript
+    console.log("lista", lista);
+
+    // Convertir el array a una cadena separada por comas para enviarlo en la URL
+    var maeCCodString = lista.join(',');
+
     // Crear todos los dxDataGrid en sus respectivos contenedores
     $("#gridContainerP_" + id).dxDataGrid({
         dataSource: new DevExpress.data.ArrayStore({
@@ -205,7 +215,7 @@
         }),
         onInitialized(e) {
             let grid = e.component;
-            sendRequest(`/Operaciones/ListarProductos?OcId=${@Model.id}`).then(data => {
+                sendRequest(`/Operaciones/ListarProductos?OcId=@Model[0].id&maeCCodList=${maeCCodString}`).then(data => {
                 grid.option("dataSource", new DevExpress.data.ArrayStore({
                     key: 'Codigo',
                     data: data

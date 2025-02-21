@@ -39,7 +39,15 @@ namespace CAMTEX.Repositorio
             oConn.AddParameter("@FileID", entidad.NuevoFileID);
             oConn.AddParameter("@OC2", xmlString);
 
+            // Agregar parámetro de salida para obtener el NuevoFileID
+            oConn.agregarParametroSalida("@XmlResultado", SqlDbType.Xml, -1);
+
+
+
             DataTable dt = oConn.ExecuteDataTable("[DBO].[Usp_Files]");
+
+            string nuevoFileID = Convert.ToString(oConn.obtenerParametroSalida("@XmlResultado"));
+
 
             retorno.Add("resultado", true);
             retorno.Add("mensaje", "OK");

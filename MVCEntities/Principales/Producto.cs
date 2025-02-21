@@ -19,5 +19,9 @@ namespace CAMTEX.Entidades
         [DataMember] public decimal Qty { get; set; }
         [DataMember] public decimal Valor { get; set; }
         [DataMember] public int OcId { get; set; }
+
+        [DataMember] public string cadenaCodigo { get; set; }
+
+
     }
 }

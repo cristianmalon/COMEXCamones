@@ -50,7 +50,7 @@ namespace MVCBase.Controllers
 
         }
         [AllowAnonymous]
-        public ActionResult VROrdenCompra(string id , OrdenesCompra orderData)
+        public ActionResult VROrdenCompra(string id , List<OrdenesCompra> orderData)
         {
             ViewBag.Id = id;
             return PartialView("_BuscarOrdC", orderData);
@@ -359,12 +359,13 @@ namespace MVCBase.Controllers
         }
         [HttpGet]
         [AllowAnonymous]
-        public JsonResult ListarProductos(int OcId)
+        public JsonResult ListarProductos(int OcId, string maeCCodList)
         {
             var datos = new Request<Producto>();
             //datos.entidad = entidad;
             datos.entidad = new Producto();
             datos.entidad.OcId = OcId;
+            datos.entidad.cadenaCodigo = maeCCodList;
             ////datos.entidad.IdSede = VariablesWeb.Usuario.IdSede;
             var lista = new ProductoAplicacion(new ProductoRepositorio()).Listar(datos);
             //return Json(new { data = lista.response });
