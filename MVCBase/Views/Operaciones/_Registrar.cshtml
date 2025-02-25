@@ -94,10 +94,7 @@
 
 
 
-<script>
-
-    
-    var IdordenesAbiertas = [];
+<script>var IdordenesAbiertas = [];
     var IdordenesAbiertasTAR = [];
 
     $(() => {
@@ -140,7 +137,7 @@
         function loadPartialView(itemData, itemIndex, itemElement) {
 
             var uniqueId = itemData.id;
-            var orderData = itemData.data; 
+            var orderData = itemData.data;
             console.log("uniqueId: ", uniqueId);
             console.log("orderData: ", orderData);
 
@@ -166,7 +163,7 @@
             });
         }
 
-       
+
         function closeButtonHandler(itemData) {
             DevExpress.ui.dialog.confirm("¿Estás seguro de que deseas quitar esta O/C?", "Confirmación")
                 .done(function (dialogResult) {
@@ -185,8 +182,10 @@
                             IdordenesAbiertas = IdordenesAbiertas.filter(codigo =>
                                 !(codigo.OrdenID === itemData.data[0].id)
                             );
-                            console.log("IdordenesAbiertas: ", IdordenesAbiertas);
-
+                            console.log("IdordenesAbiertasTAR: ", IdordenesAbiertasTAR);
+                            IdordenesAbiertasTAR = IdordenesAbiertasTAR.filter(codigo =>
+                                !(codigo.OrdenID === itemData.data[0].id)
+                            );
                             tabPanelItems.splice(index, 1);
                             tabPanel.option('dataSource', tabPanelItems);
 
@@ -211,7 +210,7 @@
                     success: function (result) {
                         contentElement.append(result);
                         contentElement.append('<div class="dx-popup-bottom-buttons">' +
-                            '<div id="btnAdd"></div>' +
+                            '<div id="btnAdd"></div>&nbsp;&nbsp;' +
                             '<div id="btnClose"></div>' +
                             '</div>');
 
@@ -254,7 +253,7 @@
                                     DevExpress.ui.dialog.alert("Esta  O/C ya está abierta.", "Aviso");
                                     return;
                                 }
-                                
+
 
                                 //if (existeProv) {
                                 //    DevExpress.ui.dialog.alert("Este proveedor ya esta seleccionado.", "Aviso");
@@ -312,7 +311,7 @@
             icon: 'add',
             text: 'Agregar O/C',
             type: 'default',
-            disabled: true, 
+            disabled: true,
             onClick: function () {
                 popup.show();
             }
@@ -349,7 +348,7 @@
                             $('#txtFile').prop('disabled', true);
                             $('#txtObservacion').prop('disabled', true);
                         });
-                    
+
                 },
                 error: function () {
                     DevExpress.ui.dialog.alert("Hubo un error al guardar el File.", "Error");
@@ -394,6 +393,7 @@
 
                 console.log("idtab: ", idtabAbiertas);
 
+                //RECOGER DATOS DEL PRIMER GRID
                 let allGridRows = idtabAbiertas.map(id => {
                     let grid = $("#gridContainerP_" + id).dxDataGrid("instance");
                     console.log("grid.getDataSource().items():", grid.getDataSource().items());
@@ -415,6 +415,8 @@
                     rows: tab.rows.map(row => ({
                         Codigo: row.Codigo,
                         OrdenID: row.OrdenID,
+                        Descripcion: row.Descripcion,
+                        Moneda: row.Moneda,
                         PU: row.PU,
                         Qty: row.Qty,
                         Valor: row.Valor
@@ -430,6 +432,33 @@
 
 
 
+                //EXTRAER DATOS PAR AEL CONTROLADOR DEL DEL FORMULARIO DE LA 2DA SECCION
+                var formDataArray = idtabAbiertas.map(id => ({
+                    id: id, // Agregamos el ID como clave
+                    rows: [{ // Agrupamos los datos dentro de "rows"
+                        NroOperacion: $("#txtNOp_" + id).val(),
+                        DUA: $("#txtDUA_" + id).val(),
+                        BL_AWB: $("#txtBL_" + id).val(),
+                        OrdenID: $("#txtOI_" + id).val(),
+                        Deposito: $("#txtDeposito_" + id).val(),
+                        Garantia: $("#txtGarantia_" + id).val(),
+                        NroFactura: $("#txtFactura_" + id).val(),
+                        FechaFactura: $("#txtFechaFactura_" + id).val(),
+                        FechaIngreso: $("#txtFechaIngreso_" + id).val(),
+                        Situacion: $("#txtSituacion_" + id).val(),
+                        LineaNaviera: $("#txtLineaNaviera_" + id).val(),
+                        FechaLogistica: $("#txtFechaLogistica_" + id).val(),
+                        FechaEmbarque: $("#txtFechaEmbarque_" + id).val(),
+                        FechaDeposito: $("#txtFechaDeposito_" + id).val(),
+                        Incoterm: $("#txtIncoterm_" + id).val(),
+                        Via: $("#txtVia_" + id).val()
+                    }]
+                }));
+
+
+                jsonStringDatoImp = JSON.stringify(formDataArray);
+
+                console.log("Todos los formData: ", formDataArray);
 
 
 
@@ -441,15 +470,16 @@
                 /*
                  * REGISTRA UNA CADENA DIVIDIDA POR COMAS DONDE ESTAN MIS ID DE LAS OC
                  * Y EL ID DEL FILE CREADO
-                 * DESPUES EN EL SP ESTE RECORRERA CADA VALOR DIVIDIDO DEL ARRAY 
-                 * Y LO GUARDARA EN FILEOPERACIONES 
+                 * DESPUES EN EL SP ESTE RECORRERA CADA VALOR DIVIDIDO DEL ARRAY
+                 * Y LO GUARDARA EN FILEOPERACIONES
                  */
                 $.ajax({
                     url: '/Operaciones/RegistrarOC',  // Ruta del controlador y acción
                     type: 'POST',
                     data: {
                         nuevoFileID: nuevoFileID,
-                        idOcList: jsonString
+                        idOcList: jsonString,
+                        formDatoImp: jsonStringDatoImp
                     },
                     success: function (response) {
                         console.log("response: ", response);
@@ -481,19 +511,12 @@
 
 
 
-                
+
             }
         });
 
 
-    });
-
-   
-
-    
-
-
-</script>
+    });</script>
 
 
 

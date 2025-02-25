@@ -20,6 +20,12 @@ namespace CAMTEX.Entidades
         [DataMember] public decimal Valor { get; set; }
         [DataMember] public int OcId { get; set; }
 
+
+        [DataMember] public string Moneda { get; set; }
+
+
+
+
         [DataMember] public string cadenaCodigo { get; set; }
 
 

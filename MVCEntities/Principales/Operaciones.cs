@@ -24,6 +24,11 @@ namespace CAMTEX.Entidades
         [DataMember] public string NuevoFileID { get; set; }
 
         [DataMember] public string CadIdOc { get; set; }
+        [DataMember] public string CadformDatoI { get; set; }
+
+
+
+        
 
 
     }

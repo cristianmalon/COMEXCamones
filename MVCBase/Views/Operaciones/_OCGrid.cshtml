@@ -103,7 +103,29 @@
                     //    format: "yyyy-MM-dd"
                     //},
                 ],
+                toolbar: {
+                    items: [
 
+                        {
+                            location: 'after',
+                            widget: 'dxButton',
+                            options: {
+                                icon: 'refresh',
+                                text: "ACTUALIZAR",
+                                onClick() {
+                                    dataGrid2.clearFilter(); // Limpia los filtros
+                                    dataGrid2.deselectAll(); // Deselecciona todas las filas
+                                    dataGrid2.refresh();     // Refresca los datos
+                                },
+                                stylingMode: "outlined", // Cambia el estilo del botón a outlined
+                                // Modifica el color del botón
+                                elementAttr: {
+                                    class: "ClsRefresh custom-button-style" // Puedes cambiar "dx-color-blue" por otro color de tu elección
+                                }
+                            },
+                        },
+                    ],
+                },
                 onSelectionChanged(e) {
                     //const selectedRows = e.selectedRowsData;
 
@@ -151,26 +173,6 @@
 
 
 
-
-                export: {
-                    enabled: true,
-
-                },
-                onExporting(e) {
-                    const workbook = new ExcelJS.Workbook();
-                    const worksheet = workbook.addWorksheet('data');
-
-                    DevExpress.excelExporter.exportDataGrid({
-                        component: e.component,
-                        worksheet,
-                        autoFilterEnabled: true,
-                    }).then(() => {
-                        workbook.xlsx.writeBuffer().then((buffer) => {
-                            saveAs(new Blob([buffer], { type: 'application/octet-stream' }), 'data.xlsx');
-                        });
-                    });
-                    e.cancel = true;
-                },
                 hoverStateEnabled: true,
                 filterRow: { visible: true },
                 showColumnLines: true,

@@ -212,7 +212,7 @@ namespace MVCBase.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public JsonResult RegistrarOC(string nuevoFileID, string idOcList)
+        public JsonResult RegistrarOC(string nuevoFileID, string idOcList , string formDatoImp)
         {
 
             if (ModelState.IsValid)
@@ -223,6 +223,7 @@ namespace MVCBase.Controllers
                     Operaciones entidad = new Operaciones();
                     entidad.NuevoFileID = nuevoFileID;
                     entidad.CadIdOc = idOcList;
+                    entidad.CadformDatoI = formDatoImp;
                     //entidad.IdSede = VariablesWeb.ENUsuario.IdSede;
                     //entidad.Estacion = VariablesWeb.HostName();
                     //entidad.UsuarioCreacion = VariablesWeb.Usuario.SUsrId;
