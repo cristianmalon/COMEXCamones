@@ -84,6 +84,8 @@
                     <div class="text-right">
                         <div id="btnGuardarTodasOC"></div>
                     </div>
+                    <!-- Campo oculto para guardar nuevoFileID -->
+                    <input type="hidden" id="FileIDv" value="" />
 
                 </div>
             </div>
@@ -340,6 +342,8 @@
                 success: function (response) {
                     console.log("response: ", response);
                     nuevoFileID = response.nuevoFileID;
+                    document.getElementById("FileIDv").value = nuevoFileID; // Asigna un nuevo ID
+
                         DevExpress.ui.dialog.alert("File guardado correctamente.", "Éxito").done(function () {
                             // Habilitar el botón de "Agregar O/C"
                             $('#addButton').dxButton('instance').option('disabled', false);

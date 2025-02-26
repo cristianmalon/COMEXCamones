@@ -135,7 +135,7 @@
             <div class="row">
                 <div class="col-md-4">
                     <label>Fecha Ingreso</label>
-                    <input type="date" id="txtFechaIngreso_@ViewBag.Id" class="form-control" >
+                    <input type="date" id="txtFechaIngreso_@ViewBag.Id" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")">
                 </div>
                 <div class="col-md-4">
                     <label>Situación</label>
@@ -208,7 +208,8 @@
     console.log("id: ", id);
     var lista = @Html.Raw(maeCCodJson); // Convertir JSON en objeto JavaScript
     console.log("lista", lista);
-
+    console.log("FileIDv", $("#FileIDv").val());
+    var filecreado = $("#FileIDv").val();
     // Convertir el array a una cadena separada por comas para enviarlo en la URL
     var maeCCodString = lista.join(',');
 
@@ -241,9 +242,9 @@
             mode: "single" // Permite seleccionar una fila
         },
         editing: {
-            refreshMode: 'reshape',
-            mode: "cell", // Permite edición en celda
-            allowUpdating: true // Permite la edición de celdas
+            //refreshMode: 'reshape',
+            //mode: "cell", // Permite edición en celda
+            //allowUpdating: true // Permite la edición de celdas
         },
         columns: [
             { dataField: 'Codigo', caption: 'Codigo', alignment: 'left', allowEditing: false },
@@ -254,10 +255,19 @@
 
             { dataField: 'Descripcion', caption: 'Descripcion', alignment: 'left', allowEditing: false },
             { dataField: 'Moneda', caption: 'Moneda', alignment: 'right', allowEditing: false },
-            { dataField: 'PU', caption: 'P.U.', alignment: 'left', allowEditing: false  },
             {
-                dataField: 'Qty', caption: 'Qty.', alignment: 'left', allowEditing: true,
-                cellTemplate(container, options) {
+                dataField: 'PU', caption: 'P.U.', alignment: 'left', allowEditing: false,
+                calculateCellValue(rowData) {
+                    return rowData.PU ? rowData.PU.toFixed(2) : "0.00"; // Formatea a 2 decimales
+                }
+            },
+            {
+                dataField: 'Qty', caption: 'Qty.', alignment: 'left', allowEditing: false,
+
+                setCellValue(newData, value) {
+                    newData.Qty = Math.round(value); // Asegura que siempre sea entero
+                },
+                /*cellTemplate(container, options) {
                     $("<div>")
                         .text(options.value)
                         .css({
@@ -276,10 +286,14 @@
                     { type: "required", message: "El valor no puede estar vacío." },
                     { type: "numeric", message: "Solo se permiten números." },
                     { type: "range", min: 0, message: "Debe ser 0 o mayor." }
-                ]
+                ]*/
             },
-            { dataField: 'Valor', caption: 'Valor', alignment: 'right', allowEditing: false },
-
+            {
+                dataField: 'Valor', caption: 'Valor', alignment: 'right', allowEditing: false,
+                calculateCellValue(rowData) {
+                    return rowData.Valor ? rowData.Valor.toFixed(2) : "0.00"; // Formatea a 2 decimales
+                }
+            }
         ],
         summary: {
             totalItems: [
@@ -329,7 +343,7 @@
                         }
                     }
                 },
-                {
+                /*{
                     location: "after",
                     widget: "dxButton",
                     options: {
@@ -339,7 +353,7 @@
                             DevExpress.ui.dialog.alert("Valor Cambiado.", "Guardar cambios");
                         }
                     }
-                }
+                }*/
             ]
         },
         export: {
@@ -357,17 +371,121 @@
     });
 
 
-
     $("#gridContainerL_" + id).dxDataGrid({
-        dataSource: [], // Data real
-        columns: ["Lote", "Cantidad", "Fecha"],
-        showBorders: true
+        dataSource: new DevExpress.data.ArrayStore({
+            key: 'Codigo',
+            data: [] // Se cargará después con `load`
+        }),
+        onInitialized(e) {
+            let grid = e.component;
+            sendRequest(`/Operaciones/ListarLotes?OcId=@Model[0].id&file=${filecreado}`).then(data => {
+                grid.option("dataSource", new DevExpress.data.ArrayStore({
+                    key: 'Codigo',
+                    data: data
+                }));
+            });
+        },
+        allowExpandAll: true,
+        expandAll: true,
+        keyExpr: 'Codigo',
+        allowSorting: false,
+        allowFiltering: true,
+        allowColumnResizing: true,
+        height: 300,
+        selection: {
+            mode: "single"
+        },
+        editing: {
+            mode: 'row',
+            allowUpdating: true,
+            allowAdding: true,
+            allowDeleting: true,
+            selectTextOnEditStart: true,
+            startEditAction: 'click',
+        },
+        columns: [
+            { dataField: 'Codigo', caption: 'Codigo', alignment: 'left', allowEditing: false },
+            { dataField: 'NroLotes', caption: 'NroLotes', alignment: 'left', allowEditing: true },
+            { dataField: 'Evaluacion', caption: 'Evaluacion', alignment: 'left', allowEditing: true },
+            { dataField: 'Estado', caption: 'Estado', alignment: 'left', allowEditing: true },
+            { dataField: 'Resultado', caption: 'Resultado', alignment: 'left', allowEditing: true },
+            { dataField: 'Deposito', caption: 'Deposito', alignment: 'right', allowEditing: true },
+            { dataField: 'Destino', caption: 'Destino', alignment: 'left', allowEditing: true },
+        ],
+        toolbar: {
+            items: [
+                /*{
+                    location: "before",
+                    widget: "dxButton",
+                    options: {
+                        text: "Eliminar fila seleccionada",
+                        icon: "trash",
+                        onClick() {
+                            let grid = $("#gridContainerL_" + id).dxDataGrid("instance");
+                            let selectedRow = grid.getSelectedRowKeys();
+                            let dataSource = grid.getDataSource();
+                            let dataArray = dataSource.items();
+
+                            if (selectedRow.length > 0) {
+                                if (dataArray.length > 1) {
+                                    let store = dataSource.store();
+                                    store.remove(selectedRow[0]);
+                                    grid.refresh();
+                                } else {
+                                    DevExpress.ui.dialog.alert("Debe haber al menos un producto en la orden de compra.", "Aviso");
+                                }
+                            } else {
+                                DevExpress.ui.dialog.alert("Por favor, selecciona una orden.", "Aviso");
+                            }
+                        }
+                    }
+                },*/
+                {
+                    location: "after",
+                    widget: "dxButton",
+                    options: {
+                        text: "Agregar fila",
+                        icon: "add",
+                        onClick() {
+                            let grid = $("#gridContainerL_" + id).dxDataGrid("instance");
+                            let dataSource = grid.getDataSource();
+                            let store = dataSource.store();
+
+                            let nuevaFila = {
+                                Codigo: "", // Genera un código único si es necesario
+                                NroLotes: "",
+                                Evaluacion: "",
+                                Estado: "",
+                                Resultado: "",
+                                Deposito: "",
+                                Destino: ""
+                            };
+
+                            store.insert(nuevaFila).done(() => {
+                                grid.refresh();
+                            });
+                        }
+                    }
+                }
+            ]
+        },
+        hoverStateEnabled: false,
+        filterRow: { visible: true },
+        showColumnLines: true,
+        showRowLines: true,
+        rowAlternationEnabled: true,
+        showBorders: true,
+        paging: {
+            pageSize: 10,
+        }
     });
+
 
     $("#gridContainerC_" + id).dxDataGrid({
         dataSource: [], // Data real
         columns: ["Contenedor", "Tamaño", "Ubicación"],
         showBorders: true
+
     });
 
     $("#gridContainerO_" + id).dxDataGrid({

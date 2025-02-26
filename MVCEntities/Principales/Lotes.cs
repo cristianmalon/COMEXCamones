@@ -17,5 +17,7 @@ namespace CAMTEX.Entidades
         [DataMember] public string Resultado { get; set; }
         [DataMember] public string Deposito { get; set; }
         [DataMember] public string Destino { get; set; }
+        [DataMember] public int IdOPeraciones { get; set; }
+        [DataMember] public int IdFile { get; set; }
     }
 }

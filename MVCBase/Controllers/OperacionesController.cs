@@ -385,17 +385,15 @@ namespace MVCBase.Controllers
 
 
 
-
-
-
-
         [HttpGet]
         [AllowAnonymous]
-        public JsonResult ListarLotes(int idOrdenCompra)
+        public JsonResult ListarLotes(int OcId, int file)
         {
             var datos = new Request<Lotes>();
             //datos.entidad = entidad;
             datos.entidad = new Lotes();
+            datos.entidad.IdOPeraciones = OcId;
+            datos.entidad.IdFile = file;
             ////datos.entidad.IdSede = VariablesWeb.Usuario.IdSede;
             var lista = new LotesAplicacion(new LotesRepositorio()).Listar(datos);
             //return Json(new { data = lista.response });
