@@ -57,8 +57,8 @@ namespace CAMTEX.Aplicacion
                         Descripcion = Util.CapturaString(row, "MaeDDes"),
                         PU = Util.CapturaDecimal(row, "OrcNPrec"),
                         Qty = Util.CapturaDecimal(row, "OrcQCan"),
-                        Valor = Util.CapturaDecimal(row, "OrcNImp")
-
+                        Valor = Util.CapturaDecimal(row, "OrcNImp"),
+                        Moneda = Util.CapturaString(row, "OrcDMon")
                     });
                 }
 
