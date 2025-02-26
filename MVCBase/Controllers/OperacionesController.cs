@@ -50,7 +50,7 @@ namespace MVCBase.Controllers
 
         }
         [AllowAnonymous]
-        public ActionResult VROrdenCompra(string id , OrdenesCompra orderData)
+        public ActionResult VROrdenCompra(string id , List<OrdenesCompra> orderData)
         {
             ViewBag.Id = id;
             return PartialView("_BuscarOrdC", orderData);
@@ -217,7 +217,7 @@ namespace MVCBase.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public JsonResult RegistrarOC(string nuevoFileID, string idOcList)
+        public JsonResult RegistrarOC(string nuevoFileID, string idOcList , string formDatoImp)
         {
 
             if (ModelState.IsValid)
@@ -228,6 +228,7 @@ namespace MVCBase.Controllers
                     Operaciones entidad = new Operaciones();
                     entidad.NuevoFileID = nuevoFileID;
                     entidad.CadIdOc = idOcList;
+                    entidad.CadformDatoI = formDatoImp;
                     //entidad.IdSede = VariablesWeb.ENUsuario.IdSede;
                     //entidad.Estacion = VariablesWeb.HostName();
                     //entidad.UsuarioCreacion = VariablesWeb.Usuario.SUsrId;
@@ -364,12 +365,13 @@ namespace MVCBase.Controllers
         }
         [HttpGet]
         [AllowAnonymous]
-        public JsonResult ListarProductos(int OcId)
+        public JsonResult ListarProductos(int OcId, string maeCCodList)
         {
             var datos = new Request<Producto>();
             //datos.entidad = entidad;
             datos.entidad = new Producto();
             datos.entidad.OcId = OcId;
+            datos.entidad.cadenaCodigo = maeCCodList;
             ////datos.entidad.IdSede = VariablesWeb.Usuario.IdSede;
             var lista = new ProductoAplicacion(new ProductoRepositorio()).Listar(datos);
             //return Json(new { data = lista.response });
@@ -388,17 +390,15 @@ namespace MVCBase.Controllers
 
 
 
-
-
-
-
         [HttpGet]
         [AllowAnonymous]
-        public JsonResult ListarLotes(int idOrdenCompra)
+        public JsonResult ListarLotes(int OcId, int file)
         {
             var datos = new Request<Lotes>();
             //datos.entidad = entidad;
             datos.entidad = new Lotes();
+            datos.entidad.IdOPeraciones = OcId;
+            datos.entidad.IdFile = file;
             ////datos.entidad.IdSede = VariablesWeb.Usuario.IdSede;
             var lista = new LotesAplicacion(new LotesRepositorio()).Listar(datos);
             //return Json(new { data = lista.response });

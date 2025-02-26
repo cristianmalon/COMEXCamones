@@ -29,7 +29,11 @@ namespace CAMTEX.Repositorio
 
         public DataTable Listar(Lotes entidad)
         {
-            throw new NotImplementedException();
+            oConn.AddParameter("@opcion", 1);
+            oConn.AddParameter("@file", entidad.IdFile);
+            oConn.AddParameter("@idOp", entidad.IdOPeraciones);
+            DataTable dt = oConn.ExecuteDataTable("[DBO].[Usp_ListarLotes]");
+            return dt;
         }
 
         public DataTable ListarPaginado(Lotes entidad)

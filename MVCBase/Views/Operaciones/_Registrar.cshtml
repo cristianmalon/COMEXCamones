@@ -84,6 +84,8 @@
                     <div class="text-right">
                         <div id="btnGuardarTodasOC"></div>
                     </div>
+                    <!-- Campo oculto para guardar nuevoFileID -->
+                    <input type="hidden" id="FileIDv" value="" />
 
                 </div>
             </div>
@@ -94,10 +96,8 @@
 
 
 
-<script>
-
-    
-    var IdordenesAbiertas = [];
+<script>var IdordenesAbiertas = [];
+    var IdordenesAbiertasTAR = [];
 
     $(() => {
         var nuevoFileID;
@@ -139,8 +139,10 @@
         function loadPartialView(itemData, itemIndex, itemElement) {
 
             var uniqueId = itemData.id;
-            var orderData = itemData.data; 
-           
+            var orderData = itemData.data;
+            console.log("uniqueId: ", uniqueId);
+            console.log("orderData: ", orderData);
+
             const tabPanelItems2 = tabPanel.option('dataSource');
             console.log("tabPanelItems2: ", tabPanelItems2[0].idoc);
             $('<div>').addClass('tab-content').attr("data-id", uniqueId).appendTo(itemElement);
@@ -163,7 +165,7 @@
             });
         }
 
-       
+
         function closeButtonHandler(itemData) {
             DevExpress.ui.dialog.confirm("¿Estás seguro de que deseas quitar esta O/C?", "Confirmación")
                 .done(function (dialogResult) {
@@ -176,14 +178,16 @@
                         if (index !== -1) {
                             // Filtrar correctamente para eliminar la combinación de NumeroOrden + Item
                             ordenesAbiertas = ordenesAbiertas.filter(codigo =>
-                                !(codigo.NumeroOrdenC === itemData.data.NumeroOrden)
+                                !(codigo.NumeroOrdenC === itemData.data[0].NumeroOrden)
                             );
                             console.log("ordenesAbiertas: ", ordenesAbiertas);
                             IdordenesAbiertas = IdordenesAbiertas.filter(codigo =>
-                                !(codigo.OrdenID === itemData.data.id)
+                                !(codigo.OrdenID === itemData.data[0].id)
                             );
-                            console.log("IdordenesAbiertas: ", IdordenesAbiertas);
-
+                            console.log("IdordenesAbiertasTAR: ", IdordenesAbiertasTAR);
+                            IdordenesAbiertasTAR = IdordenesAbiertasTAR.filter(codigo =>
+                                !(codigo.OrdenID === itemData.data[0].id)
+                            );
                             tabPanelItems.splice(index, 1);
                             tabPanel.option('dataSource', tabPanelItems);
 
@@ -199,8 +203,8 @@
 
         var popup = $('#popupContainer').dxPopup({
             title: 'Buscar O/C',
-            width: 1100,
-            height: 700,
+            width: 1200,
+            height: 800,
             contentTemplate: function (contentElement) {
                 $.ajax({
                     url: '/Operaciones/BuscarOcGrid',
@@ -208,7 +212,7 @@
                     success: function (result) {
                         contentElement.append(result);
                         contentElement.append('<div class="dx-popup-bottom-buttons">' +
-                            '<div id="btnAdd"></div>' +
+                            '<div id="btnAdd"></div>&nbsp;&nbsp;' +
                             '<div id="btnClose"></div>' +
                             '</div>');
 
@@ -216,26 +220,43 @@
                             text: 'Seleccionar',
                             onClick: function () {
                                 var grid = $("#gridBOC").dxDataGrid("instance");
-                                var selectedRow = grid.getSelectedRowsData()[0];
-
-                                if (!selectedRow) {
+                                var selectedRow = grid.getSelectedRowsData();
+                                console.log("selectedRow para denegar oc diferente : ", selectedRow);
+                                if (selectedRow.length === 0) {
                                     DevExpress.ui.dialog.alert("Por favor, selecciona una orden.", "Aviso");
                                     return;
                                 }
                                 console.log("selectedRow: ", selectedRow);
-                                var numeroOrden = selectedRow.NumeroOrden;
-                                var numeroOrdenId = selectedRow.id;
+                                var numeroOrden = selectedRow[0].NumeroOrden;
+                                var numeroOrdenId = selectedRow[0].id;
                                 //var codProv = selectedRow.PrvCCod;
                                 var item = selectedRow.Item; // Asegúrate de que la columna `Item` existe en el dataset
-                                console.log("ordenesAbiertas: ", ordenesAbiertas);
+                                var tarDNem = selectedRow[0].TarDNem; // Nuevo campo para la validación
+
+
                                 // Verificar si ya existe una pestaña con la misma combinación de NumeroOrden + Item
                                 var existeOrden = IdordenesAbiertas.some(oc => oc.OrdenID === numeroOrdenId);
-                                //var existeProv = IdordenesAbiertas.some(oc => oc.CodProv === codProv);
+
+                                // Si es el primer registro, guardamos el TarDNem y permitimos continuar
+                                if (IdordenesAbiertasTAR.length === 0) {
+                                    IdordenesAbiertasTAR.push({ OrdenID: numeroOrdenId, TarDNem: tarDNem });
+                                } else {
+                                    // Obtener el primer TarDNem guardado
+                                    var primerTarDNem = IdordenesAbiertasTAR[0].TarDNem;
+
+                                    // Validar si el TarDNem actual es diferente al primero
+                                    if (tarDNem !== primerTarDNem) {
+                                        DevExpress.ui.dialog.alert("Tipo de O/C diferente.", "Aviso");
+                                        return;
+                                    }
+                                }
 
                                 if (existeOrden) {
                                     DevExpress.ui.dialog.alert("Esta  O/C ya está abierta.", "Aviso");
                                     return;
                                 }
+
+
                                 //if (existeProv) {
                                 //    DevExpress.ui.dialog.alert("Este proveedor ya esta seleccionado.", "Aviso");
                                 //    return;
@@ -277,6 +298,12 @@
                     }
                 });
             },
+            onShowing: function () {
+                var grid = $("#gridBOC").dxDataGrid("instance");
+                if (grid) {
+                    grid.clearSelection(); // Limpia la selección anterior al abrir el popup
+                }
+            },
             onHidden: function () {
                 console.log('Ventana emergente cerrada');
             }
@@ -286,7 +313,7 @@
             icon: 'add',
             text: 'Agregar O/C',
             type: 'default',
-            disabled: true, 
+            disabled: true,
             onClick: function () {
                 popup.show();
             }
@@ -315,6 +342,8 @@
                 success: function (response) {
                     console.log("response: ", response);
                     nuevoFileID = response.nuevoFileID;
+                    document.getElementById("FileIDv").value = nuevoFileID; // Asigna un nuevo ID
+
                         DevExpress.ui.dialog.alert("File guardado correctamente.", "Éxito").done(function () {
                             // Habilitar el botón de "Agregar O/C"
                             $('#addButton').dxButton('instance').option('disabled', false);
@@ -323,7 +352,7 @@
                             $('#txtFile').prop('disabled', true);
                             $('#txtObservacion').prop('disabled', true);
                         });
-                    
+
                 },
                 error: function () {
                     DevExpress.ui.dialog.alert("Hubo un error al guardar el File.", "Error");
@@ -368,6 +397,7 @@
 
                 console.log("idtab: ", idtabAbiertas);
 
+                //RECOGER DATOS DEL PRIMER GRID
                 let allGridRows = idtabAbiertas.map(id => {
                     let grid = $("#gridContainerP_" + id).dxDataGrid("instance");
                     console.log("grid.getDataSource().items():", grid.getDataSource().items());
@@ -389,6 +419,8 @@
                     rows: tab.rows.map(row => ({
                         Codigo: row.Codigo,
                         OrdenID: row.OrdenID,
+                        Descripcion: row.Descripcion,
+                        Moneda: row.Moneda,
                         PU: row.PU,
                         Qty: row.Qty,
                         Valor: row.Valor
@@ -404,6 +436,33 @@
 
 
 
+                //EXTRAER DATOS PAR AEL CONTROLADOR DEL DEL FORMULARIO DE LA 2DA SECCION
+                var formDataArray = idtabAbiertas.map(id => ({
+                    id: id, // Agregamos el ID como clave
+                    rows: [{ // Agrupamos los datos dentro de "rows"
+                        NroOperacion: $("#txtNOp_" + id).val(),
+                        DUA: $("#txtDUA_" + id).val(),
+                        BL_AWB: $("#txtBL_" + id).val(),
+                        OrdenID: $("#txtOI_" + id).val(),
+                        Deposito: $("#txtDeposito_" + id).val(),
+                        Garantia: $("#txtGarantia_" + id).val(),
+                        NroFactura: $("#txtFactura_" + id).val(),
+                        FechaFactura: $("#txtFechaFactura_" + id).val(),
+                        FechaIngreso: $("#txtFechaIngreso_" + id).val(),
+                        Situacion: $("#txtSituacion_" + id).val(),
+                        LineaNaviera: $("#txtLineaNaviera_" + id).val(),
+                        FechaLogistica: $("#txtFechaLogistica_" + id).val(),
+                        FechaEmbarque: $("#txtFechaEmbarque_" + id).val(),
+                        FechaDeposito: $("#txtFechaDeposito_" + id).val(),
+                        Incoterm: $("#txtIncoterm_" + id).val(),
+                        Via: $("#txtVia_" + id).val()
+                    }]
+                }));
+
+
+                jsonStringDatoImp = JSON.stringify(formDataArray);
+
+                console.log("Todos los formData: ", formDataArray);
 
 
 
@@ -415,15 +474,16 @@
                 /*
                  * REGISTRA UNA CADENA DIVIDIDA POR COMAS DONDE ESTAN MIS ID DE LAS OC
                  * Y EL ID DEL FILE CREADO
-                 * DESPUES EN EL SP ESTE RECORRERA CADA VALOR DIVIDIDO DEL ARRAY 
-                 * Y LO GUARDARA EN FILEOPERACIONES 
+                 * DESPUES EN EL SP ESTE RECORRERA CADA VALOR DIVIDIDO DEL ARRAY
+                 * Y LO GUARDARA EN FILEOPERACIONES
                  */
                 $.ajax({
                     url: '/Operaciones/RegistrarOC',  // Ruta del controlador y acción
                     type: 'POST',
                     data: {
                         nuevoFileID: nuevoFileID,
-                        idOcList: jsonString
+                        idOcList: jsonString,
+                        formDatoImp: jsonStringDatoImp
                     },
                     success: function (response) {
                         console.log("response: ", response);
@@ -455,19 +515,12 @@
 
 
 
-                
+
             }
         });
 
 
-    });
-
-   
-
-    
-
-
-</script>
+    });</script>
 
 
 

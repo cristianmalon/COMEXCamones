@@ -1,5 +1,9 @@
-﻿@model CAMTEX.Entidades.OrdenesCompra
+﻿@model List<CAMTEX.Entidades.OrdenesCompra>
+@{ // Extraer los valores de MaeCCod en un array dentro de la vista
+    var maeCCodArray = Model.Select(o => o.MaeCCod).ToList();
+    var maeCCodJson = Newtonsoft.Json.JsonConvert.SerializeObject(maeCCodArray); // Convertir a JSON
 
+}
 <div id="frmRegistrar_@ViewBag.Id">
     <div class="form-horizontal">
         <div class="row">
@@ -11,36 +15,41 @@
                             <span class="input-group-btn">
                                 <label>O/C:</label>
                                 <input class="form-control input-sm text-box single-line" disabled="disabled"
-                                       id="txtNumeroOrden_@ViewBag.Id" value="@Model.NumeroOrden">
+                                       id="txtNumeroOrden_@ViewBag.Id" value="@Model[0].NumeroOrden">
                             </span>
+                        </div>
+                        <div class="col-md-3" style="display:none">
+                            <input type="text" id="txtOI_@ViewBag.Id" class="form-control"
+                                   value="@Model[0].id" readonly>
                         </div>
                         <div class="col-md-3">
                             <label>Prov:</label>
                             <input type="text" id="txtProveedor_@ViewBag.Id" class="form-control"
-                                   value="@Model.PrvDDes" readonly>
+                                   value="@Model[0].PrvDDes" readonly>
                         </div>
                     </div>
                     <div class="form-group form-inline">
                         <div class="col-md-3">
                             <label for="txtTipo">Tipo:</label>
                             <input type="text" id="txtTipo_@ViewBag.Id" class="form-control"
-                                  value="@Model.TarDNem" readonly>
+                                   value="@Model[0].TarDNem" readonly>
                         </div>
                         <div class="col-md-3">
                             <label for="txtCond">Condición:</label>
                             <input type="text" id="txtCond_@ViewBag.Id" class="form-control"
-                                   value="@Model.CNPDDes" readonly>
+                                   value="@Model[0].CNPDDes" readonly>
                         </div>
                         <div class="col-md-3">
                             <label for="txtFecha">Fecha:</label>
                             <input type="text" id="txtFecha_@ViewBag.Id" class="form-control"
-                                   value="@(Model.FechaCreacion?.ToString("yyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"))" readonly>
-                        </div> 
+                                   value="@(Model[0].FechaCreacion?.ToString("yyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"))" readonly>
+                        </div>
                         <div class="col-md-3">
                             <label for="txtMoneda">Moneda:</label>
                             <input type="text" id="txtMoneda_@ViewBag.Id" class="form-control"
-                                   value="@Model.OrcDMon" readonly>
+                                   value="@Model[0].OrcDMon" readonly>
                         </div>
+                       
                     </div>
                     <div id="popupContainer"></div>
                     <hr style="border-top: 2px solid #33333347;" />
@@ -89,78 +98,78 @@
             <div class="form-group row">
                 <div class="col-md-3">
                     <label>Nro Operación</label>
-                    <input type="text" id="txtNOp_@ViewBag.Id" class="form-control" readonly>
+                    <input type="text" id="txtNOp_@ViewBag.Id" class="form-control" >
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-md-4">
                     <label>DUA</label>
-                    <input type="text" id="txtDUA_@ViewBag.Id" class="form-control" readonly>
+                    <input type="text" id="txtDUA_@ViewBag.Id" class="form-control" >
                 </div>
                 <div class="col-md-4">
                     <label>B/L AWB</label>
-                    <input type="text" id="txtBL_@ViewBag.Id" class="form-control" readonly>
+                    <input type="text" id="txtBL_@ViewBag.Id" class="form-control" >
                 </div>
                 <div class="col-md-4">
                     <label>Depósito</label>
-                    <input type="text" id="txtDeposito_@ViewBag.Id" class="form-control" readonly>
+                    <input type="text" id="txtDeposito_@ViewBag.Id" class="form-control" >
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-md-4">
                     <label>Garantía</label>
-                    <input type="text" id="txtGarantia_@ViewBag.Id" class="form-control" readonly>
+                    <input type="text" id="txtGarantia_@ViewBag.Id" class="form-control" >
                 </div>
                 <div class="col-md-4">
                     <label>Nro Factura</label>
-                    <input type="text" id="txtFactura_@ViewBag.Id" class="form-control" readonly>
+                    <input type="text" id="txtFactura_@ViewBag.Id" class="form-control" >
                 </div>
                 <div class="col-md-4">
                     <label>Fecha Factura</label>
-                    <input type="text" id="txtFechaFactura_@ViewBag.Id" class="form-control" readonly>
+                    <input type="date" id="txtFechaFactura_@ViewBag.Id" class="form-control" >
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-md-4">
                     <label>Fecha Ingreso</label>
-                    <input type="text" id="txtFechaIngreso_@ViewBag.Id" class="form-control" readonly>
+                    <input type="date" id="txtFechaIngreso_@ViewBag.Id" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")">
                 </div>
                 <div class="col-md-4">
                     <label>Situación</label>
-                    <input type="text" id="txtSituacion_@ViewBag.Id" class="form-control" readonly>
+                    <input type="text" id="txtSituacion_@ViewBag.Id" class="form-control" >
                 </div>
                 <div class="col-md-4">
                     <label>Línea Naviera</label>
-                    <input type="text" id="txtLineaNaviera_@ViewBag.Id" class="form-control" readonly>
+                    <input type="text" id="txtLineaNaviera_@ViewBag.Id" class="form-control" >
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-md-4">
                     <label>Fecha Logística</label>
-                    <input type="text" id="txtFechaLogistica_@ViewBag.Id" class="form-control" readonly>
+                    <input type="date" id="txtFechaLogistica_@ViewBag.Id" class="form-control" >
                 </div>
                 <div class="col-md-4">
                     <label>Fecha Embarque</label>
-                    <input type="text" id="txtFechaEmbarque_@ViewBag.Id" class="form-control" readonly>
+                    <input type="date" id="txtFechaEmbarque_@ViewBag.Id" class="form-control" >
                 </div>
                 <div class="col-md-4">
                     <label>Fecha Depósito</label>
-                    <input type="text" id="txtFechaDeposito_@ViewBag.Id" class="form-control" readonly>
+                    <input type="date" id="txtFechaDeposito_@ViewBag.Id" class="form-control" >
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-md-4">
                     <label>Incoterm</label>
-                    <input type="text" id="txtIncoterm_@ViewBag.Id" class="form-control" readonly>
+                    <input type="text" id="txtIncoterm_@ViewBag.Id" class="form-control" >
                 </div>
                 <div class="col-md-4">
                     <label>Vía</label>
-                    <input type="text" id="txtVia_@ViewBag.Id" class="form-control" readonly>
+                    <input type="text" id="txtVia_@ViewBag.Id" class="form-control" >
                 </div>
             </div>
 
@@ -197,6 +206,13 @@
 
     var idOrdenCompra = null;
     console.log("id: ", id);
+    var lista = @Html.Raw(maeCCodJson); // Convertir JSON en objeto JavaScript
+    console.log("lista", lista);
+    console.log("FileIDv", $("#FileIDv").val());
+    var filecreado = $("#FileIDv").val();
+    // Convertir el array a una cadena separada por comas para enviarlo en la URL
+    var maeCCodString = lista.join(',');
+
     // Crear todos los dxDataGrid en sus respectivos contenedores
     $("#gridContainerP_" + id).dxDataGrid({
         dataSource: new DevExpress.data.ArrayStore({
@@ -205,7 +221,7 @@
         }),
         onInitialized(e) {
             let grid = e.component;
-            sendRequest(`/Operaciones/ListarProductos?OcId=${@Model.id}`).then(data => {
+                sendRequest(`/Operaciones/ListarProductos?OcId=@Model[0].id&maeCCodList=${maeCCodString}`).then(data => {
                 grid.option("dataSource", new DevExpress.data.ArrayStore({
                     key: 'Codigo',
                     data: data
@@ -225,17 +241,59 @@
         selection: {
             mode: "single" // Permite seleccionar una fila
         },
+        editing: {
+            //refreshMode: 'reshape',
+            //mode: "cell", // Permite edición en celda
+            //allowUpdating: true // Permite la edición de celdas
+        },
         columns: [
-            { dataField: 'Codigo', caption: 'Codigo', alignment: 'left' },
+            { dataField: 'Codigo', caption: 'Codigo', alignment: 'left', allowEditing: false },
 
-            { dataField: 'OrcCItem', caption: 'OrcCItem', alignment: 'left' },
-            { dataField: 'OrdenID', caption: 'OrdenID', alignment: 'left' },
-            { dataField: 'OrccnSap', caption: 'OrccnSap', alignment: 'left' },
+            { dataField: 'OrcCItem', caption: 'OrcCItem', alignment: 'left', allowEditing: false  },
+            { dataField: 'OrdenID', caption: 'OrdenID', alignment: 'left', allowEditing: false  },
+            { dataField: 'OrccnSap', caption: 'OrccnSap', alignment: 'left', allowEditing: false },
 
-            { dataField: 'Descripcion', caption: 'Descripcion', alignment: 'left' },
-            { dataField: 'PU', caption: 'P.U.', alignment: 'left' },
-            { dataField: 'Qty', caption: 'Qty.', alignment: 'left' },
-            { dataField: 'Valor', caption: 'Valor', alignment: 'right' },
+            { dataField: 'Descripcion', caption: 'Descripcion', alignment: 'left', allowEditing: false },
+            { dataField: 'Moneda', caption: 'Moneda', alignment: 'right', allowEditing: false },
+            {
+                dataField: 'PU', caption: 'P.U.', alignment: 'left', allowEditing: false,
+                calculateCellValue(rowData) {
+                    return rowData.PU ? rowData.PU.toFixed(2) : "0.00"; // Formatea a 2 decimales
+                }
+            },
+            {
+                dataField: 'Qty', caption: 'Qty.', alignment: 'left', allowEditing: false,
+
+                setCellValue(newData, value) {
+                    newData.Qty = Math.round(value); // Asegura que siempre sea entero
+                },
+                /*cellTemplate(container, options) {
+                    $("<div>")
+                        .text(options.value)
+                        .css({
+                            "background-color": "#ffffcc", // Color amarillo claro
+                            "color": "#000", // Texto negro para contraste
+                            "padding": "5px",
+                            "border-radius": "5px"
+                        })
+                        .appendTo(container);
+                },
+                editorOptions: {
+                    min: 0, // Evita valores negativos
+                    showSpinButtons: true // Muestra botones para incrementar/decrementar
+                },
+                validationRules: [
+                    { type: "required", message: "El valor no puede estar vacío." },
+                    { type: "numeric", message: "Solo se permiten números." },
+                    { type: "range", min: 0, message: "Debe ser 0 o mayor." }
+                ]*/
+            },
+            {
+                dataField: 'Valor', caption: 'Valor', alignment: 'right', allowEditing: false,
+                calculateCellValue(rowData) {
+                    return rowData.Valor ? rowData.Valor.toFixed(2) : "0.00"; // Formatea a 2 decimales
+                }
+            }
         ],
         summary: {
             totalItems: [
@@ -247,6 +305,15 @@
                     alignment: "right"
                 }
             ]
+        },
+        onRowUpdated(e) {
+            let rowData = e.data; // Obtiene los datos de la fila editada
+            if (rowData.Qty !== undefined && rowData.PU !== undefined) {
+                rowData.Valor = rowData.PU * rowData.Qty; // Calcula el nuevo Valor
+                let grid = e.component;
+                grid.getDataSource().store().update(rowData.Codigo, rowData); // Actualiza el store
+                grid.refresh(); // Refresca el grid para mostrar el cambio
+            }
         },
         toolbar: {
             items: [
@@ -268,14 +335,25 @@
                                     store.remove(selectedRow[0]);
                                     grid.refresh();
                                 } else {
-                                    DevExpress.ui.dialog.alert("Debe haber al menos una fila en la orden de compra.", "Aviso");
+                                    DevExpress.ui.dialog.alert("Debe haber al menos un producto en la orden de compra.", "Aviso");
                                 }
                             } else {
                                 DevExpress.ui.dialog.alert("Por favor, selecciona una orden.", "Aviso");
                             }
                         }
                     }
-                }
+                },
+                /*{
+                    location: "after",
+                    widget: "dxButton",
+                    options: {
+                        text: "Guardar cambios",
+                        icon: "save",
+                        onClick() {
+                            DevExpress.ui.dialog.alert("Valor Cambiado.", "Guardar cambios");
+                        }
+                    }
+                }*/
             ]
         },
         export: {
@@ -293,17 +371,121 @@
     });
 
 
-
     $("#gridContainerL_" + id).dxDataGrid({
-        dataSource: [], // Data real
-        columns: ["Lote", "Cantidad", "Fecha"],
-        showBorders: true
+        dataSource: new DevExpress.data.ArrayStore({
+            key: 'Codigo',
+            data: [] // Se cargará después con `load`
+        }),
+        onInitialized(e) {
+            let grid = e.component;
+            sendRequest(`/Operaciones/ListarLotes?OcId=@Model[0].id&file=${filecreado}`).then(data => {
+                grid.option("dataSource", new DevExpress.data.ArrayStore({
+                    key: 'Codigo',
+                    data: data
+                }));
+            });
+        },
+        allowExpandAll: true,
+        expandAll: true,
+        keyExpr: 'Codigo',
+        allowSorting: false,
+        allowFiltering: true,
+        allowColumnResizing: true,
+        height: 300,
+        selection: {
+            mode: "single"
+        },
+        editing: {
+            mode: 'row',
+            allowUpdating: true,
+            allowAdding: true,
+            allowDeleting: true,
+            selectTextOnEditStart: true,
+            startEditAction: 'click',
+        },
+        columns: [
+            { dataField: 'Codigo', caption: 'Codigo', alignment: 'left', allowEditing: false },
+            { dataField: 'NroLotes', caption: 'NroLotes', alignment: 'left', allowEditing: true },
+            { dataField: 'Evaluacion', caption: 'Evaluacion', alignment: 'left', allowEditing: true },
+            { dataField: 'Estado', caption: 'Estado', alignment: 'left', allowEditing: true },
+            { dataField: 'Resultado', caption: 'Resultado', alignment: 'left', allowEditing: true },
+            { dataField: 'Deposito', caption: 'Deposito', alignment: 'right', allowEditing: true },
+            { dataField: 'Destino', caption: 'Destino', alignment: 'left', allowEditing: true },
+        ],
+        toolbar: {
+            items: [
+                /*{
+                    location: "before",
+                    widget: "dxButton",
+                    options: {
+                        text: "Eliminar fila seleccionada",
+                        icon: "trash",
+                        onClick() {
+                            let grid = $("#gridContainerL_" + id).dxDataGrid("instance");
+                            let selectedRow = grid.getSelectedRowKeys();
+                            let dataSource = grid.getDataSource();
+                            let dataArray = dataSource.items();
+
+                            if (selectedRow.length > 0) {
+                                if (dataArray.length > 1) {
+                                    let store = dataSource.store();
+                                    store.remove(selectedRow[0]);
+                                    grid.refresh();
+                                } else {
+                                    DevExpress.ui.dialog.alert("Debe haber al menos un producto en la orden de compra.", "Aviso");
+                                }
+                            } else {
+                                DevExpress.ui.dialog.alert("Por favor, selecciona una orden.", "Aviso");
+                            }
+                        }
+                    }
+                },*/
+                {
+                    location: "after",
+                    widget: "dxButton",
+                    options: {
+                        text: "Agregar fila",
+                        icon: "add",
+                        onClick() {
+                            let grid = $("#gridContainerL_" + id).dxDataGrid("instance");
+                            let dataSource = grid.getDataSource();
+                            let store = dataSource.store();
+
+                            let nuevaFila = {
+                                Codigo: "", // Genera un código único si es necesario
+                                NroLotes: "",
+                                Evaluacion: "",
+                                Estado: "",
+                                Resultado: "",
+                                Deposito: "",
+                                Destino: ""
+                            };
+
+                            store.insert(nuevaFila).done(() => {
+                                grid.refresh();
+                            });
+                        }
+                    }
+                }
+            ]
+        },
+        hoverStateEnabled: false,
+        filterRow: { visible: true },
+        showColumnLines: true,
+        showRowLines: true,
+        rowAlternationEnabled: true,
+        showBorders: true,
+        paging: {
+            pageSize: 10,
+        }
     });
+
 
     $("#gridContainerC_" + id).dxDataGrid({
         dataSource: [], // Data real
         columns: ["Contenedor", "Tamaño", "Ubicación"],
         showBorders: true
+
     });
 
     $("#gridContainerO_" + id).dxDataGrid({
