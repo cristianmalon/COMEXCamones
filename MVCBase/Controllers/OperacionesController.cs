@@ -64,7 +64,12 @@ namespace MVCBase.Controllers
             return PartialView("_BuscarF", FacturaData);
         }
 
-
+        [AllowAnonymous]
+        public ActionResult VRIE(string id)
+        {
+            ViewBag.Id = id;
+            return PartialView("_BuscarIE");
+        }
 
         [AllowAnonymous]
         public ActionResult BuscarOcGrid()
@@ -448,7 +453,25 @@ namespace MVCBase.Controllers
 
 
 
+        [HttpGet]
+        [AllowAnonymous]
+        public JsonResult ListarIE()
+        {
+            ////datos.entidad.IdSede = VariablesWeb.Usuario.IdSede;
+            var lista = new InstruccionEmbarqueAplicacion(new InstruccionEmbarqueRepositorio()).ListarInstruccionEmbarque();
+            //return Json(new { data = lista.response });
+            var rpta = Json(new
+            {
+                //data = lista.response
+                result = !lista.error,
+                IsError = lista.error,
+                Datos = JsonConvert.SerializeObject(lista.response),
+                msg = lista.mensaje
+            }, JsonRequestBehavior.AllowGet);
+            rpta.MaxJsonLength = int.MaxValue;
 
+            return rpta;
+        }
 
 
 

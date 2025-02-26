@@ -1,0 +1,115 @@
+﻿<div id="frmBF">
+    <div class="form-horizontal">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <div id="gridIE"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+
+    $(() => {
+        const DxSource = new DevExpress.data.CustomStore({
+            load() {
+                return sendRequest(`/Operaciones/ListarIE`);
+            },
+        });
+
+        //se cambio IdMaquina por CodigoFibra del value de update y remove y el keyExpr
+        const dataGrid2 =
+            $('#gridIE').dxDataGrid({
+                dataSource: DxSource,
+                keyExpr: 'RowNumber',
+                columnAutoWidth: true,
+                onRowInserted(e) {
+                    e.component.navigateToRow(e.key);
+                },
+                columns: [
+                    {
+                        dataField: "IE_Anio",
+                        caption: 'IE Año',
+
+                    },
+                    {
+                        dataField: "IE_Nro",
+                        caption: 'IE Nro',
+
+                    },
+                    {
+                        dataField: "Control_Comex",
+                        caption: 'Control Comex',
+
+                    },
+                    {
+                        dataField: "Cliente",
+                        caption: 'Cliente',
+
+                    },
+                    {
+                        dataField: "CantPrendas",
+                        caption: 'Cant. Prendas',
+
+                    },
+
+                ],
+
+
+
+
+
+
+                export: {
+                    enabled: true,
+
+                },
+                onExporting(e) {
+                    const workbook = new ExcelJS.Workbook();
+                    const worksheet = workbook.addWorksheet('data');
+
+                    DevExpress.excelExporter.exportDataGrid({
+                        component: e.component,
+                        worksheet,
+                        autoFilterEnabled: true,
+                    }).then(() => {
+                        workbook.xlsx.writeBuffer().then((buffer) => {
+                            saveAs(new Blob([buffer], { type: 'application/octet-stream' }), 'data.xlsx');
+                        });
+                    });
+                    e.cancel = true;
+                },
+                hoverStateEnabled: true,
+                filterRow: { visible: true },
+                showColumnLines: true,
+                showRowLines: true,
+                rowAlternationEnabled: true,
+                showBorders: true,
+                selection: {
+                    mode: 'single',
+                },
+                paging: {
+                    pageSize: 10,  // Set the number of rows per page as per your requirement
+                },
+            }).dxDataGrid('instance');
+
+
+
+    })
+
+
+</script>
+
+<style>
+
+    #gridBOC .dx-toolbar {
+        background-color: #002762;
+        padding: 10px 10px 5px 0px;
+    }
+</style>
