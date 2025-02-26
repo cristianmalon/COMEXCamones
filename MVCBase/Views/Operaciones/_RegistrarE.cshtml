@@ -191,37 +191,38 @@
 
 
         var popup = $('#popupContainer').dxPopup({
-            title: 'Buscar Factura',
+            title: 'Buscar Instrucción de embarque',
             width: 1100,
             height: 700,
             contentTemplate: function (contentElement) {
                 $.ajax({
-                    url: '/Operaciones/BuscarF',
+                    url: '/Operaciones/VRIE',
                     method: 'GET',
                     success: function (result) {
                         contentElement.append(result);
                         contentElement.append('<div class="dx-popup-bottom-buttons">' +
                             '<div id="btnAdd"></div>' +
-                            '<div id="btnClose"></div>' +
                             '</div>');
 
                         $('#btnAdd').dxButton({
                             text: 'Seleccionar',
                             onClick: function () {
-                                var grid = $("#gridBF").dxDataGrid("instance");
+                                var grid = $("#gridIE").dxDataGrid("instance");
                                 var selectedRow = grid.getSelectedRowsData()[0];
                                 if (!selectedRow) {
-                                    alert("Por favor, selecciona una Factura.");
+                                    alert("Por favor, selecciona una instruccion de embarque.");
                                     return;
                                 }
+                                debugger;
+                                //var numeroOrden = selectedRow.U_DIN_NFACT;
+                                var IE_Anio = selectedRow.IE_Anio;
+                                var IE_Nro = selectedRow.IE_Nro;
 
-                                var numeroOrden = selectedRow.U_DIN_NFACT;
-
-                                var existeOrden = facturasAbiertas.some(oc => oc.NumeroOrden === numeroOrden );
+                                var existeOrden = facturasAbiertas.some(oc => oc.IE_Anio === IE_Anio && oc.IE_Nro === IE_Nro);
                                 console.log("facturasAbiertas:", facturasAbiertas);
-                                console.log("numeroOrden:", numeroOrden);
+                                //console.log("numeroOrden:", numeroOrden);
                                 if (existeOrden) {
-                                    DevExpress.ui.dialog.alert("Esta Factura ya está abierta.", "Aviso");
+                                    DevExpress.ui.dialog.alert("Esta Instruccion de embarque ya esta seleccionada.", "Aviso");
                                     return;
                                 }
                                 var tabPanelItems = tabPanel.option('dataSource');
@@ -229,28 +230,19 @@
                                 var uniqueId = `tab_${Date.now()}`;
                                 var newTab = {
                                     id: uniqueId,
-                                    title: numeroOrden,
+                                    title: IE_Anio + '-' + IE_Nro,
                                     data: selectedRow // Pasamos todo el objeto seleccionado
                                 };
                                 tabPanelItems.push(newTab);
                                 tabPanel.option('dataSource', tabPanelItems);
                                 tabPanel.option('selectedIndex', tabPanelItems.length - 1);
-
-
                                 // Agregar al array de órdenes abiertas para evitar duplicados
-                                facturasAbiertas.push({ NumeroOrden: numeroOrden});
-
-
+                                facturasAbiertas.push({ IE_Anio: IE_Anio, IE_Nro: IE_Nro });
                                 popup.hide();
+
                             }
                         });
 
-                        $('#btnClose').dxButton({
-                            text: 'Cerrar',
-                            onClick: function () {
-                                popup.hide();
-                            }
-                        });
                     },
                     error: function (error) {
                         console.error('Error al cargar la vista parcial', error);
@@ -262,10 +254,9 @@
             }
         }).dxPopup('instance');
 
-
         $('#addButton').dxButton({
             icon: 'add',
-            text: 'Agregar Factura',
+            text: 'Agregar Instrucción de Embarque',
             type: 'default',
             disabled: true,
             onClick: function () {

@@ -52,6 +52,7 @@
     <Compile Include="Base\IGeneralRepositorio.cs" />
     <Compile Include="Despacho_OS\CDSD01Repositorio.cs" />
     <Compile Include="Despacho_OS\HojaRutaControlRepositorio.cs" />
+    <Compile Include="InstruccionEmbarqueRepositorio.cs" />
     <Compile Include="Principales\AgenteCargaRepositorio.cs" />
     <Compile Include="Principales\AlmacenRepositorio.cs" />
     <Compile Include="Principales\ArticuloRepositorio.cs" />

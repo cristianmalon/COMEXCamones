@@ -52,6 +52,7 @@
     <Compile Include="Principales\FacturasAplicacion.cs" />
     <Compile Include="Principales\FilesAplicacion.cs" />
     <Compile Include="Principales\IncotermAplicacion.cs" />
+    <Compile Include="Principales\InstruccionEmbarqueAplicacion.cs" />
     <Compile Include="Principales\LotesAplicacion.cs" />
     <Compile Include="Principales\OperacionesAplicacion.cs" />
     <Compile Include="Principales\OrdenesCompraAplicacion.cs" />
