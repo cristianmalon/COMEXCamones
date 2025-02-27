@@ -431,6 +431,58 @@
                 jsonString = JSON.stringify(result);
                 console.log("jsonString: ",jsonString);
 
+                //FIN GRID PRODUCTO
+
+
+                //INICIO GRID LOTES
+
+                let allGridRowsL = idtabAbiertas.map(id => {
+                    let grid = $("#gridContainerL_" + id).dxDataGrid("instance");
+                    console.log("grid.getDataSource().items():", grid.getDataSource().items());
+                    return {
+                        id: id,
+                        rows: grid ? grid.getDataSource().items() : []
+                    };
+                });
+                console.log("allGridRowsL antes:", allGridRowsL);
+
+
+                let jsonStringL;
+
+
+                // Filtrar solo los valores deseados
+                let resultL = allGridRowsL.map(tab => ({
+                    id: tab.id,
+                    rows: tab.rows.map(row => ({
+                        OrdenID: row.OrdenID,
+                        Codigo: row.Codigo,
+                        NroLotes: row.NroLotes,
+                        Evaluacion: row.Evaluacion,
+                        Estado: row.Estado,
+                        Resultado: row.Resultado,
+                        Deposito: row.Deposito,
+                        Destino: row.Destino
+
+                    }))
+                }));
+
+                // Convertir a JSON String
+                jsonStringL = JSON.stringify(resultL);
+                console.log("jsonString: ", jsonStringL);
+
+
+
+
+
+                //FIN GRID LOTES
+
+
+
+
+
+
+
+
                 // Mostrar en consola todas las filas agrupadas por grid
                 console.log("NOmbre del file donde se guardarn:", nuevoFileID);
 
@@ -483,6 +535,7 @@
                     data: {
                         nuevoFileID: nuevoFileID,
                         idOcList: jsonString,
+                        cadLote: jsonStringL,
                         formDatoImp: jsonStringDatoImp
                     },
                     success: function (response) {

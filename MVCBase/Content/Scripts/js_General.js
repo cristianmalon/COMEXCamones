@@ -1194,6 +1194,7 @@ function selectGridRow(searchedId, grid, idField) {
     }
 }
 
+
 function sendRequest(url, method = 'GET', data) {
     const d = $.Deferred();
     //debugger;
@@ -1219,11 +1220,12 @@ function sendRequest(url, method = 'GET', data) {
         } else {
             return d.resolve(result)
         }
+
     }).fail((xhr) => {
         d.reject(xhr.responseJSON ? xhr.responseJSON.Message : xhr.statusText);
     });
-
     return d.promise();
+
 }
 
 function sendRequestTable(url, method = 'GET', data) {

@@ -217,7 +217,7 @@ namespace MVCBase.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public JsonResult RegistrarOC(string nuevoFileID, string idOcList , string formDatoImp)
+        public JsonResult RegistrarOC(string nuevoFileID, string idOcList, string cadLote, string formDatoImp)
         {
 
             if (ModelState.IsValid)
@@ -228,6 +228,7 @@ namespace MVCBase.Controllers
                     Operaciones entidad = new Operaciones();
                     entidad.NuevoFileID = nuevoFileID;
                     entidad.CadIdOc = idOcList;
+                    entidad.CadLote = cadLote;
                     entidad.CadformDatoI = formDatoImp;
                     //entidad.IdSede = VariablesWeb.ENUsuario.IdSede;
                     //entidad.Estacion = VariablesWeb.HostName();
@@ -389,7 +390,7 @@ namespace MVCBase.Controllers
         }
 
 
-
+        /*LOTES*/
         [HttpGet]
         [AllowAnonymous]
         public JsonResult ListarLotes(int OcId, int file)
@@ -417,6 +418,256 @@ namespace MVCBase.Controllers
 
 
 
+        [HttpPost]
+        [AllowAnonymous]
+        public JsonResult InsertarLote(Lotes entidad)
+        {
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    Response response = new Response();
+                    
+                    //entidad.IdSede = VariablesWeb.ENUsuario.IdSede;
+                    entidad.HOST_REG = VariablesWeb.HostName();
+                    entidad.USUARIO_REG = VariablesWeb.Usuario.SUsrId;
+
+
+                    var datos = new Request<Lotes>();
+                    datos.entidad = entidad;
+                    response = new LotesAplicacion(new LotesRepositorio()).Insertar(datos);
+
+                    return Json(new
+                    {
+                        rpta = response.Success,
+                        errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                        NuevoFileID = response.output,
+                        url = Url.Action("Index"),
+                        result = response.Success ? Utiles.MessageSaveSuccess() : response.mensaje,
+                        id = 0,
+                        nuevoFileID = response.Success ? Convert.ToInt32(response.output) : 0 // Nuevo campo con el ID generado
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception ex)
+                {
+                    return Json(new
+                    {
+                        rpta = false,
+                        errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                        url = Url.Action("Index"),
+                        result = Utiles.MessageServerError() + " - " + ex.Message.ToString(),
+                        //combo = 0
+                        id = 0
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    rpta = false,
+                    errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                    url = Url.Action("Index"),
+                    result = Utiles.MessageModelStateInvalid()
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+        }
+
+
+        [HttpDelete]
+        [AllowAnonymous]
+        public JsonResult EliminarLote(Lotes entidad)
+        {
+           
+            if (ModelState.IsValid)
+            {
+                try
+                {
+
+                    Response response = new Response();
+                    var datos = new Request<Lotes>();
+                    datos.entidad = entidad;
+                    response = new LotesAplicacion(new LotesRepositorio()).Eliminar(datos);
+
+                    return Json(new
+                    {
+                        rpta = response.Success,
+                        errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                        url = Url.Action("Index"),
+                        result = response.Success ? Utiles.MessageSaveSuccess() : response.mensaje,
+                        id = 0
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception ex)
+                {
+                    return Json(new
+                    {
+                        rpta = false,
+                        errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                        url = Url.Action("Index"),
+                        result = Utiles.MessageServerError() + " - " + ex.Message.ToString(),
+                        //combo = 0
+                        id = 0
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    rpta = false,
+                    errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                    url = Url.Action("Index"),
+                    result = Utiles.MessageModelStateInvalid()
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+        }
+
+        /*FIN LOTES*/
+
+        /*CONTENEDOR*/
+
+        [HttpGet]
+        [AllowAnonymous]
+        public JsonResult ListarContenedores(int OcId, int file)
+        {
+            var datos = new Request<Contenedores>();
+            //datos.entidad = entidad;
+            datos.entidad = new Contenedores();
+            datos.entidad.IdOPeraciones = OcId;
+            datos.entidad.IdFile = file;
+            ////datos.entidad.IdSede = VariablesWeb.Usuario.IdSede;
+            var lista = new ContenedorAplicacion(new ContenedorRepositorio()).Listar(datos);
+            //return Json(new { data = lista.response });
+            var rpta = Json(new
+            {
+                //data = lista.response
+                result = !lista.error,
+                IsError = lista.error,
+                Datos = JsonConvert.SerializeObject(lista.response),
+                msg = lista.mensaje
+            }, JsonRequestBehavior.AllowGet);
+            rpta.MaxJsonLength = int.MaxValue;
+
+            return rpta;
+        }
+
+
+
+
+        [HttpPost]
+        [AllowAnonymous]
+        public JsonResult InsertarContenedor(Contenedores entidad)
+        {
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    Response response = new Response();
+
+                    //entidad.IdSede = VariablesWeb.ENUsuario.IdSede;
+                    entidad.HOST_REG = VariablesWeb.HostName();
+                    entidad.USUARIO_REG = VariablesWeb.Usuario.SUsrId;
+
+
+                    var datos = new Request<Contenedores>();
+                    datos.entidad = entidad;
+                    response = new ContenedorAplicacion(new ContenedorRepositorio()).Insertar(datos);
+
+                    return Json(new
+                    {
+                        rpta = response.Success,
+                        errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                        NuevoFileID = response.output,
+                        url = Url.Action("Index"),
+                        result = response.Success ? Utiles.MessageSaveSuccess() : response.mensaje,
+                        id = 0,
+                        nuevoFileID = response.Success ? Convert.ToInt32(response.output) : 0 // Nuevo campo con el ID generado
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception ex)
+                {
+                    return Json(new
+                    {
+                        rpta = false,
+                        errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                        url = Url.Action("Index"),
+                        result = Utiles.MessageServerError() + " - " + ex.Message.ToString(),
+                        //combo = 0
+                        id = 0
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    rpta = false,
+                    errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                    url = Url.Action("Index"),
+                    result = Utiles.MessageModelStateInvalid()
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+        }
+
+
+
+        [HttpDelete]
+        [AllowAnonymous]
+        public JsonResult EliminarContenedor(Contenedores entidad)
+        {
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+
+                    Response response = new Response();
+                    var datos = new Request<Contenedores>();
+                    datos.entidad = entidad;
+                    response = new ContenedorAplicacion(new ContenedorRepositorio()).Eliminar(datos);
+
+                    return Json(new
+                    {
+                        rpta = response.Success,
+                        errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                        url = Url.Action("Index"),
+                        result = response.Success ? Utiles.MessageSaveSuccess() : response.mensaje,
+                        id = 0
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception ex)
+                {
+                    return Json(new
+                    {
+                        rpta = false,
+                        errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                        url = Url.Action("Index"),
+                        result = Utiles.MessageServerError() + " - " + ex.Message.ToString(),
+                        //combo = 0
+                        id = 0
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    rpta = false,
+                    errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                    url = Url.Action("Index"),
+                    result = Utiles.MessageModelStateInvalid()
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+        }
+
+        /*FIN CONTENEDOR*/
 
 
 
