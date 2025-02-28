@@ -1,7 +1,7 @@
-﻿@model List<CAMTEX.Entidades.OrdenesCompra>
+﻿@model CAMTEX.Entidades.OrdenesCompra
 @{ // Extraer los valores de MaeCCod en un array dentro de la vista
-    var maeCCodArray = Model.Select(o => o.MaeCCod).ToList();
-    var maeCCodJson = Newtonsoft.Json.JsonConvert.SerializeObject(maeCCodArray); // Convertir a JSON
+    //var maeCCodArray = Model.Select(o => o.MaeCCod).ToList();
+    var maeCCodJson = @Html.Raw(Json.Encode(Model)); //Newtonsoft.Json.JsonConvert.SerializeObject(maeCCodArray); // Convertir a JSON
 
 }
 <div id="frmRegistrar_@ViewBag.Id">
@@ -15,39 +15,39 @@
                             <span class="input-group-btn">
                                 <label>O/C:</label>
                                 <input class="form-control input-sm text-box single-line" disabled="disabled"
-                                       id="txtNumeroOrden_@ViewBag.Id" value="@Model[0].NumeroOrden">
+                                       id="txtNumeroOrden_@ViewBag.Id" value="@Model.NumeroOrden">
                             </span>
                         </div>
                         <div class="col-md-3" style="display:none">
                             <input type="text" id="txtOI_@ViewBag.Id" class="form-control"
-                                   value="@Model[0].id" readonly>
+                                   value="@Model.id" readonly>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-5">
                             <label>Prov:</label>
                             <input type="text" id="txtProveedor_@ViewBag.Id" class="form-control"
-                                   value="@Model[0].PrvDDes" readonly>
+                                   value="@Model.PrvDDes" readonly>
                         </div>
                     </div>
                     <div class="form-group form-inline">
                         <div class="col-md-3">
                             <label for="txtTipo">Tipo:</label>
                             <input type="text" id="txtTipo_@ViewBag.Id" class="form-control"
-                                   value="@Model[0].TarDNem" readonly>
+                                   value="@Model.TarDNem" readonly>
                         </div>
                         <div class="col-md-3">
                             <label for="txtCond">Condición:</label>
                             <input type="text" id="txtCond_@ViewBag.Id" class="form-control"
-                                   value="@Model[0].CNPDDes" readonly>
+                                   value="@Model.CNPDDes" readonly>
                         </div>
                         <div class="col-md-3">
                             <label for="txtFecha">Fecha:</label>
                             <input type="text" id="txtFecha_@ViewBag.Id" class="form-control"
-                                   value="@(Model[0].FechaCreacion?.ToString("yyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"))" readonly>
+                                   value="@(Model.FechaCreacion?.ToString("yyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"))" readonly>
                         </div>
                         <div class="col-md-3">
                             <label for="txtMoneda">Moneda:</label>
                             <input type="text" id="txtMoneda_@ViewBag.Id" class="form-control"
-                                   value="@Model[0].OrcDMon" readonly>
+                                   value="@Model.OrcDMon" readonly>
                         </div>
                        
                     </div>
@@ -139,7 +139,15 @@
                 </div>
                 <div class="col-md-4">
                     <label>Situación</label>
-                    <input type="text" id="txtSituacion_@ViewBag.Id" class="form-control" >
+                    <input type="text" id="txtSituacion_@ViewBag.Id" class="form-control">
+                    @Html.DropDownListFor(model => model.IdSituacion,
+                                new List<SelectListItem>
+                                {
+                                    new SelectListItem{ Text= "Pendiente por envio de Comercial", Value = "1" },
+                                                  new SelectListItem{ Text= "En PCP", Value = "2" },
+                                                  new SelectListItem{ Text= "Atendidos por PCP", Value = "4" }   ,
+                                                  new SelectListItem{ Text= "Aprobados por Comercial", Value = "5" }
+                                }, "-- Todos --", new { @class = "form-control selectpicker", style = "width: 100%;" })
                 </div>
                 <div class="col-md-4">
                     <label>Línea Naviera</label>
@@ -201,12 +209,14 @@
 
 
 <script>
-
+    var dataProducto = [];
     var id = "@ViewBag.Id"; // Obtener ID dinámico si es necesario
 
     var idOrdenCompra = null;
     console.log("id: ", id);
-    var lista = @Html.Raw(maeCCodJson); // Convertir JSON en objeto JavaScript
+    var lista = []
+    lista.push(@Html.Raw(maeCCodJson));//  @Html.Raw(maeCCodJson); // Convertir JSON en objeto JavaScript
+    dataProducto = @Html.Raw(Json.Encode(Model.ListaProducto));
     console.log("lista", lista);
     console.log("FileIDv", $("#FileIDv").val());
     var filecreado = $("#FileIDv").val();
@@ -215,22 +225,23 @@
 
     // Crear todos los dxDataGrid en sus respectivos contenedores
     $("#gridContainerP_" + id).dxDataGrid({
-        dataSource: new DevExpress.data.ArrayStore({
+        @*dataSource: new DevExpress.data.ArrayStore({
             key: 'Codigo',
             data: [] // Se cargará después con `load`
         }),
         onInitialized(e) {
             let grid = e.component;
-                sendRequest(`/Operaciones/ListarProductos?OcId=@Model[0].id&maeCCodList=${maeCCodString}`).then(data => {
+                sendRequest(`/Operaciones/ListarProductos?OcId=@Model.id&maeCCodList=${maeCCodString}`).then(data => {
                 grid.option("dataSource", new DevExpress.data.ArrayStore({
                     key: 'Codigo',
                     data: data
                 }));
             });
-        },
+        },*@
+        dataSource: dataProducto,
         allowExpandAll: true,
         expandAll: true,
-        keyExpr: 'Codigo',
+        keyExpr: 'IdFileProd',
         allowSorting: false,
         allowFiltering: true,
         allowColumnResizing: true,
@@ -247,12 +258,8 @@
             //allowUpdating: true // Permite la edición de celdas
         },
         columns: [
-            { dataField: 'Codigo', caption: 'Codigo', alignment: 'left', allowEditing: false },
-
-            { dataField: 'OrcCItem', caption: 'OrcCItem', alignment: 'left', allowEditing: false  },
-            { dataField: 'OrdenID', caption: 'OrdenID', alignment: 'left', allowEditing: false  },
-            { dataField: 'OrccnSap', caption: 'OrccnSap', alignment: 'left', allowEditing: false },
-
+            { dataField: 'OrcCItem', caption: 'Item', alignment: 'left', allowEditing: false },
+            { dataField: 'CodigoArticulo', caption: 'Codigo', alignment: 'left', allowEditing: false },
             { dataField: 'Descripcion', caption: 'Descripcion', alignment: 'left', allowEditing: false },
             { dataField: 'Moneda', caption: 'Moneda', alignment: 'right', allowEditing: false },
             {
@@ -378,7 +385,7 @@
         }),
         onInitialized(e) {
             let grid = e.component;
-            sendRequest(`/Operaciones/ListarLotes?OcId=@Model[0].id&file=${filecreado}`).then(data => {
+            sendRequest(`/Operaciones/ListarLotes?OcId=@Model.id&file=${filecreado}`).then(data => {
                 grid.option("dataSource", new DevExpress.data.ArrayStore({
                     key: 'Codigo',
                     data: data

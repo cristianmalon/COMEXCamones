@@ -85,31 +85,19 @@ namespace CAMTEX.Aplicacion
                     {
                         NombreF = Util.CapturaString(row, "NombreF"),
 
-                        FileId = Util.CapturaInt0(row, "CodFile"),
+                        FileId = Util.CapturaInt0(row, "FileId"),
+                        CodFile = Util.CapturaString(row, "CodFile"),
                         FechaOp = Util.CapturaDatetime(row, "FechaOp"),
 
                         NroOp = Util.CapturaString(row, "NroOp"),
                         Proveedor = Util.CapturaString(row, "Proveedor"),
                         OrdC = Util.CapturaString(row, "OrdC"),
 
-                        Producto = Util.CapturaString(row, "Producto"),
                         DesArt = Util.CapturaString(row, "DesArt"),
-                        Solicitado = Util.CapturaInt0(row, "Solicitado"),
-
-                        DUA = Util.CapturaString(row, "DUA"),
-                        Deposito = Util.CapturaInt0(row, "Deposito"),
                         Situacion = Util.CapturaString(row, "Situacion"),
 
-                        FechaIngreso = Util.CapturaDatetime(row, "FechaIngreso"),
-                        FechaEmbarque = Util.CapturaDatetime(row, "FechaEmbarque"),
-                        EstadoRQ = Util.CapturaString(row, "EstadoRQ"),
-
-                        EstadoCalidad = Util.CapturaString(row, "EstadoCalidad"),
-                        NumFactura = Util.CapturaInt0(row, "NumFactura"),
-                        LineaNaviera = Util.CapturaString(row, "LineaNaviera"),
-
-                        Contenedor = Util.CapturaInt0(row, "Contenedor"),
-                        AgenteAduana = Util.CapturaString(row, "AgenteAduana"),
+                        FechaEmbarque = Util.CapturaDatetime(row, "Fechaembarque"),
+                        ViaTransporte = Util.CapturaString(row, "ViaTransporte"),
 
 
                     });

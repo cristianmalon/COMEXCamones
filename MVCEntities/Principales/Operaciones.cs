@@ -10,7 +10,9 @@ namespace CAMTEX.Entidades
     [DataContract]
     public class Operaciones:EntidadBase
     {
+        [DataMember] public int FileId { get; set; }
         [DataMember] public int NroFile { get; set; }
+        [DataMember] public int OrdenID { get; set; }
         [DataMember] public string NroOperacion { get; set; }
         [DataMember] public DateTime Fecha { get; set; }
         [DataMember] public string Codigo { get; set; }
@@ -28,7 +30,7 @@ namespace CAMTEX.Entidades
 
 
 
-        
+        [DataMember] public string XML_Productos { get; set; }
 
 
     }

@@ -68,7 +68,7 @@ namespace CAMTEX.Repositorio
         public DataTable ListarI(Files entidad)
         {
             oConn.AddParameter("@opcion", 1);
-            DataTable dt = oConn.ExecuteDataTable("[DBO].[Usp_Files]");
+            DataTable dt = oConn.ExecuteDataTable("[DBO].[Usp_Files_Lista]");
             return dt;
         }
 

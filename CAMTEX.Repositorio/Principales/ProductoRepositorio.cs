@@ -39,7 +39,11 @@ namespace CAMTEX.Repositorio
 
         public DataTable ListarPaginado(Producto entidad)
         {
-            throw new NotImplementedException();
+            oConn.AddParameter("@opcion", 1);
+            oConn.AddParameter("@FileID", entidad.FileID);
+            oConn.AddParameter("@OrdenID", entidad.OrdenID);
+            DataTable dt = oConn.ExecuteDataTable("[DBO].[USP_FileOperacionesProductos_listar]");
+            return dt;
         }
     }
 }
