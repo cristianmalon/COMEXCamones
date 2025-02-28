@@ -520,7 +520,7 @@
             load() {
                 return sendRequest(`/Operaciones/ListarLotes?OcId=${IdOP}&file=${filecreado}`)
                     .then(data => {
-                        data.forEach(row => row.OrdenID = @Model[0].id); // Agregar OrdenID a cada fila
+                        data.forEach(row => row.OrdenID = @Model.id); // Agregar OrdenID a cada fila
                         return data;
                     });
             },
@@ -673,7 +673,7 @@
             load() {
                 return sendRequest(`/Operaciones/ListarContenedores?OcId=${IdOP}&file=${filecreado}`)
                     .then(data => {
-                        data.forEach(row => row.OrdenID = @Model[0].id); // Agregar OrdenID a cada fila
+                        data.forEach(row => row.OrdenID = @Model.id); // Agregar OrdenID a cada fila
                         return data;
                     });
             },
