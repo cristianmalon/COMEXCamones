@@ -8169,6 +8169,7 @@
     <Content Include="Views\Operaciones\_FGrid.cshtml" />
     <Content Include="Views\Operaciones\_BuscarF.cshtml" />
     <Content Include="Views\Operaciones\_BuscarIE.cshtml" />
+    <Content Include="Views\Operaciones\_Editar.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CAMTEX.Aplicacion.Entidades\CAMTEX.Aplicacion.Entidades.csproj">

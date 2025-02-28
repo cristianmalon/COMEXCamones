@@ -1,4 +1,4 @@
-﻿@model CAMTEX.Entidades.OrdenesCompra
+@model CAMTEX.Entidades.OrdenesCompra
 @{ // Extraer los valores de MaeCCod en un array dentro de la vista
     //var maeCCodArray = Model.Select(o => o.MaeCCod).ToList();
     var maeCCodJson = @Html.Raw(Json.Encode(Model)); //Newtonsoft.Json.JsonConvert.SerializeObject(maeCCodArray); // Convertir a JSON
@@ -211,7 +211,7 @@
 <script>
     var dataProducto = [];
     var id = "@ViewBag.Id"; // Obtener ID dinámico si es necesario
-
+    var IdOP = 0;
     var idOrdenCompra = null;
     console.log("id: ", id);
     var lista = []
@@ -377,24 +377,24 @@
         }
     });
 
-
+    @*
     $("#gridContainerL_" + id).dxDataGrid({
         dataSource: new DevExpress.data.ArrayStore({
-            key: 'Codigo',
             data: [] // Se cargará después con `load`
         }),
         onInitialized(e) {
             let grid = e.component;
+
             sendRequest(`/Operaciones/ListarLotes?OcId=@Model.id&file=${filecreado}`).then(data => {
                 grid.option("dataSource", new DevExpress.data.ArrayStore({
                     key: 'Codigo',
                     data: data
                 }));
+
             });
         },
         allowExpandAll: true,
         expandAll: true,
-        keyExpr: 'Codigo',
         allowSorting: false,
         allowFiltering: true,
         allowColumnResizing: true,
@@ -411,7 +411,28 @@
             startEditAction: 'click',
         },
         columns: [
-            { dataField: 'Codigo', caption: 'Codigo', alignment: 'left', allowEditing: false },
+            {
+                dataField: 'OrdenID',
+                caption: 'Orden ID',
+                alignment: 'left',
+                allowEditing: false, // No editable
+                dataType: 'number'
+            },
+            {
+                dataField: 'Codigo',
+                caption: 'Codigo',
+                alignment: 'left',
+                allowEditing: true, // Permitir edición
+                lookup: {
+                    dataSource: lista.map(codigo => ({ Codigo: codigo })), // Convertimos el array de strings a objetos
+                    valueExpr: 'Codigo', // Valor que se guardará en el grid
+                    displayExpr: 'Codigo' // Valor que se mostrará en el combo
+                },
+                validationRules: [
+                    { type: "required", message: "El código no puede estar vacío" }
+                ]
+
+            },
             { dataField: 'NroLotes', caption: 'NroLotes', alignment: 'left', allowEditing: true },
             { dataField: 'Evaluacion', caption: 'Evaluacion', alignment: 'left', allowEditing: true },
             { dataField: 'Estado', caption: 'Estado', alignment: 'left', allowEditing: true },
@@ -419,34 +440,26 @@
             { dataField: 'Deposito', caption: 'Deposito', alignment: 'right', allowEditing: true },
             { dataField: 'Destino', caption: 'Destino', alignment: 'left', allowEditing: true },
         ],
+        onEditorPreparing(e) {
+            if (e.dataField === "Codigo" && e.parentType === "dataRow") {
+                let grid = $("#gridContainerL_" + id).dxDataGrid("instance");
+                let existingCodigos = grid.getDataSource().items().map(row => row.Codigo);
+                let originalValue = e.row.data.Codigo; // Código original antes de editar
+
+                e.editorOptions.onValueChanged = function (args) {
+                    if (args.value !== originalValue && existingCodigos.includes(args.value)) {
+                        DevExpress.ui.dialog.alert("El código ya está seleccionado en otra fila", "Aviso");
+                        args.component.option("value", originalValue); // Revertir al valor original
+                    } else {
+                        e.setValue(args.value);
+
+                    }
+                };
+            }
+        },
+
         toolbar: {
             items: [
-                /*{
-                    location: "before",
-                    widget: "dxButton",
-                    options: {
-                        text: "Eliminar fila seleccionada",
-                        icon: "trash",
-                        onClick() {
-                            let grid = $("#gridContainerL_" + id).dxDataGrid("instance");
-                            let selectedRow = grid.getSelectedRowKeys();
-                            let dataSource = grid.getDataSource();
-                            let dataArray = dataSource.items();
-
-                            if (selectedRow.length > 0) {
-                                if (dataArray.length > 1) {
-                                    let store = dataSource.store();
-                                    store.remove(selectedRow[0]);
-                                    grid.refresh();
-                                } else {
-                                    DevExpress.ui.dialog.alert("Debe haber al menos un producto en la orden de compra.", "Aviso");
-                                }
-                            } else {
-                                DevExpress.ui.dialog.alert("Por favor, selecciona una orden.", "Aviso");
-                            }
-                        }
-                    }
-                },*/
                 {
                     location: "after",
                     widget: "dxButton",
@@ -458,20 +471,31 @@
                             let dataSource = grid.getDataSource();
                             let store = dataSource.store();
 
+                            let existingCodigos = dataSource.items().map(row => row.Codigo);
+                            let nuevoCodigo = lista.find(codigo => !existingCodigos.includes(codigo)); // Encuentra un código no usado
+
+                            if (!nuevoCodigo) {
+                                DevExpress.ui.dialog.alert("No hay códigos disponibles sin repetir", "Aviso");
+                                return; // No agrega la fila si no hay códigos únicos disponibles
+
+                            }
+
                             let nuevaFila = {
-                                Codigo: "", // Genera un código único si es necesario
-                                NroLotes: "",
-                                Evaluacion: "",
-                                Estado: "",
-                                Resultado: "",
-                                Deposito: "",
-                                Destino: ""
+                                OrdenID: @Model[0].id,
+                                Codigo: nuevoCodigo,
+                                NroLotes: "0",
+                                Evaluacion: "Pendiente",
+                                Estado: "Nuevo",
+                                Resultado: "Por evaluar",
+                                Deposito: "N/A",
+                                Destino: "Sin destino"
                             };
 
                             store.insert(nuevaFila).done(() => {
                                 grid.refresh();
                             });
                         }
+
                     }
                 }
             ]
@@ -487,11 +511,277 @@
         }
     });
 
+    *@
+
+
+    $("#gridContainerL_" + id).dxDataGrid({
+        dataSource: new DevExpress.data.CustomStore({
+            key: 'IdLote',
+            load() {
+                return sendRequest(`/Operaciones/ListarLotes?OcId=${IdOP}&file=${filecreado}`)
+                    .then(data => {
+                        data.forEach(row => row.OrdenID = @Model[0].id); // Agregar OrdenID a cada fila
+                        return data;
+                    });
+            },
+            insert(values) {
+                values.Estado = 'A';
+                console.log("values:", values);
+                console.log("JSON.stringify(values):", JSON.stringify(values));
+                return sendRequest(`/Operaciones/InsertarLote`, 'POST', JSON.stringify(values));
+            },
+            remove(key) {
+                var values = { IdLote: key }
+                return sendRequest(`/Operaciones/EliminarLote/${key}`, 'DELETE', JSON.stringify(values));
+            }
+        }),
+        allowExpandAll: true,
+        expandAll: true,
+        allowSorting: false,
+        allowFiltering: true,
+        allowColumnResizing: true,
+        height: 300,
+        selection: {
+            mode: "single"
+        },
+        editing: {
+            mode: "row", // También puedes usar 'popup' o 'batch'
+            allowAdding: true, // Permitir agregar filas nuevas
+            allowDeleting: true, // Permitir eliminar filas
+            useIcons: true // Asegura que los iconos de edición sean visibles
+        },
+        onInitNewRow: function (e) {
+            e.data.IdOPeraciones = IdOP ; // Valor predeterminado para IdFile
+            e.data.IdFile = filecreado; // Valor predeterminado para IdOPeraciones
+        },
+        columns: [
+            { dataField: 'IdFile', caption: 'IdFile', alignment: 'left', allowEditing: false },
+            { dataField: 'IdOPeraciones', caption: 'IdOPeraciones', alignment: 'left', allowEditing: false },
+            { dataField: 'IdLote', caption: 'IdLote', alignment: 'left', allowEditing: false },
+
+            {
+                dataField: 'Codigo',
+                caption: 'Codigo',
+                alignment: 'left',
+                allowEditing: true, // Permitir edición
+                validationRules: [
+                    { type: "required", message: "El código no puede estar vacío" }
+                ]
+            },
+            {
+                dataField: 'NroLotes', caption: 'NroLotes', alignment: 'left', allowEditing: true,
+                validationRules: [
+                    { type: "required", message: "El Nro Lotes no puede estar vacío" }
+                ]},
+            {
+                dataField: 'Evaluacion', caption: 'Evaluacion', alignment: 'left', allowEditing: true,
+                dataType: 'date', // Indica que el campo es de tipo fecha
+                format: 'dd/MM/yyyy', // Opcional: Especifica el formato de fecha
+                editorOptions: { // Opcional: Configura el editor de fecha
+                    displayFormat: 'dd/MM/yyyy',
+                    dateSerializationFormat: 'yyyy-MM-dd' // Formato para el servidor
+                },
+                validationRules: [
+                    { type: "required", message: "La Evaluacion no puede estar vacío" }
+                ]
+            },
+            {
+                dataField: 'EstadoLote', caption: 'EstadoLote', alignment: 'left', allowEditing: true,
+                validationRules: [
+                    { type: "required", message: "El Estado Lote no puede estar vacío" }
+                ]},
+            {
+                dataField: 'Resultado', caption: 'Resultado', alignment: 'left', allowEditing: true,
+                validationRules: [
+                    { type: "required", message: "El Resultado no puede estar vacío" }
+                ]},
+            {
+                dataField: 'Destino', caption: 'Destino', alignment: 'left', allowEditing: true,
+                validationRules: [
+                    { type: "required", message: "El Destino no puede estar vacío" }
+                ]},
+            {dataField: 'Estado', caption: 'Estado', alignment: 'left', allowEditing: false}
+
+        ],
+        toolbar: {
+            items: [
+                {
+                    widget: "dxButton",
+                    options: {
+                        icon: "add",
+                        text: "Agregar Lote",
+                        onClick() {
+                            $("#gridContainerL_" + id).dxDataGrid("instance").addRow();
+                        }
+                    },
+                    location: "before"
+                },
+                {
+                    widget: "dxButton",
+                    options: {
+                        icon: "trash",
+                        text: "Eliminar Lote",
+                        onClick() {
+                            const grid = $("#gridContainerL_" + id).dxDataGrid("instance");
+                            const selectedRow = grid.getSelectedRowsData();
+
+                            if (selectedRow.length === 0) {
+                                DevExpress.ui.dialog.alert("Debe seleccionar un lote para eliminar.", "Aviso");
+                                return;
+                            }
+
+                            const selectedIdLote = selectedRow[0].IdLote;
+
+                            DevExpress.ui.dialog.confirm("¿Está seguro de eliminar este lote?", "Confirmar eliminación").done(function (result) {
+                                if (result) {
+                                    grid.getDataSource().store().remove(selectedIdLote)
+                                        .then(() => {
+                                            grid.refresh();
+                                            DevExpress.ui.notify("Lote eliminado correctamente.", "success", 2000);
+                                        })
+                                        .catch(() => {
+                                            DevExpress.ui.notify("Error al eliminar el lote.", "error", 2000);
+                                        });
+                                }
+                            });
+                        }
+                    },
+                    location: "before"
+                }
+            ]
+        },
+        hoverStateEnabled: false,
+        filterRow: { visible: true },
+        showColumnLines: true,
+        showRowLines: true,
+        rowAlternationEnabled: true,
+        showBorders: true,
+        paging: {
+            pageSize: 10,
+        }
+    });
+
+
+
+
+
+
 
     $("#gridContainerC_" + id).dxDataGrid({
-        dataSource: [], // Data real
-        columns: ["Contenedor", "Tamaño", "Ubicación"],
-        showBorders: true
+        dataSource: new DevExpress.data.CustomStore({
+            key: 'IdContenedor',
+            load() {
+                return sendRequest(`/Operaciones/ListarContenedores?OcId=${IdOP}&file=${filecreado}`)
+                    .then(data => {
+                        data.forEach(row => row.OrdenID = @Model[0].id); // Agregar OrdenID a cada fila
+                        return data;
+                    });
+            },
+            insert(values) {
+                values.Estado = 'A';
+                console.log("values:", values);
+                console.log("JSON.stringify(values):", JSON.stringify(values));
+                return sendRequest(`/Operaciones/InsertarContenedor`, 'POST', JSON.stringify(values));
+            },
+            remove(key) {
+                var values = { IdContenedor: key }
+                return sendRequest(`/Operaciones/EliminarContenedor/${key}`, 'DELETE', JSON.stringify(values));
+            }
+        }),
+        allowExpandAll: true,
+        expandAll: true,
+        allowSorting: false,
+        allowFiltering: true,
+        allowColumnResizing: true,
+        height: 300,
+        selection: {
+            mode: "single"
+        },
+        editing: {
+            mode: "row", // También puedes usar 'popup' o 'batch'
+            allowAdding: true, // Permitir agregar filas nuevas
+            allowDeleting: true, // Permitir eliminar filas
+            useIcons: true // Asegura que los iconos de edición sean visibles
+        },
+        onInitNewRow: function (e) {
+            e.data.IdOPeraciones = IdOP ; // Valor predeterminado para IdFile
+            e.data.IdFile = filecreado; // Valor predeterminado para IdOPeraciones
+            e.data.Estado = 'A'; // Valor predeterminado para IdOPeraciones
+        },
+        columns: [
+            { dataField: 'IdFile', caption: 'IdFile', alignment: 'left', allowEditing: false },
+            { dataField: 'IdOPeraciones', caption: 'IdOPeraciones', alignment: 'left', allowEditing: false },
+            { dataField: 'IdContenedor', caption: 'IdLote', alignment: 'left', allowEditing: false },
+
+            {
+                dataField: 'Contenedor',
+                caption: 'Contenedor',
+                alignment: 'left',
+                allowEditing: true, // Permitir edición
+                validationRules: [
+                    { type: "required", message: "El Contenedor no puede estar vacío" }
+                ]
+            },          
+            
+            {dataField: 'Estado', caption: 'Estado', alignment: 'left', allowEditing: false}
+
+        ],
+        toolbar: {
+            items: [
+                {
+                    widget: "dxButton",
+                    options: {
+                        icon: "add",
+                        text: "Agregar Contenedor",
+                        onClick() {
+                            $("#gridContainerC_" + id).dxDataGrid("instance").addRow();
+                        }
+                    },
+                    location: "before"
+                },
+                {
+                    widget: "dxButton",
+                    options: {
+                        icon: "trash",
+                        text: "Eliminar Contenedor",
+                        onClick() {
+                            const grid = $("#gridContainerC_" + id).dxDataGrid("instance");
+                            const selectedRow = grid.getSelectedRowsData();
+
+                            if (selectedRow.length === 0) {
+                                DevExpress.ui.dialog.alert("Debe seleccionar un Contenedor para eliminar.", "Aviso");
+                                return;
+                            }
+
+                            const selectedIdLote = selectedRow[0].IdLote;
+
+                            DevExpress.ui.dialog.confirm("¿Está seguro de eliminar este Contenedor?", "Confirmar eliminación").done(function (result) {
+                                if (result) {
+                                    grid.getDataSource().store().remove(selectedIdLote)
+                                        .then(() => {
+                                            grid.refresh();
+                                            DevExpress.ui.notify("Contenedor eliminado correctamente.", "success", 2000);
+                                        })
+                                        .catch(() => {
+                                            DevExpress.ui.notify("Error al eliminar el Contenedor.", "error", 2000);
+                                        });
+                                }
+                            });
+                        }
+                    },
+                    location: "before"
+                }
+            ]
+        },
+        hoverStateEnabled: false,
+        filterRow: { visible: true },
+        showColumnLines: true,
+        showRowLines: true,
+        rowAlternationEnabled: true,
+        showBorders: true,
+        paging: {
+            pageSize: 10,
+        }
 
     });
 

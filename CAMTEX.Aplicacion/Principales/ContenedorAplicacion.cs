@@ -12,26 +12,26 @@ using System.Threading.Tasks;
 
 namespace CAMTEX.Aplicacion
 {
-    public class LotesAplicacion: IGeneralAplicacion<Lotes>
+    public class ContenedorAplicacion: IGeneralAplicacion<Contenedores>
     {
-        private LotesRepositorio LotesRepositorio;
+        private ContenedorRepositorio ContenedorRepositorio;
 
-        public LotesAplicacion (LotesRepositorio lotesRepositorio)
+        public ContenedorAplicacion (ContenedorRepositorio contenedorRepositorio)
         {
-            LotesRepositorio = lotesRepositorio;
+            ContenedorRepositorio = contenedorRepositorio;
         }
 
-        public Response Actualizar(Request<Lotes> entidad)
+        public Response Actualizar(Request<Contenedores> entidad)
         {
             throw new NotImplementedException();
         }
 
-        public Response Eliminar(Request<Lotes> entidad)
+        public Response Eliminar(Request<Contenedores> entidad)
         {
             Response retorno = new Response();
             try
             {
-                var resultado = LotesRepositorio.Eliminar(entidad.entidad);
+                var resultado = ContenedorRepositorio.Eliminar(entidad.entidad);
                 retorno.Success = true;
                 retorno.error = false;
 
@@ -44,12 +44,12 @@ namespace CAMTEX.Aplicacion
             return retorno;
         }
 
-        public Response Insertar(Request<Lotes> entidad)
+        public Response Insertar(Request<Contenedores> entidad)
         {
             Response retorno = new Response();
             try
             {
-                var resultado = LotesRepositorio.Insertar(entidad.entidad);
+                var resultado = ContenedorRepositorio.Insertar(entidad.entidad);
                 retorno.Success = true;
                 retorno.error = false;
 
@@ -62,30 +62,24 @@ namespace CAMTEX.Aplicacion
             return retorno;
         }
 
-        public Response<List<Lotes>> Listar(Request<Lotes> entidad)
+        public Response<List<Contenedores>> Listar(Request<Contenedores> entidad)
         {
-            Response<List<Lotes>> retorno = new Response<List<Lotes>>();
+            Response<List<Contenedores>> retorno = new Response<List<Contenedores>>();
 
             try
             {
-                DataTable dt = LotesRepositorio.Listar(entidad.entidad);
-                List<Lotes> lista = new List<Lotes>();
+                DataTable dt = ContenedorRepositorio.Listar(entidad.entidad);
+                List<Contenedores> lista = new List<Contenedores>();
 
                 foreach (DataRow row in dt.Rows)
                 {
-                    lista.Add(new Lotes()
+                    lista.Add(new Contenedores()
                     {
                         IdFile = Util.CapturaInt0(row, "FileID"),
                         IdOPeraciones = Util.CapturaInt0(row, "IdOperaciones"),
-                        IdLote = Util.CapturaInt0(row, "IdLote"),
-                        Codigo = Util.CapturaString(row, "CodigoLote"),
-                        NroLotes = Util.CapturaString(row, "Lote"),
-                        Evaluacion = Util.CapturaDatetime(row, "Evaluacion"),
-                        EstadoLote = Util.CapturaString(row, "EstadoLote"),
-                        Resultado = Util.CapturaString(row, "Resultado"),
-                        Destino = Util.CapturaInt0(row, "IdDestinoPlanta"),
-                        ESTADO = Util.CapturaString(row, "Estado")
-
+                        IdContenedor = Util.CapturaInt0(row, "IdLote"),
+                        Contenedor = Util.CapturaString(row, "CodigoLote")                
+                        
                     });
                 }
 
@@ -100,7 +94,7 @@ namespace CAMTEX.Aplicacion
             return retorno;
         }
 
-        public Response<List<Lotes>> ListarPaginado(Request<Lotes> entidad)
+        public Response<List<Contenedores>> ListarPaginado(Request<Contenedores> entidad)
         {
             throw new NotImplementedException();
         }

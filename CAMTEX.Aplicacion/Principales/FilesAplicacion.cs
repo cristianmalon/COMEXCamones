@@ -1,4 +1,4 @@
-﻿using CAMTEX.Aplicacion.Base;
+using CAMTEX.Aplicacion.Base;
 using CAMTEX.Aplicacion.Entidades;
 using CAMTEX.Entidades;
 using CAMTEX.Repositorio;

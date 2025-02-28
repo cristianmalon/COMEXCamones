@@ -10,60 +10,55 @@ using System.Threading.Tasks;
 
 namespace CAMTEX.Repositorio
 {
-    public class LotesRepositorio : DDataAccess, IGeneralRepositorio<Lotes>
+    public class ContenedorRepositorio : DDataAccess, IGeneralRepositorio<Contenedores>
     {
-        public IDictionary<string, object> Actualizar(Lotes entidad)
+        public IDictionary<string, object> Actualizar(Contenedores entidad)
         {
             throw new NotImplementedException();
         }
 
-        public IDictionary<string, object> Eliminar(Lotes entidad)
+        public IDictionary<string, object> Eliminar(Contenedores entidad)
         {
             Dictionary<string, object> retorno = new Dictionary<string, object>();
 
             oConn.AddParameter("@opcion", 2);
-            oConn.AddParameter("@IdLote", entidad.IdLote);
+            oConn.AddParameter("@IdContenedor", entidad.IdContenedor);
             //oConn.AddParameter("@Usuario", entidad.USUARIO_REG);
             //oConn.AddParameter("@MaquinaPC", entidad.HOST_REG);
-            DataTable dt = oConn.ExecuteDataTable("[DBO].[Usp_Lotes]");
+            DataTable dt = oConn.ExecuteDataTable("[DBO].[Usp_Contenedor]");
 
             retorno.Add("resultado", true);
             retorno.Add("mensaje", "OK");
             return retorno;
         }
 
-        public IDictionary<string, object> Insertar(Lotes entidad)
+        public IDictionary<string, object> Insertar(Contenedores entidad)
         {
             //SE REQUIERE QUE EL IDFILE Y EL IDOPERACIONES ESTE RELACIONADOS PARA QUE SE PUEDA GUARDAR
             Dictionary<string, object> retorno = new Dictionary<string, object>();
             oConn.AddParameter("@opcion", 1);
             oConn.AddParameter("@FileId", entidad.IdFile);
             oConn.AddParameter("@IdOperaciones", entidad.IdOPeraciones);
-            oConn.AddParameter("@CodLote", entidad.Codigo);
-            oConn.AddParameter("@Lote", entidad.NroLotes);
-            oConn.AddParameter("@Evaluacion", entidad.Evaluacion);
-            oConn.AddParameter("@EstadoL", entidad.EstadoLote);
-            oConn.AddParameter("@Resultado", entidad.Resultado);
-            oConn.AddParameter("@IdDestP", entidad.Destino);
+            oConn.AddParameter("@CodContenedor", entidad.Contenedor);            
             oConn.AddParameter("@usuario", entidad.USUARIO_REG);
             oConn.AddParameter("@Host", entidad.HOST_REG);
-            DataTable dt = oConn.ExecuteDataTable("[DBO].[Usp_Lotes]");
+            DataTable dt = oConn.ExecuteDataTable("[DBO].[Usp_Contenedor]");
 
             retorno.Add("resultado", true);
             retorno.Add("mensaje", "OK");
             return retorno;
         }
 
-        public DataTable Listar(Lotes entidad)
+        public DataTable Listar(Contenedores entidad)
         {
             oConn.AddParameter("@opcion", 1);
             oConn.AddParameter("@file", entidad.IdFile);
             oConn.AddParameter("@idOp", entidad.IdOPeraciones);
-            DataTable dt = oConn.ExecuteDataTable("[DBO].[Usp_ListarLotes]");
+            DataTable dt = oConn.ExecuteDataTable("[DBO].[Usp_ContenedorListar]");
             return dt;
         }
 
-        public DataTable ListarPaginado(Lotes entidad)
+        public DataTable ListarPaginado(Contenedores entidad)
         {
             throw new NotImplementedException();
         }
