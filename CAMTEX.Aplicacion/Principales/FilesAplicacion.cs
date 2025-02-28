@@ -1,4 +1,4 @@
-﻿using CAMTEX.Aplicacion.Base;
+using CAMTEX.Aplicacion.Base;
 using CAMTEX.Aplicacion.Entidades;
 using CAMTEX.Entidades;
 using CAMTEX.Repositorio;
@@ -83,41 +83,21 @@ namespace CAMTEX.Aplicacion
                 {
                     lista.Add(new Files()
                     {
-                        FileId = Util.CapturaInt0(row, "FileID"),
-
                         NombreF = Util.CapturaString(row, "NombreF"),
 
+                        FileId = Util.CapturaInt0(row, "FileId"),
+                        CodFile = Util.CapturaString(row, "CodFile"),
                         FechaOp = Util.CapturaDatetime(row, "FechaOp"),
 
                         NroOp = Util.CapturaString(row, "NroOp"),
-
-                        CodProv = Util.CapturaString(row, "CodProv"),
-
-
                         Proveedor = Util.CapturaString(row, "Proveedor"),
-
-
-                        OrdenID = Util.CapturaString(row, "OrdenID"),
-
                         OrdC = Util.CapturaString(row, "OrdC"),
 
-                        //Producto = Util.CapturaString(row, "Producto"),
                         DesArt = Util.CapturaString(row, "DesArt"),
-                        //Solicitado = Util.CapturaInt0(row, "Solicitado"),
                         Situacion = Util.CapturaString(row, "Situacion"),
 
-                       // DUA = Util.CapturaString(row, "DUA"),
-                       // Deposito = Util.CapturaInt0(row, "Deposito"),
-
-                        //FechaIngreso = Util.CapturaDatetime(row, "FechaIngreso"),
-                        FechaEmbarque = Util.CapturaDatetime(row, "FechaEmbarque"),
-                        //EstadoRQ = Util.CapturaString(row, "EstadoRQ"),
-                        LineaNaviera = Util.CapturaString(row, "ViaTransporte")
-                        //EstadoCalidad = Util.CapturaString(row, "EstadoCalidad"),
-                        // NumFactura = Util.CapturaInt0(row, "NumFactura"),
-
-                        //Contenedor = Util.CapturaInt0(row, "Contenedor"),
-                        //AgenteAduana = Util.CapturaString(row, "AgenteAduana"),
+                        FechaEmbarque = Util.CapturaDatetime(row, "Fechaembarque"),
+                        ViaTransporte = Util.CapturaString(row, "ViaTransporte"),
 
 
                     });

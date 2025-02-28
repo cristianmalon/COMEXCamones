@@ -50,6 +50,7 @@ namespace CAMTEX.Entidades
         [DataMember] public int Contenedor { get; set; }
         [DataMember] public string AgenteAduana { get; set; }
 
+        [DataMember] public string ViaTransporte { get; set; }
 
 
 

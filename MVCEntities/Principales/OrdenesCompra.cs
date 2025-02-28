@@ -23,12 +23,28 @@ namespace CAMTEX.Entidades
         [DataMember] public string MaeCCod { get; set; }
 
         [DataMember] public string MaeDDes { get; set; }
-
-
-
-
+        [DataMember] public int IdSituacion { get; set; }
 
         [DataMember] public int id { get; set; }
+        [DataMember] public int FileID { get; set; }
+        [DataMember] public int ItemOrdenCompra { get; set; }
+        [DataMember] public int ItemNroEntregaOC { get; set; }
+        [DataMember] public List<Producto> ListaProducto { get; set; }
 
+    }
+    public class Situacion
+    {
+        [DataMember] public string idsituacion { get; set; }
+        [DataMember] public string situacion { get; set; }
+    }
+    public class ViaTransporte
+    {
+        [DataMember] public string idsituacion { get; set; }
+        [DataMember] public string situacion { get; set; }
+    }
+    public class LineaNaviera
+    {
+        [DataMember] public string idsituacion { get; set; }
+        [DataMember] public string situacion { get; set; }
     }
 }

@@ -65,9 +65,17 @@ namespace MVCBase.Controllers
 
         }
         [AllowAnonymous]
-        public ActionResult VROrdenCompra(string id , List<OrdenesCompra> orderData)
+        public ActionResult VROrdenCompra(string id , OrdenesCompra orderData,int FileID)
         {
             ViewBag.Id = id;
+            //traemos los demas campos
+            var datos = new Request<Producto>();
+            //datos.entidad = entidad;
+            datos.entidad = new Producto();
+            datos.entidad.OrdenID = orderData.id;
+            datos.entidad.FileID = FileID;
+            var lista = new ProductoAplicacion(new ProductoRepositorio()).ListarPaginado(datos);
+            orderData.ListaProducto = lista.response;
             return PartialView("_BuscarOrdC", orderData);
         }
 
@@ -222,11 +230,38 @@ namespace MVCBase.Controllers
 
         }
 
+        [HttpPost]
+        [AllowAnonymous]
+        public JsonResult ActualizarOperaciones(Operaciones entidad)
+        {
 
-
-
-
-
+            try
+            {
+                Response response = new Response();
+                var datos = new Request<Operaciones>();
+                entidad.USUARIO_REG = VariablesWeb.Usuario.SUsrId;
+                datos.entidad = entidad;
+                response = new OperacionesAplicacion(new OperacionesRepositorio()).Actualizar(datos);
+                return Json(new
+                {
+                    result = response.Success,
+                    errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                    url = Url.Action("Index"),
+                    msg = response.Success ? Utiles.MessageSaveSuccess() : response.mensaje,
+                }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    result = false,
+                    errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                    url = Url.Action("Index"),
+                    msg = Utiles.MessageServerError() + " - " + ex.Message.ToString(),
+                    id = 0
+                }, JsonRequestBehavior.AllowGet);
+            }
+        }
 
 
 
