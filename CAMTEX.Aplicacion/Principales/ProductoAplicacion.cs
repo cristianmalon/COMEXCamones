@@ -75,7 +75,37 @@ namespace CAMTEX.Aplicacion
 
         public Response<List<Producto>> ListarPaginado(Request<Producto> entidad)
         {
-            throw new NotImplementedException();
+            Response<List<Producto>> retorno = new Response<List<Producto>>();
+
+            try
+            {
+                DataTable dt = ProductoRepositorio.ListarPaginado(entidad.entidad);
+                List<Producto> lista = new List<Producto>();
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    lista.Add(new Producto()
+                    {
+                        IdFileProd = Util.CapturaInt0(row, "IdFileProd"),
+                        OrcCItem = Util.CapturaInt0(row, "ItemOrdenCompra"),
+                        CodigoArticulo = Util.CapturaString(row, "CodigoArticulo"),
+                        Descripcion = Util.CapturaString(row, "DescripcionArticulo"),
+                        PU = Util.CapturaDecimal(row, "PrecioUnitario"),
+                        Qty = Util.CapturaDecimal(row, "Cantidad"),
+                        Valor = Util.CapturaDecimal(row, "ValorOrden"),
+                        Moneda = Util.CapturaString(row, "MonedaOrden")
+                    });
+                }
+
+                retorno.error = false;
+                retorno.response = lista;
+            }
+            catch (Exception ex)
+            {
+                retorno.error = true;
+                retorno.mensaje = ex.Message;
+            }
+            return retorno;
         }
     }
 }

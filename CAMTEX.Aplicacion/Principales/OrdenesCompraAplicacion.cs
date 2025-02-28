@@ -61,8 +61,9 @@ namespace CAMTEX.Aplicacion
 
                         TarDNem = Util.CapturaString(row, "TarDNem"),
                         CNPDDes = Util.CapturaString(row, "CNPDDes"),
-                        OrcDMon = Util.CapturaString(row, "OrcDMon")
-                       
+                        OrcDMon = Util.CapturaString(row, "OrcDMon"),
+                        ItemOrdenCompra = Util.CapturaInt0(row, "ItemOrdenCompra"),
+                        ItemNroEntregaOC = Util.CapturaInt0(row, "ItemNroEntregaOC"),
                     });
                 }
 

@@ -154,7 +154,8 @@
                 contentType: 'application/json',
                 data: JSON.stringify({
                     id: uniqueId,
-                    orderData: orderData // Aquí envías todo el objeto
+                    orderData: orderData[0], // Aquí envías todo el objeto
+                    FileID:$('#FileIDv').val()
                 }),
                 success: function (response) {
                     itemElement.find('.tab-content').html(response);
@@ -256,32 +257,72 @@
                                     return;
                                 }
 
+                                // Guardamos en Base los productos seleccionados
+                                var BEOperaciones = {
+                                    FileID: $('#FileIDv').val(),
+                                    OrdenID: selectedRow[0].id,
+                                }
+                                var root = "<ROOT>";
+                                $.each(selectedRow, function (i, e) {
+                                    root += "<FileOperacionesProductos>";
+                                    root += "<ItemOrdenCompra>" + e.ItemOrdenCompra + "</ItemOrdenCompra>";
+                                    root += "<ItemNroEntregaOC>" + e.ItemNroEntregaOC + "</ItemNroEntregaOC>";
+                                    root += "</FileOperacionesProductos>";
+                                })
+                                root += "</ROOT>";
+                                BEOperaciones.XML_Productos = root;
+
+                                $.ajax({
+                                    url: `/Operaciones/ActualizarOperaciones`,
+                                    type: 'POST',
+                                    async: false,
+                                    data: JSON.stringify({ entidad: BEOperaciones }),
+                                    dataType: 'json',
+                                    headers: {
+                                        "Content-Type": "application/json"
+                                    },
+                                    success: function (res) {
+                                        //debugger;
+                                        if (!res.result) {
+                                            DevExpress.ui.dialog.alert("Hubo un error al guardar los items seleccionados.", "Error");
+
+                                        } else {
+                                            var tabPanelItems = tabPanel.option('dataSource');
+
+                                            var uniqueId = `tab_${Date.now()}`;
+                                            var newTab = {
+                                                id: uniqueId,
+                                                title: `${numeroOrden}`, // Mostrar ambos valores en el título
+                                                idoc: numeroOrdenId,
+                                                data: selectedRow // Pasamos todo el objeto seleccionado
+                                            };
+
+                                            tabPanelItems.push(newTab);
+                                            tabPanel.option('dataSource', tabPanelItems);
+                                            tabPanel.option('selectedIndex', tabPanelItems.length - 1);
+
+                                            // Agregar al array de órdenes abiertas para evitar duplicados
+                                            ordenesAbiertas.push({ NumeroOrdenC: numeroOrden });
+                                            IdordenesAbiertas.push({ OrdenID: numeroOrdenId });
+
+                                            console.log("IdordenesAbiertas: ", IdordenesAbiertas);
+
+                                            popup.hide();
+
+                                        }
+                                        console.log(res);
+
+                                    }, complete: function (data) {
+                                        //desbloqObject()
+                                    }
+                                });
+
 
                                 //if (existeProv) {
                                 //    DevExpress.ui.dialog.alert("Este proveedor ya esta seleccionado.", "Aviso");
                                 //    return;
                                 //}
-                                var tabPanelItems = tabPanel.option('dataSource');
-
-                                var uniqueId = `tab_${Date.now()}`;
-                                var newTab = {
-                                    id: uniqueId,
-                                    title: `${numeroOrden}`, // Mostrar ambos valores en el título
-                                    idoc: numeroOrdenId,
-                                    data: selectedRow // Pasamos todo el objeto seleccionado
-                                };
-
-                                tabPanelItems.push(newTab);
-                                tabPanel.option('dataSource', tabPanelItems);
-                                tabPanel.option('selectedIndex', tabPanelItems.length - 1);
-
-                                // Agregar al array de órdenes abiertas para evitar duplicados
-                                ordenesAbiertas.push({ NumeroOrdenC: numeroOrden });
-                                IdordenesAbiertas.push({ OrdenID: numeroOrdenId});
-
-                                console.log("IdordenesAbiertas: ", IdordenesAbiertas);
-
-                                popup.hide();
+                                
                             }
                         });
 
