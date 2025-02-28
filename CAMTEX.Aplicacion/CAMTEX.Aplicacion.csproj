@@ -49,6 +49,7 @@
     <Compile Include="Principales\AlmacenAplicacion.cs" />
     <Compile Include="Principales\ArticuloAplicacion.cs" />
     <Compile Include="Principales\CondPagoAplicacion.cs" />
+    <Compile Include="Principales\ContenedorAplicacion.cs" />
     <Compile Include="Principales\FacturasAplicacion.cs" />
     <Compile Include="Principales\FilesAplicacion.cs" />
     <Compile Include="Principales\IncotermAplicacion.cs" />

@@ -57,6 +57,7 @@
     <Compile Include="Principales\AlmacenRepositorio.cs" />
     <Compile Include="Principales\ArticuloRepositorio.cs" />
     <Compile Include="Principales\CondPagoRepositorio.cs" />
+    <Compile Include="Principales\ContenedorRepositorio.cs" />
     <Compile Include="Principales\FacturasRepositorio.cs" />
     <Compile Include="Principales\FilesRepositorio.cs" />
     <Compile Include="Principales\IncotermRepositorio.cs" />
