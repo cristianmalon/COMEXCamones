@@ -83,33 +83,41 @@ namespace CAMTEX.Aplicacion
                 {
                     lista.Add(new Files()
                     {
+                        FileId = Util.CapturaInt0(row, "FileID"),
+
                         NombreF = Util.CapturaString(row, "NombreF"),
 
-                        FileId = Util.CapturaInt0(row, "CodFile"),
                         FechaOp = Util.CapturaDatetime(row, "FechaOp"),
 
                         NroOp = Util.CapturaString(row, "NroOp"),
+
+                        CodProv = Util.CapturaString(row, "CodProv"),
+
+
                         Proveedor = Util.CapturaString(row, "Proveedor"),
+
+
+                        OrdenID = Util.CapturaString(row, "OrdenID"),
+
                         OrdC = Util.CapturaString(row, "OrdC"),
 
-                        Producto = Util.CapturaString(row, "Producto"),
+                        //Producto = Util.CapturaString(row, "Producto"),
                         DesArt = Util.CapturaString(row, "DesArt"),
-                        Solicitado = Util.CapturaInt0(row, "Solicitado"),
-
-                        DUA = Util.CapturaString(row, "DUA"),
-                        Deposito = Util.CapturaInt0(row, "Deposito"),
+                        //Solicitado = Util.CapturaInt0(row, "Solicitado"),
                         Situacion = Util.CapturaString(row, "Situacion"),
 
-                        FechaIngreso = Util.CapturaDatetime(row, "FechaIngreso"),
+                       // DUA = Util.CapturaString(row, "DUA"),
+                       // Deposito = Util.CapturaInt0(row, "Deposito"),
+
+                        //FechaIngreso = Util.CapturaDatetime(row, "FechaIngreso"),
                         FechaEmbarque = Util.CapturaDatetime(row, "FechaEmbarque"),
-                        EstadoRQ = Util.CapturaString(row, "EstadoRQ"),
+                        //EstadoRQ = Util.CapturaString(row, "EstadoRQ"),
+                        LineaNaviera = Util.CapturaString(row, "ViaTransporte")
+                        //EstadoCalidad = Util.CapturaString(row, "EstadoCalidad"),
+                        // NumFactura = Util.CapturaInt0(row, "NumFactura"),
 
-                        EstadoCalidad = Util.CapturaString(row, "EstadoCalidad"),
-                        NumFactura = Util.CapturaInt0(row, "NumFactura"),
-                        LineaNaviera = Util.CapturaString(row, "LineaNaviera"),
-
-                        Contenedor = Util.CapturaInt0(row, "Contenedor"),
-                        AgenteAduana = Util.CapturaString(row, "AgenteAduana"),
+                        //Contenedor = Util.CapturaInt0(row, "Contenedor"),
+                        //AgenteAduana = Util.CapturaString(row, "AgenteAduana"),
 
 
                     });

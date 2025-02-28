@@ -37,6 +37,21 @@ namespace MVCBase.Controllers
             return PartialView("_Registrar", entidad);
 
         }
+
+        [AllowAnonymous]
+        public ActionResult Editar()
+        {
+            Files entidad = new Files()
+            {
+                UsuarioCreacion = VariablesWeb.Usuario.SUsrId,
+                Estacion = VariablesWeb.HostName(),
+                FechaCreacion = DateTime.Now
+            };
+            return PartialView("_Editar", entidad);
+
+        }
+
+
         [AllowAnonymous]
         public ActionResult RegistrarE()
         {

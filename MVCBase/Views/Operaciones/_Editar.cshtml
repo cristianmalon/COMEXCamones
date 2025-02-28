@@ -1,0 +1,634 @@
+﻿@model  CAMTEX.Entidades.Files
+<div id="frmRegistrar">
+    <div class="form-horizontal">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-horizontal">
+
+                    <!--SECCION FILE-->
+                    <div class="form-group" style="display:none">
+                        <div class="col-md-6">
+                            <label>Codigo File</label>
+                            <input type="text" id="txtCFileE" class="form-control-border" style="background-color: #eee; border: 1px solid #ccc; " readonly />
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-2">
+                            <label>Nombre File</label>
+                            <input type="text" id="txtFileE" class="form-control" placeholder="Ingrese el código">
+                        </div>
+                        <div class="col-md-3">
+                            <label>Observación</label>
+                            <input type="text" id="txtObservacionE" class="form-control" placeholder="Ingrese la observación">
+
+                        </div>
+                       @*<div class="col-md-2">
+                            <label>fecha Registro</label>
+                            <input type="text" id="txtFechaRegistroE" class="form-control"
+                                   value="@(Model.FechaCreacion?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"))" readonly>
+                        </div>
+                        <div class="col-md-1">
+                            <label>Hora</label>
+                            <input type="text" id="txtHoraE" class="form-control"
+                                   value="@(Model.FechaCreacion?.ToString("HH:mm:ss") ?? DateTime.Now.ToString("HH:mm:ss"))" readonly>
+                        </div>*@
+                        <div class="col-md-2">
+                            <label>Usuario</label>
+                            <input type="text" id="txtUsuarioE" class="form-control" value="@Model.UsuarioCreacion" readonly>
+
+                        </div>
+                        <div class="col-md-1">
+                            <label>Estación</label>
+                            <input type="text" id="txtEstacionE" class="form-control" value="@Model.Estacion" readonly>
+
+                        </div>
+                        <div class="col-md-1">
+                            <label>Estado</label>
+                            <input type="text" id="txtEstadoE" class="form-control" value="Activo" readonly>
+
+                        </div>
+
+                    </div>
+                    @*<div class="form-group">
+                        <div class="col-md-6">
+                            <button type="button" id="btnGuardarFile" class="btn btn-primary">Guardar File</button>
+
+                        </div>
+                    </div>*@
+                    <!--FIN SECCION FILE-->
+
+
+                    <hr style="border-top: 2px solid #33333347;" />
+
+
+                    <div id="container">
+                        <div id="addButtonE"></div>
+                    </div>
+                    <div id="tabPanelE"></div>
+
+                    <div id="popupContainerE"></div>
+
+
+                    <hr style="border-top: 2px solid #33333347;" />
+
+
+                    <!---->
+                    <!--<div class="form-group">
+                        <div class="col-md-12 text-center">
+                            <button type="button" id="btnGuardar" class="btn btn-primary">Guardar</button>
+                        </div>
+                    </div>
+                        -->
+
+                    <div class="text-right">
+                        <div id="btnGuardarTodasOCE"></div>
+                    </div>
+                    <!-- Campo oculto para guardar nuevoFileID -->
+                    <input type="hidden" id="FileIDv" value="" />
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script>
+    var IdordenesAbiertas = [];
+    var IdordenesAbiertasTAR = [];
+
+   
+
+    $(() => {
+        var nuevoFileID;
+
+        let ordenesAbiertas = [];
+        let gridE = $("#gridContainerFile").dxDataGrid("instance");
+        let filaSeleccionada = gridE.getSelectedRowsData()[0];  // la fila seleccionada
+        $("#txtCFileE").val(filaSeleccionada.FileId); // o CodFile si prefieres
+        $("#txtFileE").val(filaSeleccionada.NombreF);
+        console.log("filaSeleccionada: ", filaSeleccionada);
+
+        const tabPanelE = $('#tabPanelE').dxTabPanel({
+            dataSource: [],
+            itemTitleTemplate: titleTemplate,
+            itemTemplate: loadPartialView,
+            height: 550,
+            deferRendering: false,
+            noDataText: "No hay pestañas abiertas", // Mensaje personalizado
+            showNavButtons: true,
+            repaintChangesOnly: true,
+            onSelectionChanged: function (e) {
+                console.log("Pestaña activa AA:", e.component.option("selectedIndex"));
+
+                $(".tab-contentss").hide();
+
+                if (e.addedItems.length > 0 && e.addedItems[0].id) {
+                    $("#tab1_" + e.addedItems[0].id).show();
+                } else {
+                    console.log("No hay pestañas abiertas.");
+                }
+            }
+        }).dxTabPanel('instance');
+
+        function titleTemplate(itemData, itemIndex, itemElement) {
+            itemElement.append($('<span>').text(itemData.title));
+            itemElement.append(
+                $('<i>')
+                    .addClass('dx-icon dx-icon-close')
+                    .click(() => { closeButtonHandler(itemData); })
+            );
+        }
+
+        function loadPartialView(itemData, itemIndex, itemElement) {
+
+            var uniqueId = itemData.id;
+            var orderData = itemData.data;
+            console.log("uniqueId: ", uniqueId);
+            console.log("orderData: ", orderData);
+
+            const tabPanelItems2 = tabPanelE.option('dataSource');
+            console.log("tabPanelItems2: ", tabPanelItems2[0].idoc);
+            $('<div>').addClass('tab-content').attr("data-id", uniqueId).appendTo(itemElement);
+
+            // Cargar la misma vista parcial en cada tab
+            $.ajax({
+                url: '/Operaciones/VROrdenCompra',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    id: uniqueId,
+                    orderData: orderData // Aquí envías todo el objeto
+                }),
+                success: function (response) {
+                    itemElement.find('.tab-content').html(response);
+                },
+                error: function () {
+                    itemElement.find('.tab-content').html('<p>Error al cargar la vista.</p>');
+                }
+            });
+        }
+
+
+        function closeButtonHandler(itemData) {
+            DevExpress.ui.dialog.confirm("¿Estás seguro de que deseas quitar esta O/C?", "Confirmación")
+                .done(function (dialogResult) {
+                    if (dialogResult) { // Si el usuario confirma
+                        const tabPanelItems = tabPanelE.option('dataSource');
+                        const index = tabPanelItems.findIndex(tab => tab.id === itemData.id);
+                        console.log("index: ", index);
+                        console.log("itemData.data: ", itemData.data);
+
+                        if (index !== -1) {
+                            // Filtrar correctamente para eliminar la combinación de NumeroOrden + Item
+                            ordenesAbiertas = ordenesAbiertas.filter(codigo =>
+                                !(codigo.NumeroOrdenC === itemData.data[0].NumeroOrden)
+                            );
+                            console.log("ordenesAbiertas: ", ordenesAbiertas);
+                            IdordenesAbiertas = IdordenesAbiertas.filter(codigo =>
+                                !(codigo.OrdenID === itemData.data[0].id)
+                            );
+                            console.log("IdordenesAbiertasTAR: ", IdordenesAbiertasTAR);
+                            IdordenesAbiertasTAR = IdordenesAbiertasTAR.filter(codigo =>
+                                !(codigo.OrdenID === itemData.data[0].id)
+                            );
+                            tabPanelItems.splice(index, 1);
+                            tabPanelE.option('dataSource', tabPanelItems);
+
+                            if (index >= tabPanelItems.length && index > 0) {
+                                tabPanelE.option('selectedIndex', index - 1);
+                            }
+                        }
+                    }
+                });
+        }
+
+
+
+        var popup = $('#popupContainerE').dxPopup({
+            title: 'Buscar O/C',
+            width: 1200,
+            height: 800,
+            contentTemplate: function (contentElement) {
+                $.ajax({
+                    url: '/Operaciones/BuscarOcGrid',
+                    method: 'GET',
+                    success: function (result) {
+                        contentElement.append(result);
+                        contentElement.append('<div class="dx-popup-bottom-buttons">' +
+                            '<div id="btnAdd"></div>&nbsp;&nbsp;' +
+                            '<div id="btnClose"></div>' +
+                            '</div>');
+
+                        $('#btnAdd').dxButton({
+                            text: 'Seleccionar',
+                            onClick: function () {
+                                var grid = $("#gridBOC").dxDataGrid("instance");
+                                var selectedRow = grid.getSelectedRowsData();
+                                console.log("selectedRow para denegar oc diferente : ", selectedRow);
+                                if (selectedRow.length === 0) {
+                                    DevExpress.ui.dialog.alert("Por favor, selecciona una orden.", "Aviso");
+                                    return;
+                                }
+                                console.log("selectedRow: ", selectedRow);
+                                var numeroOrden = selectedRow[0].NumeroOrden;
+                                var numeroOrdenId = selectedRow[0].id;
+                                //var codProv = selectedRow.PrvCCod;
+                                var item = selectedRow.Item; // Asegúrate de que la columna `Item` existe en el dataset
+                                var tarDNem = selectedRow[0].TarDNem; // Nuevo campo para la validación
+
+
+                                // Verificar si ya existe una pestaña con la misma combinación de NumeroOrden + Item
+                                var existeOrden = IdordenesAbiertas.some(oc => oc.OrdenID === numeroOrdenId);
+
+                                // Si es el primer registro, guardamos el TarDNem y permitimos continuar
+                                if (IdordenesAbiertasTAR.length === 0) {
+                                    IdordenesAbiertasTAR.push({ OrdenID: numeroOrdenId, TarDNem: tarDNem });
+                                } else {
+                                    // Obtener el primer TarDNem guardado
+                                    var primerTarDNem = IdordenesAbiertasTAR[0].TarDNem;
+
+                                    // Validar si el TarDNem actual es diferente al primero
+                                    if (tarDNem !== primerTarDNem) {
+                                        DevExpress.ui.dialog.alert("Tipo de O/C diferente.", "Aviso");
+                                        return;
+                                    }
+                                }
+
+                                if (existeOrden) {
+                                    DevExpress.ui.dialog.alert("Esta  O/C ya está abierta.", "Aviso");
+                                    return;
+                                }
+
+
+                                //if (existeProv) {
+                                //    DevExpress.ui.dialog.alert("Este proveedor ya esta seleccionado.", "Aviso");
+                                //    return;
+                                //}
+                                var tabPanelItems = tabPanelE.option('dataSource');
+
+                                var uniqueId = `tab_${Date.now()}`;
+                                var newTab = {
+                                    id: uniqueId,
+                                    title: `${numeroOrden}`, // Mostrar ambos valores en el título
+                                    idoc: numeroOrdenId,
+                                    data: selectedRow // Pasamos todo el objeto seleccionado
+                                };
+
+                                tabPanelItems.push(newTab);
+                                tabPanelE.option('dataSource', tabPanelItems);
+                                tabPanelE.option('selectedIndex', tabPanelItems.length - 1);
+
+                                // Agregar al array de órdenes abiertas para evitar duplicados
+                                ordenesAbiertas.push({ NumeroOrdenC: numeroOrden });
+                                IdordenesAbiertas.push({ OrdenID: numeroOrdenId});
+
+                                console.log("IdordenesAbiertas: ", IdordenesAbiertas);
+
+                                popup.hide();
+                            }
+                        });
+
+
+                        $('#btnClose').dxButton({
+                            text: 'Cerrar',
+                            onClick: function () {
+                                popup.hide();
+                            }
+                        });
+                    },
+                    error: function (error) {
+                        console.error('Error al cargar la vista parcial', error);
+                    }
+                });
+            },
+            onShowing: function () {
+                var grid = $("#gridBOC").dxDataGrid("instance");
+                if (grid) {
+                    grid.clearSelection(); // Limpia la selección anterior al abrir el popup
+                }
+            },
+            onHidden: function () {
+                console.log('Ventana emergente cerrada');
+            }
+        }).dxPopup('instance');
+
+        $('#addButtonE').dxButton({
+            icon: 'add',
+            text: 'Agregar O/C',
+            type: 'default',
+            disabled: false,
+            onClick: function () {
+                popup.show();
+            }
+        });
+
+
+       
+
+
+
+        // Botón para guardar todas las órdenes abiertas
+        $('#btnGuardarTodasOCE').dxButton({
+            text: 'Guardar Todas O/C',
+            type: 'success',
+            onClick: function () {
+                const tabPanelItems = tabPanelE.option('dataSource');
+
+                if (tabPanelItems.length === 0) {
+                    DevExpress.ui.dialog.alert("No hay órdenes abiertas para guardar.", "Advertencia");
+                    return;
+                }
+
+                // Obtener los números de orden abiertos
+                const ocAbiertas = tabPanelItems.map(tab => tab.title); // Extrae los títulos (números de orden)
+                const idocAbiertas = tabPanelItems.map(tab => tab.idoc); // Extrae los títulos (números de orden)
+                const idtabAbiertas = tabPanelItems.map(tab => tab.id); // Extrae los títulos (números de orden)
+                // Usar la variable nuevoFileID aquí
+                console.log("Nuevo File ID:", nuevoFileID);  // Mostrar el valor en la consola
+
+                // Crear el mensaje para el alert con saltos de línea en HTML
+                //let mensaje = `<b>File:</b> ${FileName}<br><br><b>Cantidad de O/C abiertas:</b> ${ocAbiertas.length}<br><br><b>Órdenes Guardadas:</b><br>`;
+                let mensaje = `<b>FILE:</b> ${nuevoFileID}<br><br><b>Cantidad de O/C abiertas:</b> ${ocAbiertas.length}<br><br><b>Órdenes Guardadas:</b><br>`;
+                mensaje += ocAbiertas.map(oc => `- ${oc}`).join("<br>");
+
+
+                var oclist = ocAbiertas.join(", "); // Cambiado para unir los valores con comas
+
+                let idOcList = idocAbiertas.join(',');
+
+                console.log("oclist: ", oclist);
+                console.log("idOcList: ", idOcList);
+
+                console.log("idtab: ", idtabAbiertas);
+
+                //RECOGER DATOS DEL PRIMER GRID
+                let allGridRows = idtabAbiertas.map(id => {
+                    let grid = $("#gridContainerP_" + id).dxDataGrid("instance");
+                    console.log("grid.getDataSource().items():", grid.getDataSource().items());
+                    return {
+                        id: id,
+                        rows: grid ? grid.getDataSource().items() : []
+                    };
+                });
+                console.log("allGridRows antes:", allGridRows);
+
+
+                let jsonString;
+
+
+
+                // Filtrar solo los valores deseados
+                let result = allGridRows.map(tab => ({
+                    id: tab.id,
+                    rows: tab.rows.map(row => ({
+                        Codigo: row.Codigo,
+                        OrdenID: row.OrdenID,
+                        Descripcion: row.Descripcion,
+                        Moneda: row.Moneda,
+                        PU: row.PU,
+                        Qty: row.Qty,
+                        Valor: row.Valor
+                    }))
+                }));
+
+                // Convertir a JSON String
+                jsonString = JSON.stringify(result);
+                console.log("jsonString: ",jsonString);
+
+                //FIN GRID PRODUCTO
+
+
+                //INICIO GRID LOTES
+
+                let allGridRowsL = idtabAbiertas.map(id => {
+                    let grid = $("#gridContainerL_" + id).dxDataGrid("instance");
+                    console.log("grid.getDataSource().items():", grid.getDataSource().items());
+                    return {
+                        id: id,
+                        rows: grid ? grid.getDataSource().items() : []
+                    };
+                });
+                console.log("allGridRowsL antes:", allGridRowsL);
+
+
+                let jsonStringL;
+
+
+                // Filtrar solo los valores deseados
+                let resultL = allGridRowsL.map(tab => ({
+                    id: tab.id,
+                    rows: tab.rows.map(row => ({
+                        OrdenID: row.OrdenID,
+                        Codigo: row.Codigo,
+                        NroLotes: row.NroLotes,
+                        Evaluacion: row.Evaluacion,
+                        Estado: row.Estado,
+                        Resultado: row.Resultado,
+                        Deposito: row.Deposito,
+                        Destino: row.Destino
+
+                    }))
+                }));
+
+                // Convertir a JSON String
+                jsonStringL = JSON.stringify(resultL);
+                console.log("jsonString: ", jsonStringL);
+
+
+
+
+
+                //FIN GRID LOTES
+
+
+
+
+
+
+
+
+                // Mostrar en consola todas las filas agrupadas por grid
+                console.log("NOmbre del file donde se guardarn:", nuevoFileID);
+
+
+
+                //EXTRAER DATOS PAR AEL CONTROLADOR DEL DEL FORMULARIO DE LA 2DA SECCION
+                var formDataArray = idtabAbiertas.map(id => ({
+                    id: id, // Agregamos el ID como clave
+                    rows: [{ // Agrupamos los datos dentro de "rows"
+                        NroOperacion: $("#txtNOp_" + id).val(),
+                        DUA: $("#txtDUA_" + id).val(),
+                        BL_AWB: $("#txtBL_" + id).val(),
+                        OrdenID: $("#txtOI_" + id).val(),
+                        Deposito: $("#txtDeposito_" + id).val(),
+                        Garantia: $("#txtGarantia_" + id).val(),
+                        NroFactura: $("#txtFactura_" + id).val(),
+                        FechaFactura: $("#txtFechaFactura_" + id).val(),
+                        FechaIngreso: $("#txtFechaIngreso_" + id).val(),
+                        Situacion: $("#txtSituacion_" + id).val(),
+                        LineaNaviera: $("#txtLineaNaviera_" + id).val(),
+                        FechaLogistica: $("#txtFechaLogistica_" + id).val(),
+                        FechaEmbarque: $("#txtFechaEmbarque_" + id).val(),
+                        FechaDeposito: $("#txtFechaDeposito_" + id).val(),
+                        Incoterm: $("#txtIncoterm_" + id).val(),
+                        Via: $("#txtVia_" + id).val()
+                    }]
+                }));
+
+
+                jsonStringDatoImp = JSON.stringify(formDataArray);
+
+                console.log("Todos los formData: ", formDataArray);
+
+
+
+
+
+
+
+                // Llamada AJAX al controlador
+                /*
+                 * REGISTRA UNA CADENA DIVIDIDA POR COMAS DONDE ESTAN MIS ID DE LAS OC
+                 * Y EL ID DEL FILE CREADO
+                 * DESPUES EN EL SP ESTE RECORRERA CADA VALOR DIVIDIDO DEL ARRAY
+                 * Y LO GUARDARA EN FILEOPERACIONES
+                 */
+                $.ajax({
+                    url: '/Operaciones/RegistrarOC',  // Ruta del controlador y acción
+                    type: 'POST',
+                    data: {
+                        nuevoFileID: nuevoFileID,
+                        idOcList: jsonString,
+                        cadLote: jsonStringL,
+                        formDatoImp: jsonStringDatoImp
+                    },
+                    success: function (response) {
+                        console.log("response: ", response);
+
+                        // Mostrar el mensaje y cerrar el popup al confirmar
+                        DevExpress.ui.dialog.alert(mensaje, "Guardado").done(function () {
+                            $('#popupContainerEP').dxPopup('instance').hide(); // Cierra el popup
+                        });
+                        var grid = $("#gridContainer").dxDataGrid("instance");
+
+                        if (grid) {
+                            grid.refresh(); // O también puedes usar grid.reload() dependiendo de la versión de DevExtreme
+                        }
+                    },
+                    error: function () {
+                        DevExpress.ui.dialog.alert("Hubo un error al guardar el File.", "Error");
+                        $('#btnGuardarFile').prop('disabled', false); // Volver a habilitar el botón en caso de error
+                    }
+                });
+
+
+
+
+
+
+
+
+
+
+
+
+
+            }
+        });
+
+
+    });</script>
+
+
+
+
+
+
+
+<style>
+
+
+
+
+
+
+
+
+
+    /*----*/
+
+    .dx-tabs .dx-tabs-wrapper .dx-tab {
+        width: auto;
+        padding-left: 20px;
+    }
+
+    .dx-sortable-dragging .dx-tab {
+        box-sizing: border-box;
+        text-align: center;
+    }
+
+    .employeeInfo .employeePhoto {
+        height: 100px;
+        float: left;
+        padding: 10px 20px 10px 20px;
+    }
+
+    .caption {
+        padding: 0 0 10px 30px;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .task-list {
+        padding: 0 20px;
+    }
+
+        .task-list.dx-state-disabled {
+            opacity: 1;
+        }
+
+            .task-list.dx-state-disabled .dx-list-item {
+                opacity: 1;
+            }
+
+    .employeeInfo .employeeNotes {
+        min-height: 100px;
+        padding: 20px;
+        text-align: justify;
+        white-space: normal;
+    }
+
+    .dx-theme-generic .dx-tabs-wrapper .dx-item.dx-tab {
+        max-width: fit-content;
+        padding-left: 14px;
+        padding-right: 9px;
+        line-height: 1.618;
+    }
+
+    .dx-tabpanel .dx-tab .dx-icon.dx-icon-close {
+        display: inline-block;
+        margin-right: 0;
+        margin-left: 7px;
+        opacity: 0.6;
+    }
+
+    .dx-theme-generic .dx-tabpanel .dx-tab .dx-icon.dx-icon-close {
+        font-size: 15px;
+    }
+
+    .dx-theme-material .dx-tabpanel .dx-tab .dx-icon.dx-icon-close {
+        font-size: 18px;
+    }
+
+    .dx-theme-material .dx-tab-content {
+        flex-direction: row;
+    }
+
+    .dx-theme-material .employeeNotes {
+        margin: 0;
+    }
+</style>

@@ -25,13 +25,16 @@ namespace CAMTEX.Entidades
 
 
 
-
+        
 
 
         [DataMember] public DateTime? FechaOp { get; set; }
         [DataMember] public string NroOp { get; set; }
+        
+        [DataMember] public string CodProv { get; set; }
         [DataMember] public string Proveedor { get; set; }
         [DataMember] public string OrdC { get; set; }
+        [DataMember] public string OrdenID { get; set; }
         [DataMember] public string Producto { get; set; }
         [DataMember] public string DesArt { get; set; }
         [DataMember] public int Solicitado { get; set; }

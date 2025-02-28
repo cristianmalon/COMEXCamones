@@ -11,7 +11,7 @@
         <div class="panel panel-default">
             <div class="panel-body">
 
-                <div id="gridContainer">
+                <div id="gridContainerFile">
 
                 </div>
             </div>
@@ -21,6 +21,8 @@
 
         <!-- Contenedor para el dxPopup Registrar. -->
         <div id="popupContainerEP"></div>
+        <!-- Contenedor para el dxPopup Editar. -->
+        <div id="popupContainerEF"></div>
     </div>
 </div>
 
@@ -43,10 +45,10 @@
 
     var columnsConfig = [
         {
-            dataField: 'NroOp', caption: 'Nro Operación', alignment: 'left',
+            dataField: 'FileId', caption: 'Id File', alignment: 'left',
         },
         {
-            dataField: 'OrdC', caption: 'Orden Compra', alignment: 'left',
+            dataField: 'NombreF', caption: 'Nombre File', alignment: 'left',
         },
         {
             dataField: 'FechaOp', caption: 'Fecha Operción', alignment: 'left', dataType: "date",
@@ -54,20 +56,22 @@
 
         },
         {
-            dataField: 'FileId', caption: 'Id File', alignment: 'left', visible: false
+            dataField: 'NroOp', caption: 'Nro Operación', alignment: 'left',
         },
         {
-            dataField: 'CodFile', caption: 'Cod. File', alignment: 'left',
+            dataField: 'CodProv', caption: 'Codigo Proveedor', alignment: 'left',
         },
-        {
-            dataField: 'NombreF', caption: 'Nombre File', alignment: 'left',
-        },
-
 
         {
             dataField: 'Proveedor', caption: 'Proveedor', alignment: 'left', width: 280,
         },
 
+        {
+            dataField: 'OrdenID', caption: 'Orden ID', alignment: 'left',
+        },
+        {
+            dataField: 'OrdC', caption: 'Orden Compra', alignment: 'left',
+        },
         {
             dataField: 'DesArt', caption: 'Producto', alignment: 'left', width: 280,
         },
@@ -92,7 +96,7 @@
             format: "yyyy-MM-dd"
         },
         {
-            dataField: 'ViaTransporte', caption: 'ViaTransporte', alignment: 'left',
+            dataField: 'LineaNaviera', caption: 'ViaTransporte', alignment: 'left',
         },
         //{
         //    dataField: 'EstadoCalidad', caption: 'EstadoCalidad', alignment: 'left',
@@ -134,7 +138,7 @@
 
 
             const dataGrid =
-                $('#gridContainer').dxDataGrid({
+                $('#gridContainerFile').dxDataGrid({
                     allowExpandAll: true,
                     expandAll: true,
                     keyExpr: 'FileId',
@@ -228,52 +232,7 @@
                                     icon: "edit",
                                     text: "EDITAR",
                                     onClick: function () {
-                                        const selectedRowIndex = dataGrid.option("focusedRowIndex");
-                                        if (selectedRowIndex !== undefined && selectedRowIndex !== -1) {
-
-
-                                            const visibleRows = dataGrid.getVisibleRows(); // Obtener las filas visibles
-
-                                            // Verificar que el índice seleccionado esté dentro del rango de las filas visibles
-                                            if (visibleRows[selectedRowIndex]) {
-                                                const selectedRowData = visibleRows[selectedRowIndex].data;
-
-                                                // Verificar si la fila tiene un 'Estado' válido (por ejemplo, que no esté eliminada)
-                                                if (selectedRowData && selectedRowData.Estado !== 0) {
-                                                    dataGrid.editRow(selectedRowIndex);
-                                                } else {
-                                                    Swal.fire({
-                                                        icon: 'error',
-                                                        title: 'Oops...',
-                                                        text: 'La fila seleccionada ha sido eliminada y no se puede editar.',
-                                                        customClass: {
-                                                            container: 'my-swal-container',
-                                                        },
-                                                    });
-                                                }
-                                            } else {
-                                                // Si no hay una fila en el índice seleccionado, muestra un mensaje de error
-                                                Swal.fire({
-                                                    icon: 'error',
-                                                    title: 'Oops...',
-                                                    text: 'La fila seleccionada no es válida o ya no está visible.',
-                                                    customClass: {
-                                                        container: 'my-swal-container',
-                                                    },
-                                                });
-                                            }
-
-                                        } else {
-                                            // Si no hay una fila seleccionada, muestra un mensaje o realiza otra acción
-                                            Swal.fire({
-                                                icon: 'error',
-                                                title: 'Oops...',
-                                                text: 'Selecciona una fila antes de editar.',
-                                                customClass: {
-                                                    container: 'my-swal-container', // Clase personalizada para ajustar z-index
-                                                },
-                                            });
-                                        }
+                                        EditarFile();
                                     },
                                     stylingMode: "outlined", // Cambia el estilo del botón a outlined
                                     // Modifica el color del botón
@@ -358,7 +317,7 @@
 
 
     function RegistrarFile(){
-        var grid = $('#gridContainer').dxDataGrid('instance');
+        var grid = $('#gridContainerFile').dxDataGrid('instance');
 
         var selectedData = grid.getSelectedRowsData();
         /*SECCION EDITAR*/
@@ -411,7 +370,60 @@
 
     }
 
+    function EditarFile() {
 
+        var grid = $('#gridContainerFile').dxDataGrid('instance');
+
+        var selectedData = grid.getSelectedRowsData();
+
+        if (selectedData.length > 0) {
+
+            console.log("selectedRowData para editar: ", selectedData);
+
+            $("#popupContainerEF").dxPopup({
+                    width: 1300,
+                    height: 900,
+                    showTitle: true,
+                    title: "Editar File (Importación)",
+                    visible: false, // Mantén el popup oculto hasta que sea necesario
+                    dragEnabled: true,
+                    hideOnOutsideClick: true,
+                    contentTemplate: function (contentElement) {
+                        // Cargar el contenido mediante AJAX
+                        $.ajax({
+
+                            url: '@Url.Content("~/Operaciones/Editar")',
+                            type: "GET",
+                            success: function (data) {
+                                contentElement.html(data);
+                            },
+                            error: function () {
+                                contentElement.html("<p>Error al cargar el contenido.</p>");
+                            }
+                        });
+                    },
+
+            }).dxPopup("show");
+
+        } else {
+            // Si no hay una fila seleccionada, muestra un mensaje o realiza otra acción
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Selecciona una fila antes de registrar.',
+                customClass: {
+                    container: 'my-swal-container', // Clase personalizada para ajustar z-index
+                },
+            });
+        }
+
+        /*POPUP DE LA VISTA REGISTRAR*/
+
+
+
+
+
+    }
 
 
 </script>
