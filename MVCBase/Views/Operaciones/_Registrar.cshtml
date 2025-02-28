@@ -67,7 +67,7 @@
                     </div>
                     <div id="tabPanel"></div>
 
-                    <div id="popupContainer"></div>
+                    <div id="popupContainerR"></div>
 
 
                     <hr style="border-top: 2px solid #33333347;" />
@@ -120,7 +120,7 @@
                 $(".tab-contentss").hide();
 
                 if (e.addedItems.length > 0 && e.addedItems[0].id) {
-                    $("#tab1_" + e.addedItems[0].id).show();
+                    $("#tab1_" + e.addedItems[0].id).show();                   
                 } else {
                     console.log("No hay pestañas abiertas.");
                 }
@@ -173,36 +173,67 @@
                     if (dialogResult) { // Si el usuario confirma
                         const tabPanelItems = tabPanel.option('dataSource');
                         const index = tabPanelItems.findIndex(tab => tab.id === itemData.id);
-                        console.log("index: ", index);
-                        console.log("itemData.data: ", itemData.data);
 
-                        if (index !== -1) {
-                            // Filtrar correctamente para eliminar la combinación de NumeroOrden + Item
-                            ordenesAbiertas = ordenesAbiertas.filter(codigo =>
-                                !(codigo.NumeroOrdenC === itemData.data[0].NumeroOrden)
-                            );
-                            console.log("ordenesAbiertas: ", ordenesAbiertas);
-                            IdordenesAbiertas = IdordenesAbiertas.filter(codigo =>
-                                !(codigo.OrdenID === itemData.data[0].id)
-                            );
-                            console.log("IdordenesAbiertasTAR: ", IdordenesAbiertasTAR);
-                            IdordenesAbiertasTAR = IdordenesAbiertasTAR.filter(codigo =>
-                                !(codigo.OrdenID === itemData.data[0].id)
-                            );
-                            tabPanelItems.splice(index, 1);
-                            tabPanel.option('dataSource', tabPanelItems);
+                        console.log("CLOSE itemData: ", itemData);
+                        console.log("CLOSE File: ", $('#FileIDv').val());
+                        console.log("CLOSE index: ", index);
+                        console.log("CLOSE itemData.data: ", itemData.data);
+                        console.log("CLOSE itemData.data: ", itemData.data[0].id);
 
-                            if (index >= tabPanelItems.length && index > 0) {
-                                tabPanel.option('selectedIndex', index - 1);
+                        // Parámetros para el AJAX
+                        const fileId = $('#FileIDv').val();
+                        const ordenId = itemData.data[0].id;
+
+                        $.ajax({
+                            url: '/Operaciones/ActualizarEstadoOrdenxFile',
+                            type: 'POST',
+                            data: {
+                                fileId: fileId,
+                                ordenId: ordenId,
+                                nuevoEstado: 'I'
+                            },
+                            success: function (response) {
+                                console.log('response: ', response);
+
+                                if (response.rpta) {
+                                    console.log('Estado actualizado correctamente.');
+
+                                    if (index !== -1) {
+                                        // Filtrar correctamente para eliminar la combinación de NumeroOrden + Item
+                                        ordenesAbiertas = ordenesAbiertas.filter(codigo =>
+                                            !(codigo.NumeroOrdenC === itemData.data[0].NumeroOrden)
+                                        );
+                                        console.log("ordenesAbiertas: ", ordenesAbiertas);
+                                        IdordenesAbiertas = IdordenesAbiertas.filter(codigo =>
+                                            !(codigo.OrdenID === itemData.data[0].id)
+                                        );
+                                        console.log("IdordenesAbiertasTAR: ", IdordenesAbiertasTAR);
+                                        IdordenesAbiertasTAR = IdordenesAbiertasTAR.filter(codigo =>
+                                            !(codigo.OrdenID === itemData.data[0].id)
+                                        );
+                                        tabPanelItems.splice(index, 1);
+                                        tabPanel.option('dataSource', tabPanelItems);
+
+                                        if (index >= tabPanelItems.length && index > 0) {
+                                            tabPanel.option('selectedIndex', index - 1);
+                                        }
+                                    }
+                                } else {
+                                    DevExpress.ui.dialog.alert('No se pudo actualizar el estado.', 'Error');
+                                }
+                            },
+                            error: function () {
+                                DevExpress.ui.dialog.alert('Ocurrió un error al actualizar el estado.', 'Error');
                             }
-                        }
+                        });
                     }
                 });
         }
 
 
 
-        var popup = $('#popupContainer').dxPopup({
+
+        var popup = $('#popupContainerR').dxPopup({
             title: 'Buscar O/C',
             width: 1200,
             height: 800,
@@ -211,13 +242,15 @@
                     url: '/Operaciones/BuscarOcGrid',
                     method: 'GET',
                     success: function (result) {
-                        contentElement.append(result);
-                        contentElement.append('<div class="dx-popup-bottom-buttons">' +
-                            '<div id="btnAdd"></div>&nbsp;&nbsp;' +
-                            '<div id="btnClose"></div>' +
-                            '</div>');
+                        
 
-                        $('#btnAdd').dxButton({
+                        contentElement.append(result);
+
+                        // Crear el contenedor de botones (lo agregamos como elemento DOM limpio, no como string)
+                        var buttonContainer = $('<div>').addClass('dx-popup-bottom-buttons').appendTo(contentElement);
+
+                        // Botón "Seleccionar"
+                        $('<div>').attr('id', 'btnAdd').appendTo(buttonContainer).dxButton({
                             text: 'Seleccionar',
                             onClick: function () {
                                 var grid = $("#gridBOC").dxDataGrid("instance");
@@ -322,17 +355,29 @@
                                 //    DevExpress.ui.dialog.alert("Este proveedor ya esta seleccionado.", "Aviso");
                                 //    return;
                                 //}
-                                
+
                             }
                         });
 
-
-                        $('#btnClose').dxButton({
+                        // Botón "Cerrar"
+                        $('<div>').attr('id', 'btnClose').appendTo(buttonContainer).dxButton({
+                            text: 'Cerrar',
                             text: 'Cerrar',
                             onClick: function () {
                                 popup.hide();
                             }
                         });
+
+
+
+
+
+
+
+
+
+
+
                     },
                     error: function (error) {
                         console.error('Error al cargar la vista parcial', error);
@@ -586,7 +631,7 @@
                         DevExpress.ui.dialog.alert(mensaje, "Guardado").done(function () {
                             $('#popupContainerEP').dxPopup('instance').hide(); // Cierra el popup
                         });
-                        var grid = $("#gridContainer").dxDataGrid("instance");
+                        var grid = $("#gridContainerFile").dxDataGrid("instance");
 
                         if (grid) {
                             grid.refresh(); // O también puedes usar grid.reload() dependiendo de la versión de DevExtreme
@@ -614,7 +659,8 @@
         });
 
 
-    });</script>
+    });
+</script>
 
 
 

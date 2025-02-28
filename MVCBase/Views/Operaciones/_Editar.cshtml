@@ -112,6 +112,7 @@
         $("#txtFileE").val(filaSeleccionada.NombreF);
         console.log("filaSeleccionada: ", filaSeleccionada);
 
+
         const tabPanelE = $('#tabPanelE').dxTabPanel({
             dataSource: [],
             itemTitleTemplate: titleTemplate,
@@ -208,7 +209,7 @@
 
 
 
-        var popup = $('#popupContainerE').dxPopup({
+        var popupE = $('#popupContainerE').dxPopup({
             title: 'Buscar O/C',
             width: 1200,
             height: 800,
@@ -218,12 +219,12 @@
                     method: 'GET',
                     success: function (result) {
                         contentElement.append(result);
-                        contentElement.append('<div class="dx-popup-bottom-buttons">' +
-                            '<div id="btnAdd"></div>&nbsp;&nbsp;' +
-                            '<div id="btnClose"></div>' +
-                            '</div>');
 
-                        $('#btnAdd').dxButton({
+                        // Crear el contenedor de botones (lo agregamos como elemento DOM limpio, no como string)
+                        var buttonContainer = $('<div>').addClass('dx-popup-bottom-buttons').appendTo(contentElement);
+
+                        // Botón "Seleccionar"
+                        $('<div>').attr('id', 'btnAdd').appendTo(buttonContainer).dxButton({
                             text: 'Seleccionar',
                             onClick: function () {
                                 var grid = $("#gridBOC").dxDataGrid("instance");
@@ -263,42 +264,86 @@
                                     return;
                                 }
 
+                                // Guardamos en Base los productos seleccionados
+                                var BEOperaciones = {
+                                    FileID: $('#FileIDv').val(),
+                                    OrdenID: selectedRow[0].id,
+                                }
+                                var root = "<ROOT>";
+                                $.each(selectedRow, function (i, e) {
+                                    root += "<FileOperacionesProductos>";
+                                    root += "<ItemOrdenCompra>" + e.ItemOrdenCompra + "</ItemOrdenCompra>";
+                                    root += "<ItemNroEntregaOC>" + e.ItemNroEntregaOC + "</ItemNroEntregaOC>";
+                                    root += "</FileOperacionesProductos>";
+                                })
+                                root += "</ROOT>";
+                                BEOperaciones.XML_Productos = root;
+
+                                $.ajax({
+                                    url: `/Operaciones/ActualizarOperaciones`,
+                                    type: 'POST',
+                                    async: false,
+                                    data: JSON.stringify({ entidad: BEOperaciones }),
+                                    dataType: 'json',
+                                    headers: {
+                                        "Content-Type": "application/json"
+                                    },
+                                    success: function (res) {
+                                        //debugger;
+                                        if (!res.result) {
+                                            DevExpress.ui.dialog.alert("Hubo un error al guardar los items seleccionados.", "Error");
+
+                                        } else {
+                                            var tabPanelItems = tabPanelE.option('dataSource');
+
+                                            var uniqueId = `tab_${Date.now()}`;
+                                            var newTab = {
+                                                id: uniqueId,
+                                                title: `${numeroOrden}`, // Mostrar ambos valores en el título
+                                                idoc: numeroOrdenId,
+                                                data: selectedRow // Pasamos todo el objeto seleccionado
+                                            };
+
+                                            tabPanelItems.push(newTab);
+                                            tabPanelE.option('dataSource', tabPanelItems);
+                                            tabPanelE.option('selectedIndex', tabPanelItems.length - 1);
+
+                                            // Agregar al array de órdenes abiertas para evitar duplicados
+                                            ordenesAbiertas.push({ NumeroOrdenC: numeroOrden });
+                                            IdordenesAbiertas.push({ OrdenID: numeroOrdenId });
+
+                                            console.log("IdordenesAbiertas: ", IdordenesAbiertas);
+
+                                            popupE.hide();
+
+                                        }
+                                        console.log(res);
+
+                                    }, complete: function (data) {
+                                        //desbloqObject()
+                                    }
+                                });
+
 
                                 //if (existeProv) {
                                 //    DevExpress.ui.dialog.alert("Este proveedor ya esta seleccionado.", "Aviso");
                                 //    return;
                                 //}
-                                var tabPanelItems = tabPanelE.option('dataSource');
 
-                                var uniqueId = `tab_${Date.now()}`;
-                                var newTab = {
-                                    id: uniqueId,
-                                    title: `${numeroOrden}`, // Mostrar ambos valores en el título
-                                    idoc: numeroOrdenId,
-                                    data: selectedRow // Pasamos todo el objeto seleccionado
-                                };
-
-                                tabPanelItems.push(newTab);
-                                tabPanelE.option('dataSource', tabPanelItems);
-                                tabPanelE.option('selectedIndex', tabPanelItems.length - 1);
-
-                                // Agregar al array de órdenes abiertas para evitar duplicados
-                                ordenesAbiertas.push({ NumeroOrdenC: numeroOrden });
-                                IdordenesAbiertas.push({ OrdenID: numeroOrdenId});
-
-                                console.log("IdordenesAbiertas: ", IdordenesAbiertas);
-
-                                popup.hide();
                             }
                         });
 
-
-                        $('#btnClose').dxButton({
+                        // Botón "Cerrar"
+                        $('<div>').attr('id', 'btnClose').appendTo(buttonContainer).dxButton({
+                            text: 'Cerrar',
                             text: 'Cerrar',
                             onClick: function () {
-                                popup.hide();
+                                popupE.hide();
                             }
                         });
+
+
+
                     },
                     error: function (error) {
                         console.error('Error al cargar la vista parcial', error);
@@ -306,9 +351,9 @@
                 });
             },
             onShowing: function () {
-                var grid = $("#gridBOC").dxDataGrid("instance");
-                if (grid) {
-                    grid.clearSelection(); // Limpia la selección anterior al abrir el popup
+                var gridE = $("#gridBOC").dxDataGrid("instance");
+                if (gridE) {
+                    gridE.clearSelection(); // Limpia la selección anterior al abrir el popup
                 }
             },
             onHidden: function () {
@@ -322,7 +367,7 @@
             type: 'default',
             disabled: false,
             onClick: function () {
-                popup.show();
+                popupE.show();
             }
         });
 

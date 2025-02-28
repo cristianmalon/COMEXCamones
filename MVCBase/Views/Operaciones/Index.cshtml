@@ -363,7 +363,12 @@
                         }
                     });
                 },
-
+                onHidden: function () { // Agregar este evento
+                    var gridPrincipal = $("#gridContainerFile").dxDataGrid("instance");
+                    if (gridPrincipal) {
+                        gridPrincipal.refresh(); // O gridPrincipal.reload()
+                    }
+                }
             }).dxPopup("show");
 
 
@@ -402,7 +407,12 @@
                             }
                         });
                     },
-
+                    onHidden: function () { // Agregar este evento
+                        var gridPrincipal = $("#gridContainerFile").dxDataGrid("instance");
+                        if (gridPrincipal) {
+                            gridPrincipal.refresh(); // O gridPrincipal.reload()
+                        }
+                    }
             }).dxPopup("show");
 
         } else {
@@ -425,7 +435,7 @@
 
     }
 
-
+    
 </script>
 
 

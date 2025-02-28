@@ -84,11 +84,11 @@ namespace CAMTEX.Aplicacion
                     lista.Add(new Files()
                     {
                         NombreF = Util.CapturaString(row, "NombreF"),
-
+                        CodProv = Util.CapturaString(row, "CodProv"),
                         FileId = Util.CapturaInt0(row, "FileId"),
                         CodFile = Util.CapturaString(row, "CodFile"),
                         FechaOp = Util.CapturaDatetime(row, "FechaOp"),
-
+                        OrdenID = Util.CapturaString(row, "OrdenID"),
                         NroOp = Util.CapturaString(row, "NroOp"),
                         Proveedor = Util.CapturaString(row, "Proveedor"),
                         OrdC = Util.CapturaString(row, "OrdC"),

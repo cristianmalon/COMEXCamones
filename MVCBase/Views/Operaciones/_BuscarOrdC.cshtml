@@ -213,7 +213,7 @@
     var id = "@ViewBag.Id"; // Obtener ID dinámico si es necesario
     var IdOP = 0;
     var idOrdenCompra = null;
-    console.log("id: ", id);
+    console.log("id de vista: ", id);
     var lista = []
     lista.push(@Html.Raw(maeCCodJson));//  @Html.Raw(maeCCodJson); // Convertir JSON en objeto JavaScript
     dataProducto = @Html.Raw(Json.Encode(Model.ListaProducto));
@@ -330,8 +330,24 @@
                     options: {
                         text: "Eliminar fila seleccionada",
                         icon: "trash",
+                        elementAttr: {
+                            id: "btnEliminar_" + id  // Aquí `id` debe ser el identificador único de la pestaña o del tab
+                        },
                         onClick() {
-                            let grid = $("#gridContainerP_" + id).dxDataGrid("instance");
+                            console.log("id: ", id);
+                            let tabPanel = $("#tabPanel").dxTabPanel("instance");
+                            let activeTab = tabPanel.option("selectedItem");
+
+                            if (!activeTab || !activeTab.id) {
+                                DevExpress.ui.dialog.alert("No se pudo obtener la pestaña activa.", "Error");
+                                return;
+                            }
+
+                            let currentId = activeTab.id;
+                            console.log("id actual: ", currentId);
+
+
+                            let grid = $("#gridContainerP_" + currentId).dxDataGrid("instance");
                             let selectedRow = grid.getSelectedRowKeys();
                             let dataSource = grid.getDataSource();
                             let dataArray = dataSource.items(); // Obtiene los datos visibles en el grid

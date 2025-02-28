@@ -325,7 +325,63 @@ namespace MVCBase.Controllers
         }
 
 
+        [HttpPost]
+        [AllowAnonymous]
+        public JsonResult ActualizarEstadoOrdenxFile(int fileID, int ordenId, string nuevoEstado)
+        {
 
+            if (ModelState.IsValid)
+            {
+                try
+                {
+
+                    Response response = new Response();
+                    Operaciones entidad = new Operaciones();
+                    entidad.NroFile = fileID;
+                    entidad.OrdenID = ordenId;                    
+                    //entidad.IdSede = VariablesWeb.ENUsuario.IdSede;
+                    //entidad.Estacion = VariablesWeb.HostName();
+                    //entidad.UsuarioCreacion = VariablesWeb.Usuario.SUsrId;
+
+
+                    var datos = new Request<Operaciones>();
+                    datos.entidad = entidad;
+                    response = new OperacionesAplicacion(new OperacionesRepositorio()).Eliminar(datos);
+
+                    return Json(new
+                    {
+                        rpta = response.Success,
+                        errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                        url = Url.Action("Index"),
+                        result = response.Success ? Utiles.MessageSaveSuccess() : response.mensaje,
+                        id = 0
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception ex)
+                {
+                    return Json(new
+                    {
+                        rpta = false,
+                        errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                        url = Url.Action("Index"),
+                        result = Utiles.MessageServerError() + " - " + ex.Message.ToString(),
+                        //combo = 0
+                        id = 0
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    rpta = false,
+                    errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                    url = Url.Action("Index"),
+                    result = Utiles.MessageModelStateInvalid()
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+        }
 
 
 
