@@ -217,7 +217,7 @@
     var lista = []
     lista.push(@Html.Raw(maeCCodJson));//  @Html.Raw(maeCCodJson); // Convertir JSON en objeto JavaScript
     dataProducto = @Html.Raw(Json.Encode(Model.ListaProducto));
-    console.log("lista", lista);
+    console.log("dataProducto", dataProducto);
     console.log("FileIDv", $("#FileIDv").val());
     var filecreado = $("#FileIDv").val();
     // Convertir el array a una cadena separada por comas para enviarlo en la URL
