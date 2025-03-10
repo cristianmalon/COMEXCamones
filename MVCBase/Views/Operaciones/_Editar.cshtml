@@ -82,7 +82,7 @@
                         -->
 
                     <div class="text-right">
-                        <div id="btnGuardarTodasOCE"></div>
+                        <div id="btnGuardarTodasOCE"  style="display: none;"></div>
                     </div>
                     <!-- Campo oculto para guardar nuevoFileID -->
                     <input type="hidden" id="FileIDv" value="" />
@@ -199,31 +199,62 @@
         function closeButtonHandler(itemData) {
             DevExpress.ui.dialog.confirm("¿Estás seguro de que deseas quitar esta O/C?", "Confirmación")
                 .done(function (dialogResult) {
-                    if (dialogResult) {
+                    if (dialogResult) { // Si el usuario confirma
                         const tabPanelItems = tabPanelE.option('dataSource');
                         const index = tabPanelItems.findIndex(tab => tab.id === itemData.id);
-                        console.log("index: ", index);
-                        console.log("itemData.data: ", itemData.data);
 
-                        if (index !== -1) {
-                            ordenesAbiertas = ordenesAbiertas.filter(codigo =>
-                                !(codigo.NumeroOrdenC === itemData.data[0].NumeroOrden)
-                            );
-                            console.log("ordenesAbiertas: ", ordenesAbiertas);
-                            IdordenesAbiertas = IdordenesAbiertas.filter(codigo =>
-                                !(codigo.OrdenID === itemData.data[0].id)
-                            );
-                            console.log("IdordenesAbiertasTAR: ", IdordenesAbiertasTAR);
-                            IdordenesAbiertasTAR = IdordenesAbiertasTAR.filter(codigo =>
-                                !(codigo.OrdenID === itemData.data[0].id)
-                            );
-                            tabPanelItems.splice(index, 1);
-                            tabPanelE.option('dataSource', tabPanelItems);
+                        console.log("CLOSE itemData: ", itemData);
+                        console.log("CLOSE File: ", $('#FileIDv').val());
+                        console.log("CLOSE index: ", index);
+                        console.log("CLOSE itemData.data: ", itemData.data);
+                        console.log("CLOSE itemData.data: ", itemData.data[0].OrdenID);
 
-                            if (index >= tabPanelItems.length && index > 0) {
-                                tabPanelE.option('selectedIndex', index - 1);
+                        // Parámetros para el AJAX
+                        const fileId = $('#FileIDv').val();
+                        const ordenId = itemData.data[0].OrdenID;
+
+                        $.ajax({
+                            url: '/Operaciones/ActualizarEstadoOrdenxFile',
+                            type: 'POST',
+                            data: {
+                                fileId: fileId,
+                                ordenId: ordenId,
+                                nuevoEstado: 'I'
+                            },
+                            success: function (response) {
+                                console.log('response: ', response);
+
+                                if (response.rpta) {
+                                    console.log('Estado actualizado correctamente.');
+
+                                    if (index !== -1) {
+                                        // Filtrar correctamente para eliminar la combinación de NumeroOrden + Item
+                                        ordenesAbiertas = ordenesAbiertas.filter(codigo =>
+                                            !(codigo.NumeroOrdenC === itemData.data[0].NumeroOrden)
+                                        );
+                                        console.log("ordenesAbiertas: ", ordenesAbiertas);
+                                        IdordenesAbiertas = IdordenesAbiertas.filter(codigo =>
+                                            !(codigo.OrdenID === itemData.data[0].id)
+                                        );
+                                        console.log("IdordenesAbiertasTAR: ", IdordenesAbiertasTAR);
+                                        IdordenesAbiertasTAR = IdordenesAbiertasTAR.filter(codigo =>
+                                            !(codigo.OrdenID === itemData.data[0].id)
+                                        );
+                                        tabPanelItems.splice(index, 1);
+                                        tabPanelE.option('dataSource', tabPanelItems);
+
+                                        if (index >= tabPanelItems.length && index > 0) {
+                                            tabPanelE.option('selectedIndex', index - 1);
+                                        }
+                                    }
+                                } else {
+                                    DevExpress.ui.dialog.alert('No se pudo actualizar el estado.', 'Error');
+                                }
+                            },
+                            error: function () {
+                                DevExpress.ui.dialog.alert('Ocurrió un error al actualizar el estado.', 'Error');
                             }
-                        }
+                        });
                     }
                 });
         }

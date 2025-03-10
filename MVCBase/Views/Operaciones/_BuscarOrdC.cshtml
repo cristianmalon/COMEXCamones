@@ -220,6 +220,14 @@
     console.log("dataProducto", dataProducto);
     console.log("FileIDv", $("#FileIDv").val());
     var filecreado = $("#FileIDv").val();
+
+
+    if (!filecreado) { // Verifica si filecreado está vacío (null, undefined, "", 0, false, NaN)
+        filecreado = "@Model.FileID"; // Asigna el valor de @Model.FileID
+        $("#FileIDv").val(filecreado); // Actualiza el valor en el campo
+    }
+
+
     // Convertir el array a una cadena separada por comas para enviarlo en la URL
     var maeCCodString = lista.join(',');
 
@@ -737,8 +745,8 @@
                 validationRules: [
                     { type: "required", message: "El Contenedor no puede estar vacío" }
                 ]
-            },          
-            
+            },
+
             {dataField: 'Estado', caption: 'Estado', alignment: 'left', allowEditing: false}
 
         ],
