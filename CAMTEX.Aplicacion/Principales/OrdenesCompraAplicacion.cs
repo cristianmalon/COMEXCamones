@@ -26,6 +26,23 @@ namespace CAMTEX.Aplicacion
         {
             throw new NotImplementedException();
         }
+        public Response ActualizarDatosImportacion(Request<OrdenesCompra> entidad)
+        {
+            Response retorno = new Response();
+            try
+            {
+                var resultado = OrdenesCompraRepositorio.ActualizarDatosImportacion(entidad.entidad);
+                retorno.Success = true;
+                retorno.error = false;
+
+            }
+            catch (Exception ex)
+            {
+                retorno.error = true;
+                retorno.mensaje = ex.Message;
+            }
+            return retorno;
+        }
 
         public Response Eliminar(Request<OrdenesCompra> entidad)
         {
@@ -81,6 +98,91 @@ namespace CAMTEX.Aplicacion
         public Response<List<OrdenesCompra>> ListarPaginado(Request<OrdenesCompra> entidad)
         {
             throw new NotImplementedException();
+        }
+
+        public Response<List<Situacion>> ListarSituacion()
+        {
+            Response<List<Situacion>> retorno = new Response<List<Situacion>>();
+
+            try
+            {
+                DataTable dt = OrdenesCompraRepositorio.ListarSituacion();
+                List<Situacion> lista = new List<Situacion>();
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    lista.Add(new Situacion()
+                    {
+                        Idsituacion = Util.CapturaInt0(row, "idsituacion"),
+                        DesSituacion = Util.CapturaString(row, "situacion"),
+                    });
+                }
+
+                retorno.error = false;
+                retorno.response = lista;
+            }
+            catch (Exception ex)
+            {
+                retorno.error = true;
+                retorno.mensaje = ex.Message;
+            }
+            return retorno;
+        }
+        public Response<List<ViaTransporte>> ListarViaTransporte()
+        {
+            Response<List<ViaTransporte>> retorno = new Response<List<ViaTransporte>>();
+
+            try
+            {
+                DataTable dt = OrdenesCompraRepositorio.ListarViaTransporte();
+                List<ViaTransporte> lista = new List<ViaTransporte>();
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    lista.Add(new ViaTransporte()
+                    {
+                        IdVia = Util.CapturaInt0(row, "idVia"),
+                        DesViaTransporte = Util.CapturaString(row, "ViaTransporte"),
+                    });
+                }
+
+                retorno.error = false;
+                retorno.response = lista;
+            }
+            catch (Exception ex)
+            {
+                retorno.error = true;
+                retorno.mensaje = ex.Message;
+            }
+            return retorno;
+        }
+        public Response<List<LineaNaviera>> ListarLineaNaviera()
+        {
+            Response<List<LineaNaviera>> retorno = new Response<List<LineaNaviera>>();
+
+            try
+            {
+                DataTable dt = OrdenesCompraRepositorio.ListarLineaNaviera();
+                List<LineaNaviera> lista = new List<LineaNaviera>();
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    lista.Add(new LineaNaviera()
+                    {
+                        IdLineaNaviera = Util.CapturaInt0(row, "IdLineaNaviera"),
+                        DesLineaNaviera = Util.CapturaString(row, "LineaNaviera"),
+                    });
+                }
+
+                retorno.error = false;
+                retorno.response = lista;
+            }
+            catch (Exception ex)
+            {
+                retorno.error = true;
+                retorno.mensaje = ex.Message;
+            }
+            return retorno;
         }
     }
 }
