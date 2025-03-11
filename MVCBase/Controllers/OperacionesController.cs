@@ -77,9 +77,47 @@ namespace MVCBase.Controllers
             datos.entidad.FileID = FileID;
             var lista = new ProductoAplicacion(new ProductoRepositorio()).ListarPaginado(datos);
             orderData.ListaProducto = lista.response;
+            var listaSituacion = new OrdenesCompraAplicacion(new OrdenesCompraRepositorio()).ListarSituacion();
+            orderData.ListaSituacion = listaSituacion.response;
+            var ListarViaTransporte = new OrdenesCompraAplicacion(new OrdenesCompraRepositorio()).ListarViaTransporte();
+            orderData.ListaViatransporte= ListarViaTransporte.response;
+            var ListarLineaNaviera = new OrdenesCompraAplicacion(new OrdenesCompraRepositorio()).ListarLineaNaviera();
+            orderData.ListaLineaNaviera = ListarLineaNaviera.response;
             return PartialView("_BuscarOrdC", orderData);
         }
 
+        [HttpPost]
+        [AllowAnonymous]
+        public JsonResult ActualizarDatosImportacion(OrdenesCompra entidad)
+        {
+
+            try
+            {
+                Response response = new Response();
+                var datos = new Request<OrdenesCompra>();
+                entidad.Usuario = VariablesWeb.Usuario.SUsrId;
+                datos.entidad = entidad;
+                response = new OrdenesCompraAplicacion(new OrdenesCompraRepositorio()).ActualizarDatosImportacion(datos);
+                return Json(new
+                {
+                    result = response.Success,
+                    errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                    url = Url.Action("Index"),
+                    msg = response.Success ? Utiles.MessageSaveSuccess() : response.mensaje,
+                }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    result = false,
+                    errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                    url = Url.Action("Index"),
+                    msg = Utiles.MessageServerError() + " - " + ex.Message.ToString(),
+                    id = 0
+                }, JsonRequestBehavior.AllowGet);
+            }
+        }
 
         [AllowAnonymous]
         public ActionResult VRFactura(string id, Factura FacturaData)

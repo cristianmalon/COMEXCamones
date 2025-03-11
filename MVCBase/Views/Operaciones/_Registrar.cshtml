@@ -1,4 +1,4 @@
-﻿@model  CAMTEX.Entidades.Files
+@model  CAMTEX.Entidades.Files
 <div id="frmRegistrar">
     <div class="form-horizontal">
         <div class="row">
@@ -70,7 +70,7 @@
                     <div id="popupContainerR"></div>
 
 
-                    <hr style="border-top: 2px solid #33333347;" />
+                    @*<hr style="border-top: 2px solid #33333347;" />*@
 
 
                     <!---->
@@ -81,9 +81,11 @@
     </div>
         -->
 
+
                     <div class="text-right">
                         <div id="btnGuardarTodasOC" style="display: none;"></div>
                     </div>
+
                     <!-- Campo oculto para guardar nuevoFileID -->
                     <input type="hidden" id="FileIDv" value="" />
 
@@ -109,7 +111,7 @@
             dataSource: [],
             itemTitleTemplate: titleTemplate,
             itemTemplate: loadPartialView,
-            height: 550,
+            height: 620,
             deferRendering: false,
             noDataText: "No hay pestañas abiertas", // Mensaje personalizado
             showNavButtons: true,
