@@ -5,7 +5,9 @@
                 <div class="form-horizontal">
                     <div class="form-group">
                         <div class="col-md-12">
-                            <div id="gridBOC"></div>
+                            <div id="gridContainerBOC">
+                                <div id="gridBOC"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -16,12 +18,30 @@
 
 
 
-
-
 <script>
 
+    function loadGrid() {
+        //$('#gridBOC').html(''),
+        //if()
+        //$("#gridBOC").dxDataGrid("instance").dispose();
+        //try {
+        //    if (!$("#gridBOC").dxDataGrid("instance") === undefined) {
+        //        $("#gridBOC").dxDataGrid("instance").dispose();
+        //        $('#gridBOC').empty('');
+        //    }
+        //} catch (ex) {
 
-    $(() => {
+        //}
+
+        var $grid = $("#gridBOC");
+
+        if ($grid.length > 0 && $grid.data("dxDataGrid")) {
+            $grid.dxDataGrid("dispose");
+            $grid.remove();  // Solo si el div sigue existiendo
+
+        }
+
+
         const DxSource = new DevExpress.data.CustomStore({
             load() {
                 return sendRequest(`/Operaciones/ListarOcGrid`);
@@ -55,7 +75,7 @@
                         dataField: "NumeroOrden",
                         caption: 'Numero Orden',
 
-                    },  
+                    },
 
                     {
                         dataField: "PrvCCod",
@@ -83,7 +103,7 @@
                         dataField: "PrvDDes",
                         caption: 'Descrpcion Proovedor',
 
-                    }, 
+                    },
                     {
                         dataField: "TarDNem",
                         caption: 'TarDNem',
@@ -98,7 +118,7 @@
                     },
                     {
                         dataField: "ItemOrdenCompra",
-                        caption: 'ItemOrdenCompra', visible:false
+                        caption: 'ItemOrdenCompra', visible: false
                     },
                     {
                         dataField: "ItemNroEntregaOC",
@@ -196,10 +216,13 @@
                 paging: {
                     pageSize: 15,  // Set the number of rows per page as per your requirement
                 },
-                
+
 
             }).dxDataGrid('instance');
+    }
+    $(() => {
 
+        loadGrid();
 
 
     })
