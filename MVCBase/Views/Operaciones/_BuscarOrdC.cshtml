@@ -343,13 +343,23 @@
                         },
                         onClick() {
                             console.log("id: ", id);
-                            let tabPanel = $("#tabPanel").dxTabPanel("instance");
-                            let activeTab = tabPanel.option("selectedItem");
+                            let tabPanel;
+                            let activeTab;
+                            if ("@ViewBag.ViewID" === 'R') {
+                                tabPanel = $("#tabPanel").dxTabPanel("instance");
+                                 activeTab = tabPanel.option("selectedItem");
+
+                            } else if ("@ViewBag.ViewID" === 'E') {
+                                tabPanel = $("#tabPanelE").dxTabPanel("instance");
+                                activeTab = tabPanel.option("selectedItem");
+
+                            }
 
                             if (!activeTab || !activeTab.id) {
                                 DevExpress.ui.dialog.alert("No se pudo obtener la pestaña activa.", "Error");
                                 return;
                             }
+                            console.log(" activeTab: ", activeTab);
 
                             let currentId = activeTab.id;
                             console.log("id actual: ", currentId);

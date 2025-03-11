@@ -185,7 +185,8 @@
                 data: JSON.stringify({
                     id: uniqueId,
                     orderData: transformedOrderData,
-                    FileID: orderData[0].FileId
+                    FileID: orderData[0].FileId,
+                    ViewID: 'E'
                 }),
                 success: function (response) {
                     itemElement.find('.tab-content').html(response);

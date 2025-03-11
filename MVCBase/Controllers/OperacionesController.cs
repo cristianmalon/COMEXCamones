@@ -65,9 +65,10 @@ namespace MVCBase.Controllers
 
         }
         [AllowAnonymous]
-        public ActionResult VROrdenCompra(string id , OrdenesCompra orderData,int FileID)
+        public ActionResult VROrdenCompra(string id , OrdenesCompra orderData,int FileID, string ViewID)
         {
             ViewBag.Id = id;
+            ViewBag.ViewID = ViewID;
             //traemos los demas campos
             var datos = new Request<Producto>();
             //datos.entidad = entidad;

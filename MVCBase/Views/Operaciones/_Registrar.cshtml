@@ -155,7 +155,8 @@
                 data: JSON.stringify({
                     id: uniqueId,
                     orderData: orderData[0], // Aquí envías todo el objeto
-                    FileID:$('#FileIDv').val()
+                    FileID: $('#FileIDv').val(),
+                    ViewID: 'R'
                 }),
                 success: function (response) {
                     itemElement.find('.tab-content').html(response);
