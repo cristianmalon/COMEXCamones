@@ -126,6 +126,8 @@
                 } else {
                     console.log("No hay pestañas abiertas.");
                 }
+
+
             }
         }).dxTabPanel('instance');
 
@@ -140,8 +142,10 @@
 
         function loadPartialView(itemData, itemIndex, itemElement) {
 
+            console.log("itemData.idop: ", itemData.idop);
             var uniqueId = itemData.id;
             var orderData = itemData.data;
+            orderData[0].IdOperaciones = itemData.idop;
             console.log("uniqueId: ", uniqueId);
             console.log("orderData: ", orderData);
 
@@ -330,6 +334,7 @@
                                                 id: uniqueId,
                                                 title: `${numeroOrden}`, // Mostrar ambos valores en el título
                                                 idoc: numeroOrdenId,
+                                                idop: res.status,
                                                 data: selectedRow // Pasamos todo el objeto seleccionado
                                             };
 

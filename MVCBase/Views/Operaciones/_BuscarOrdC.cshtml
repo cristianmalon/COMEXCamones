@@ -207,10 +207,11 @@
     var dataProducto = [];
 
     var id = "@ViewBag.Id"; // Obtener ID dinámico si es necesario
-    var IdOP = 0;
+
+
     var idOrdenCompra = null;
 
-    
+
     console.log("id de vista: ", id);
     var lista = []
     lista.push(@Html.Raw(maeCCodJson));//  @Html.Raw(maeCCodJson); // Convertir JSON en objeto JavaScript
@@ -232,7 +233,7 @@
     // Convertir el array a una cadena separada por comas para enviarlo en la URL
     var maeCCodString = lista.join(',');
     $("#btnGuardarDatosImp_" + id).click(function () {
-       
+
         debugger;
         var BE = {
             FileID: $('#FileIDv').val(),
@@ -260,7 +261,7 @@
             data: JSON.stringify({ entidad: BE }),
             success: function (response) {
                 console.log("response: ", response);
-               
+
 
                 DevExpress.ui.dialog.alert("Datos de importación guardado correctamente.", "Éxito").done(function () {
                     // Habilitar el botón de "Agregar O/C"
@@ -599,6 +600,25 @@
         dataSource: new DevExpress.data.CustomStore({
             key: 'IdLote',
             load() {
+
+                var tabP;
+                var activeT;
+                if ("@ViewBag.ViewID" === 'R') {
+                    tabP = $("#tabPanel").dxTabPanel("instance");
+                    activeT = tabP.option("selectedItem");
+
+                } else if ("@ViewBag.ViewID" === 'E') {
+                    tabP = $("#tabPanelE").dxTabPanel("instance");
+                    activeT = tabP.option("selectedItem");
+
+                }
+                console.log("activeT: ", activeT);
+
+
+                var IdOP = activeT.idop;
+
+
+
                 return sendRequest(`/Operaciones/ListarLotes?OcId=${IdOP}&file=${filecreado}`)
                     .then(data => {
                         data.forEach(row => row.OrdenID = @Model.id); // Agregar OrdenID a cada fila
@@ -632,6 +652,23 @@
             useIcons: true // Asegura que los iconos de edición sean visibles
         },
         onInitNewRow: function (e) {
+            var tabP;
+            var activeT;
+            if ("@ViewBag.ViewID" === 'R') {
+                tabP = $("#tabPanel").dxTabPanel("instance");
+                activeT = tabP.option("selectedItem");
+
+            } else if ("@ViewBag.ViewID" === 'E') {
+                tabP = $("#tabPanelE").dxTabPanel("instance");
+                activeT = tabP.option("selectedItem");
+
+            }
+            console.log("activeT: ", activeT);
+
+
+            var IdOP = activeT.idop;
+
+
             e.data.IdOPeraciones = IdOP ; // Valor predeterminado para IdFile
             e.data.IdFile = filecreado; // Valor predeterminado para IdOPeraciones
         },
@@ -692,7 +729,30 @@
                         icon: "add",
                         text: "Agregar Lote",
                         onClick() {
-                            $("#gridContainerL_" + id).dxDataGrid("instance").addRow();
+
+                            let tabPanel;
+                            let activeTab;
+                            if ("@ViewBag.ViewID" === 'R') {
+                                tabPanel = $("#tabPanel").dxTabPanel("instance");
+                                 activeTab = tabPanel.option("selectedItem");
+
+                            } else if ("@ViewBag.ViewID" === 'E') {
+                                tabPanel = $("#tabPanelE").dxTabPanel("instance");
+                                activeTab = tabPanel.option("selectedItem");
+
+                            }
+
+                            if (!activeTab || !activeTab.id) {
+                                DevExpress.ui.dialog.alert("No se pudo obtener la pestaña activa.", "Error");
+                                return;
+                            }
+                            console.log(" activeTab: ", activeTab);
+
+                            let currentId = activeTab.id;
+                            console.log("id actual: ", currentId);
+
+
+                            $("#gridContainerL_" + currentId).dxDataGrid("instance").addRow();
                         }
                     },
                     location: "before"
@@ -703,21 +763,44 @@
                         icon: "trash",
                         text: "Eliminar Lote",
                         onClick() {
-                            const grid = $("#gridContainerL_" + id).dxDataGrid("instance");
-                            const selectedRow = grid.getSelectedRowsData();
 
-                            if (selectedRow.length === 0) {
+
+                            let tabPanel;
+                            let activeTab;
+                            if ("@ViewBag.ViewID" === 'R') {
+                                tabPanel = $("#tabPanel").dxTabPanel("instance");
+                                 activeTab = tabPanel.option("selectedItem");
+
+                            } else if ("@ViewBag.ViewID" === 'E') {
+                                tabPanel = $("#tabPanelE").dxTabPanel("instance");
+                                activeTab = tabPanel.option("selectedItem");
+
+                            }
+
+                            if (!activeTab || !activeTab.id) {
+                                DevExpress.ui.dialog.alert("No se pudo obtener la pestaña activa.", "Error");
+                                return;
+                            }
+                            console.log(" activeTab: ", activeTab);
+
+                            let currentId = activeTab.id;
+                            console.log("id actual: ", currentId);
+
+                            const gridL = $("#gridContainerL_" + currentId).dxDataGrid("instance");
+                            const selectedRowL = gridL.getSelectedRowsData();
+
+                            if (selectedRowL.length === 0) {
                                 DevExpress.ui.dialog.alert("Debe seleccionar un lote para eliminar.", "Aviso");
                                 return;
                             }
 
-                            const selectedIdLote = selectedRow[0].IdLote;
+                            const selectedIdLote = selectedRowL[0].IdLote;
 
                             DevExpress.ui.dialog.confirm("¿Está seguro de eliminar este lote?", "Confirmar eliminación").done(function (result) {
                                 if (result) {
-                                    grid.getDataSource().store().remove(selectedIdLote)
+                                    gridL.getDataSource().store().remove(selectedIdLote)
                                         .then(() => {
-                                            grid.refresh();
+                                            gridL.refresh();
                                             DevExpress.ui.notify("Lote eliminado correctamente.", "success", 2000);
                                         })
                                         .catch(() => {
@@ -752,6 +835,26 @@
         dataSource: new DevExpress.data.CustomStore({
             key: 'IdContenedor',
             load() {
+
+
+                var tabP;
+                var activeT;
+                if ("@ViewBag.ViewID" === 'R') {
+                    tabP = $("#tabPanel").dxTabPanel("instance");
+                    activeT = tabP.option("selectedItem");
+
+                } else if ("@ViewBag.ViewID" === 'E') {
+                    tabP = $("#tabPanelE").dxTabPanel("instance");
+                    activeT = tabP.option("selectedItem");
+
+                }
+                console.log("activeT: ", activeT);
+
+
+                var IdOP = activeT.idop;
+
+
+
                 return sendRequest(`/Operaciones/ListarContenedores?OcId=${IdOP}&file=${filecreado}`)
                     .then(data => {
                         data.forEach(row => row.OrdenID = @Model.id); // Agregar OrdenID a cada fila
@@ -785,6 +888,24 @@
             useIcons: true // Asegura que los iconos de edición sean visibles
         },
         onInitNewRow: function (e) {
+
+            var tabP;
+            var activeT;
+            if ("@ViewBag.ViewID" === 'R') {
+                tabP = $("#tabPanel").dxTabPanel("instance");
+                activeT = tabP.option("selectedItem");
+
+            } else if ("@ViewBag.ViewID" === 'E') {
+                tabP = $("#tabPanelE").dxTabPanel("instance");
+                activeT = tabP.option("selectedItem");
+
+            }
+            console.log("activeT: ", activeT);
+
+
+            var IdOP = activeT.idop;
+
+
             e.data.IdOPeraciones = IdOP ; // Valor predeterminado para IdFile
             e.data.IdFile = filecreado; // Valor predeterminado para IdOPeraciones
             e.data.Estado = 'A'; // Valor predeterminado para IdOPeraciones
@@ -792,7 +913,7 @@
         columns: [
             { dataField: 'IdFile', caption: 'IdFile', alignment: 'left', allowEditing: false },
             { dataField: 'IdOPeraciones', caption: 'IdOPeraciones', alignment: 'left', allowEditing: false },
-            { dataField: 'IdContenedor', caption: 'IdLote', alignment: 'left', allowEditing: false },
+            { dataField: 'IdContenedor', caption: 'IdContenedor', alignment: 'left', allowEditing: false },
 
             {
                 dataField: 'Contenedor',
@@ -815,7 +936,21 @@
                         icon: "add",
                         text: "Agregar Contenedor",
                         onClick() {
-                            $("#gridContainerC_" + id).dxDataGrid("instance").addRow();
+                            let tabPanel;
+                            let activeTab;
+                            if ("@ViewBag.ViewID" === 'R') {
+                                tabPanel = $("#tabPanel").dxTabPanel("instance");
+                                 activeTab = tabPanel.option("selectedItem");
+
+                            } else if ("@ViewBag.ViewID" === 'E') {
+                                tabPanel = $("#tabPanelE").dxTabPanel("instance");
+                                activeTab = tabPanel.option("selectedItem");
+
+                            }
+                            let currentId = activeTab.id;
+
+
+                            $("#gridContainerC_" + currentId).dxDataGrid("instance").addRow();
                         }
                     },
                     location: "before"
@@ -826,21 +961,35 @@
                         icon: "trash",
                         text: "Eliminar Contenedor",
                         onClick() {
-                            const grid = $("#gridContainerC_" + id).dxDataGrid("instance");
-                            const selectedRow = grid.getSelectedRowsData();
+                            let tabPanel;
+                            let activeTab;
+                            if ("@ViewBag.ViewID" === 'R') {
+                                tabPanel = $("#tabPanel").dxTabPanel("instance");
+                                 activeTab = tabPanel.option("selectedItem");
 
-                            if (selectedRow.length === 0) {
+                            } else if ("@ViewBag.ViewID" === 'E') {
+                                tabPanel = $("#tabPanelE").dxTabPanel("instance");
+                                activeTab = tabPanel.option("selectedItem");
+
+                            }
+                            let currentId = activeTab.id;
+
+
+                            const gridC = $("#gridContainerC_" + currentId).dxDataGrid("instance");
+                            const selectedRowC = gridC.getSelectedRowsData();
+
+                            if (selectedRowC.length === 0) {
                                 DevExpress.ui.dialog.alert("Debe seleccionar un Contenedor para eliminar.", "Aviso");
                                 return;
                             }
 
-                            const selectedIdLote = selectedRow[0].IdLote;
+                            const selectedIdContenedor = selectedRowC[0].IdContenedor;
 
                             DevExpress.ui.dialog.confirm("¿Está seguro de eliminar este Contenedor?", "Confirmar eliminación").done(function (result) {
                                 if (result) {
-                                    grid.getDataSource().store().remove(selectedIdLote)
+                                    gridC.getDataSource().store().remove(selectedIdContenedor)
                                         .then(() => {
-                                            grid.refresh();
+                                            gridC.refresh();
                                             DevExpress.ui.notify("Contenedor eliminado correctamente.", "success", 2000);
                                         })
                                         .catch(() => {

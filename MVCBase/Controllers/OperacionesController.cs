@@ -285,6 +285,7 @@ namespace MVCBase.Controllers
                 {
                     result = response.Success,
                     errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                    status = response.status,
                     url = Url.Action("Index"),
                     msg = response.Success ? Utiles.MessageSaveSuccess() : response.mensaje,
                 }, JsonRequestBehavior.AllowGet);
