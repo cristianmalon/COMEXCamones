@@ -42,7 +42,20 @@ namespace CAMTEX.Aplicacion
 
         public Response Eliminar(Request<Operaciones> entidad)
         {
-            throw new NotImplementedException();
+            Response retorno = new Response();
+            try
+            {
+                var resultado = OperacionesRepositorio.Eliminar(entidad.entidad);
+                retorno.Success = true;
+                retorno.error = false;
+
+            }
+            catch (Exception ex)
+            {
+                retorno.error = true;
+                retorno.mensaje = ex.Message;
+            }
+            return retorno;
         }
 
         public Response Insertar(Request<Operaciones> entidad)

@@ -35,7 +35,7 @@
                         </div>*@
                         <div class="col-md-2">
                             <label>Usuario</label>
-                            <input type="text" id="txtUsuarioE" class="form-control" value="@Model.UsuarioCreacion" readonly>
+                            <input type="text" id="txtUsuarioE" class="form-control"  readonly>
 
                         </div>
                         <div class="col-md-1">
@@ -82,7 +82,7 @@
                         -->
 
                     <div class="text-right">
-                        <div id="btnGuardarTodasOCE"></div>
+                        <div id="btnGuardarTodasOCE"  style="display: none;"></div>
                     </div>
                     <!-- Campo oculto para guardar nuevoFileID -->
                     <input type="hidden" id="FileIDv" value="" />
@@ -106,26 +106,34 @@
         var nuevoFileID;
 
         let ordenesAbiertas = [];
+
+
+
+
         let gridE = $("#gridContainerFile").dxDataGrid("instance");
-        let filaSeleccionada = gridE.getSelectedRowsData()[0];  // la fila seleccionada
+        let filaSeleccionada = gridE.getSelectedRowsData()[0]; // la fila seleccionada
+
+
         $("#txtCFileE").val(filaSeleccionada.FileId); // o CodFile si prefieres
         $("#txtFileE").val(filaSeleccionada.NombreF);
-        console.log("filaSeleccionada: ", filaSeleccionada);
+        $("#txtUsuarioE").val(filaSeleccionada.UsuarioCreacion);
 
+
+        console.log("filaSeleccionada Editar: ", filaSeleccionada);
+
+        // Crear el dxTabPanel inicialmente (si no existe ya)
         const tabPanelE = $('#tabPanelE').dxTabPanel({
             dataSource: [],
             itemTitleTemplate: titleTemplate,
             itemTemplate: loadPartialView,
             height: 550,
             deferRendering: false,
-            noDataText: "No hay pestañas abiertas", // Mensaje personalizado
+            noDataText: "No hay pestañas abiertas",
             showNavButtons: true,
             repaintChangesOnly: true,
             onSelectionChanged: function (e) {
                 console.log("Pestaña activa AA:", e.component.option("selectedIndex"));
-
                 $(".tab-contentss").hide();
-
                 if (e.addedItems.length > 0 && e.addedItems[0].id) {
                     $("#tab1_" + e.addedItems[0].id).show();
                 } else {
@@ -134,6 +142,7 @@
             }
         }).dxTabPanel('instance');
 
+        // Función titleTemplate, loadPartialView, closeButtonHandler (como antes)
         function titleTemplate(itemData, itemIndex, itemElement) {
             itemElement.append($('<span>').text(itemData.title));
             itemElement.append(
@@ -144,24 +153,39 @@
         }
 
         function loadPartialView(itemData, itemIndex, itemElement) {
-
             var uniqueId = itemData.id;
             var orderData = itemData.data;
             console.log("uniqueId: ", uniqueId);
-            console.log("orderData: ", orderData);
+            console.log("orderData: ", orderData[0]);
+            console.log("orderData[0].FileId: ", orderData[0].FileId);
 
             const tabPanelItems2 = tabPanelE.option('dataSource');
-            console.log("tabPanelItems2: ", tabPanelItems2[0].idoc);
+            console.log("tabPanelItems2: ", tabPanelItems2[0]?.idoc);
             $('<div>').addClass('tab-content').attr("data-id", uniqueId).appendTo(itemElement);
 
-            // Cargar la misma vista parcial en cada tab
+
+
+            var transformedOrderData = {
+                id: orderData[0].OrdenID,
+                FileID: orderData[0].FileId,
+                NumeroOrden: orderData[0].OrdC,
+                PrvDDes: orderData[0].Proveedor,
+                PrvCCod: orderData[0].CodProv,
+                MaeDDes: orderData[0].DesArt,
+                
+            };
+
+
+
+
             $.ajax({
                 url: '/Operaciones/VROrdenCompra',
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify({
                     id: uniqueId,
-                    orderData: orderData // Aquí envías todo el objeto
+                    orderData: transformedOrderData,
+                    FileID: orderData[0].FileId
                 }),
                 success: function (response) {
                     itemElement.find('.tab-content').html(response);
@@ -172,43 +196,97 @@
             });
         }
 
-
         function closeButtonHandler(itemData) {
             DevExpress.ui.dialog.confirm("¿Estás seguro de que deseas quitar esta O/C?", "Confirmación")
                 .done(function (dialogResult) {
                     if (dialogResult) { // Si el usuario confirma
                         const tabPanelItems = tabPanelE.option('dataSource');
                         const index = tabPanelItems.findIndex(tab => tab.id === itemData.id);
-                        console.log("index: ", index);
-                        console.log("itemData.data: ", itemData.data);
 
-                        if (index !== -1) {
-                            // Filtrar correctamente para eliminar la combinación de NumeroOrden + Item
-                            ordenesAbiertas = ordenesAbiertas.filter(codigo =>
-                                !(codigo.NumeroOrdenC === itemData.data[0].NumeroOrden)
-                            );
-                            console.log("ordenesAbiertas: ", ordenesAbiertas);
-                            IdordenesAbiertas = IdordenesAbiertas.filter(codigo =>
-                                !(codigo.OrdenID === itemData.data[0].id)
-                            );
-                            console.log("IdordenesAbiertasTAR: ", IdordenesAbiertasTAR);
-                            IdordenesAbiertasTAR = IdordenesAbiertasTAR.filter(codigo =>
-                                !(codigo.OrdenID === itemData.data[0].id)
-                            );
-                            tabPanelItems.splice(index, 1);
-                            tabPanelE.option('dataSource', tabPanelItems);
+                        console.log("CLOSE itemData: ", itemData);
+                        console.log("CLOSE File: ", $('#FileIDv').val());
+                        console.log("CLOSE index: ", index);
+                        console.log("CLOSE itemData.data: ", itemData.data);
+                        console.log("CLOSE itemData.data: ", itemData.data[0].OrdenID);
 
-                            if (index >= tabPanelItems.length && index > 0) {
-                                tabPanelE.option('selectedIndex', index - 1);
+                        // Parámetros para el AJAX
+                        const fileId = $('#FileIDv').val();
+                        const ordenId = itemData.data[0].OrdenID;
+
+                        $.ajax({
+                            url: '/Operaciones/ActualizarEstadoOrdenxFile',
+                            type: 'POST',
+                            data: {
+                                fileId: fileId,
+                                ordenId: ordenId,
+                                nuevoEstado: 'I'
+                            },
+                            success: function (response) {
+                                console.log('response: ', response);
+
+                                if (response.rpta) {
+                                    console.log('Estado actualizado correctamente.');
+
+                                    if (index !== -1) {
+                                        // Filtrar correctamente para eliminar la combinación de NumeroOrden + Item
+                                        ordenesAbiertas = ordenesAbiertas.filter(codigo =>
+                                            !(codigo.NumeroOrdenC === itemData.data[0].NumeroOrden)
+                                        );
+                                        console.log("ordenesAbiertas: ", ordenesAbiertas);
+                                        IdordenesAbiertas = IdordenesAbiertas.filter(codigo =>
+                                            !(codigo.OrdenID === itemData.data[0].id)
+                                        );
+                                        console.log("IdordenesAbiertasTAR: ", IdordenesAbiertasTAR);
+                                        IdordenesAbiertasTAR = IdordenesAbiertasTAR.filter(codigo =>
+                                            !(codigo.OrdenID === itemData.data[0].id)
+                                        );
+                                        tabPanelItems.splice(index, 1);
+                                        tabPanelE.option('dataSource', tabPanelItems);
+
+                                        if (index >= tabPanelItems.length && index > 0) {
+                                            tabPanelE.option('selectedIndex', index - 1);
+                                        }
+                                    }
+                                } else {
+                                    DevExpress.ui.dialog.alert('No se pudo actualizar el estado.', 'Error');
+                                }
+                            },
+                            error: function () {
+                                DevExpress.ui.dialog.alert('Ocurrió un error al actualizar el estado.', 'Error');
                             }
-                        }
+                        });
                     }
                 });
         }
 
+        // Lógica de selección de fila y llenado del dxTabPanel
+        if (filaSeleccionada && filaSeleccionada.FileId) {
+            let valorFileSeleccionado = filaSeleccionada.FileId;
+
+            gridE.getDataSource().store().load().then(datosGrid => {
+                let filasConMismoFile = datosGrid.filter(fila => fila.FileId === valorFileSeleccionado);
+
+                console.log("Filas con el mismo valor en FileId:", filasConMismoFile);
+
+                const tabPanelItems = [];
+                filasConMismoFile.forEach(fila => {
+                    let uniqueId = `tab_${Date.now()}_${fila.OrdenID}`; // UniqueId por fila
+                    tabPanelItems.push({
+                        title: `${fila.OrdC}`,
+                        id: uniqueId,
+                        idoc: fila.OrdenID,
+                        data: [fila]
+                    });
+                });
+
+                tabPanelE.option('dataSource', tabPanelItems);
+            });
+        } else {
+            console.log("No se ha seleccionado una fila o la fila seleccionada no tiene la columna 'FileId'.");
+        }
 
 
-        var popup = $('#popupContainerE').dxPopup({
+        var popupE = $('#popupContainerE').dxPopup({
             title: 'Buscar O/C',
             width: 1200,
             height: 800,
@@ -218,12 +296,12 @@
                     method: 'GET',
                     success: function (result) {
                         contentElement.append(result);
-                        contentElement.append('<div class="dx-popup-bottom-buttons">' +
-                            '<div id="btnAdd"></div>&nbsp;&nbsp;' +
-                            '<div id="btnClose"></div>' +
-                            '</div>');
 
-                        $('#btnAdd').dxButton({
+                        // Crear el contenedor de botones (lo agregamos como elemento DOM limpio, no como string)
+                        var buttonContainer = $('<div>').addClass('dx-popup-bottom-buttons').appendTo(contentElement);
+
+                        // Botón "Seleccionar"
+                        $('<div>').attr('id', 'btnAdd').appendTo(buttonContainer).dxButton({
                             text: 'Seleccionar',
                             onClick: function () {
                                 var grid = $("#gridBOC").dxDataGrid("instance");
@@ -263,42 +341,86 @@
                                     return;
                                 }
 
+                                // Guardamos en Base los productos seleccionados
+                                var BEOperaciones = {
+                                    FileID: $('#FileIDv').val(),
+                                    OrdenID: selectedRow[0].id,
+                                }
+                                var root = "<ROOT>";
+                                $.each(selectedRow, function (i, e) {
+                                    root += "<FileOperacionesProductos>";
+                                    root += "<ItemOrdenCompra>" + e.ItemOrdenCompra + "</ItemOrdenCompra>";
+                                    root += "<ItemNroEntregaOC>" + e.ItemNroEntregaOC + "</ItemNroEntregaOC>";
+                                    root += "</FileOperacionesProductos>";
+                                })
+                                root += "</ROOT>";
+                                BEOperaciones.XML_Productos = root;
+
+                                $.ajax({
+                                    url: `/Operaciones/ActualizarOperaciones`,
+                                    type: 'POST',
+                                    async: false,
+                                    data: JSON.stringify({ entidad: BEOperaciones }),
+                                    dataType: 'json',
+                                    headers: {
+                                        "Content-Type": "application/json"
+                                    },
+                                    success: function (res) {
+                                        //debugger;
+                                        if (!res.result) {
+                                            DevExpress.ui.dialog.alert("Hubo un error al guardar los items seleccionados.", "Error");
+
+                                        } else {
+                                            var tabPanelItems = tabPanelE.option('dataSource');
+
+                                            var uniqueId = `tab_${Date.now()}`;
+                                            var newTab = {
+                                                id: uniqueId,
+                                                title: `${numeroOrden}`, // Mostrar ambos valores en el título
+                                                idoc: numeroOrdenId,
+                                                data: selectedRow // Pasamos todo el objeto seleccionado
+                                            };
+
+                                            tabPanelItems.push(newTab);
+                                            tabPanelE.option('dataSource', tabPanelItems);
+                                            tabPanelE.option('selectedIndex', tabPanelItems.length - 1);
+
+                                            // Agregar al array de órdenes abiertas para evitar duplicados
+                                            ordenesAbiertas.push({ NumeroOrdenC: numeroOrden });
+                                            IdordenesAbiertas.push({ OrdenID: numeroOrdenId });
+
+                                            console.log("IdordenesAbiertas: ", IdordenesAbiertas);
+
+                                            popupE.hide();
+
+                                        }
+                                        console.log(res);
+
+                                    }, complete: function (data) {
+                                        //desbloqObject()
+                                    }
+                                });
+
 
                                 //if (existeProv) {
                                 //    DevExpress.ui.dialog.alert("Este proveedor ya esta seleccionado.", "Aviso");
                                 //    return;
                                 //}
-                                var tabPanelItems = tabPanelE.option('dataSource');
 
-                                var uniqueId = `tab_${Date.now()}`;
-                                var newTab = {
-                                    id: uniqueId,
-                                    title: `${numeroOrden}`, // Mostrar ambos valores en el título
-                                    idoc: numeroOrdenId,
-                                    data: selectedRow // Pasamos todo el objeto seleccionado
-                                };
-
-                                tabPanelItems.push(newTab);
-                                tabPanelE.option('dataSource', tabPanelItems);
-                                tabPanelE.option('selectedIndex', tabPanelItems.length - 1);
-
-                                // Agregar al array de órdenes abiertas para evitar duplicados
-                                ordenesAbiertas.push({ NumeroOrdenC: numeroOrden });
-                                IdordenesAbiertas.push({ OrdenID: numeroOrdenId});
-
-                                console.log("IdordenesAbiertas: ", IdordenesAbiertas);
-
-                                popup.hide();
                             }
                         });
 
-
-                        $('#btnClose').dxButton({
+                        // Botón "Cerrar"
+                        $('<div>').attr('id', 'btnClose').appendTo(buttonContainer).dxButton({
+                            text: 'Cerrar',
                             text: 'Cerrar',
                             onClick: function () {
-                                popup.hide();
+                                popupE.hide();
                             }
                         });
+
+
+
                     },
                     error: function (error) {
                         console.error('Error al cargar la vista parcial', error);
@@ -306,9 +428,9 @@
                 });
             },
             onShowing: function () {
-                var grid = $("#gridBOC").dxDataGrid("instance");
-                if (grid) {
-                    grid.clearSelection(); // Limpia la selección anterior al abrir el popup
+                var gridE = $("#gridBOC").dxDataGrid("instance");
+                if (gridE) {
+                    gridE.clearSelection(); // Limpia la selección anterior al abrir el popup
                 }
             },
             onHidden: function () {
@@ -322,7 +444,7 @@
             type: 'default',
             disabled: false,
             onClick: function () {
-                popup.show();
+                popupE.show();
             }
         });
 
