@@ -380,6 +380,40 @@
         },
         toolbar: {
             items: [
+                // Botón "Agregar fila"
+                {
+                    location: "before",
+                    widget: "dxButton",
+                    options: {
+                        text: "Agregar fila",
+                        icon: "add",
+                        elementAttr: { id: "btnAgregar_" + id },
+                        onClick() {
+                            var tabP;
+                            var activeT;
+                            if ("@ViewBag.ViewID" === 'R') {
+                                tabP = $("#tabPanel").dxTabPanel("instance");
+                                activeT = tabP.option("selectedItem");
+
+                            } else if ("@ViewBag.ViewID" === 'E') {
+                                tabP = $("#tabPanelE").dxTabPanel("instance");
+                                activeT = tabP.option("selectedItem");
+
+                            }
+                            console.log("activeT: ", activeT);
+
+
+                            var IdOC = activeT.idoc;
+
+
+
+
+                        }
+                    }
+                },
+
+                // Botón "Eliminar fila seleccionada"
+
                 {
                     location: "before",
                     widget: "dxButton",

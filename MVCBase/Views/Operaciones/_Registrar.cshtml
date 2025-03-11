@@ -253,6 +253,9 @@
 
                         contentElement.append(result);
 
+                                              
+
+
                         // Crear el contenedor de botones (lo agregamos como elemento DOM limpio, no como string)
                         var buttonContainer = $('<div>').addClass('dx-popup-bottom-buttons').appendTo(contentElement);
 
@@ -391,11 +394,17 @@
                         console.error('Error al cargar la vista parcial', error);
                     }
                 });
+
+
+
             },
             onShowing: function () {
                 var grid = $("#gridBOC").dxDataGrid("instance");
                 if (grid) {
                     grid.clearSelection(); // Limpia la selección anterior al abrir el popup
+                    grid.clearFilter(); // Limpia los filtros aplicados
+
+
                 }
             },
             onHidden: function () {
