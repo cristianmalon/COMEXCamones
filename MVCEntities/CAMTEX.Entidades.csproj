@@ -72,6 +72,7 @@
     <Compile Include="Principales\Incoterm.cs" />
     <Compile Include="Principales\Lotes.cs" />
     <Compile Include="Principales\Operaciones.cs" />
+    <Compile Include="Principales\OperacionesImp.cs" />
     <Compile Include="Principales\OrdenesCompra.cs" />
     <Compile Include="Principales\Pais.cs" />
     <Compile Include="Principales\Producto.cs" />

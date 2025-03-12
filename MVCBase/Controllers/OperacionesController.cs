@@ -818,6 +818,68 @@ namespace MVCBase.Controllers
 
 
 
+
+        /*INICIO OPERACIONES*/
+
+        [HttpGet]
+        [AllowAnonymous]
+        public JsonResult ListarOperacionesImp(int OcId, int file)
+        {
+            var datos = new Request<OperacionesImp>();
+            //datos.entidad = entidad;
+            datos.entidad = new OperacionesImp();
+            datos.entidad.IdOperaciones = OcId;
+            datos.entidad.FileID = file;
+            ////datos.entidad.IdSede = VariablesWeb.Usuario.IdSede;
+            var lista = new OperacionesImpAplicacion(new OperacionesImpRepositorio()).Listar(datos);
+            //return Json(new { data = lista.response });
+            var rpta = Json(new
+            {
+                //data = lista.response
+                result = !lista.error,
+                IsError = lista.error,
+                Datos = JsonConvert.SerializeObject(lista.response),
+                msg = lista.mensaje
+            }, JsonRequestBehavior.AllowGet);
+            rpta.MaxJsonLength = int.MaxValue;
+
+            return rpta;
+        }
+
+
+
+
+        /*FIN OPERACIONES*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         /*FACTURA*/
 
 

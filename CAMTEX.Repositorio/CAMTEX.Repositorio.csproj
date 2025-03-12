@@ -62,6 +62,7 @@
     <Compile Include="Principales\FilesRepositorio.cs" />
     <Compile Include="Principales\IncotermRepositorio.cs" />
     <Compile Include="Principales\LotesRepositorio.cs" />
+    <Compile Include="Principales\OperacionesImpRepositorio.cs" />
     <Compile Include="Principales\OperacionesRepositorio.cs" />
     <Compile Include="Principales\OrdenesCompraRepositorio.cs" />
     <Compile Include="Principales\PaisRepositorio.cs" />
