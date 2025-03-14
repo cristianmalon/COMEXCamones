@@ -206,8 +206,8 @@
 <script>
     var dataProducto = [];
 
-    var id = "@ViewBag.Id"; 
-        
+    var id = "@ViewBag.Id";
+
 
 
 
@@ -538,6 +538,7 @@
 
                 }
                 console.log("activeT: ", activeT);
+                console.log("ViewBag.ViewID: ", "@ViewBag.ViewID");
 
 
                 var IdOP = activeT.idop;
@@ -680,7 +681,7 @@
                     { type: "required", message: "El Resultado no puede estar vacío" }
                 ]
             },
-            
+
             { dataField: 'ESTADO', caption: 'Estado', alignment: 'left', allowEditing: false}
 
         ],

@@ -275,6 +275,7 @@
                     tabPanelItems.push({
                         title: `${fila.OrdC}`,
                         id: uniqueId,
+                        idop: fila.NroOp,
                         idoc: fila.OrdenID,
                         data: [fila]
                     });
@@ -379,6 +380,7 @@
                                                 id: uniqueId,
                                                 title: `${numeroOrden}`, // Mostrar ambos valores en el título
                                                 idoc: numeroOrdenId,
+                                                idop: res.status,
                                                 data: selectedRow // Pasamos todo el objeto seleccionado
                                             };
 
