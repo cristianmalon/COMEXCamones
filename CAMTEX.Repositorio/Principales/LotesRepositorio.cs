@@ -45,6 +45,7 @@ namespace CAMTEX.Repositorio
             oConn.AddParameter("@EstadoL", entidad.EstadoLote);
             oConn.AddParameter("@Resultado", entidad.Resultado);
             oConn.AddParameter("@IdDestP", entidad.Destino);
+            oConn.AddParameter("@DepositoCad", entidad.DepositoCad);
             oConn.AddParameter("@usuario", entidad.USUARIO_REG);
             oConn.AddParameter("@Host", entidad.HOST_REG);
             DataTable dt = oConn.ExecuteDataTable("[DBO].[Usp_Lotes]");

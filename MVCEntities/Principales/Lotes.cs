@@ -15,10 +15,13 @@ namespace CAMTEX.Entidades
         [DataMember] public string Codigo { get; set; }
         [DataMember] public string NroLotes { get; set; }
         [DataMember] public DateTime? Evaluacion { get; set; }
+
+
         [DataMember] public string EstadoLote { get; set; }
         [DataMember] public string Resultado { get; set; }
-       // [DataMember] public string Deposito { get; set; }
-        [DataMember] public int Destino { get; set; }
+        [DataMember] public string Destino { get; set; }
+        [DataMember] public string DepositoCad { get; set; }
+
         [DataMember] public int IdLote { get; set; }
     }
 }
