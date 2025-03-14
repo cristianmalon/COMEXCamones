@@ -409,7 +409,7 @@
         toolbar: {
             items: [
                 // Botón "Agregar fila"
-                {
+                @*{
                     location: "before",
                     widget: "dxButton",
                     options: {
@@ -438,7 +438,7 @@
 
                         }
                     }
-                },
+                },*@
 
                 // Botón "Eliminar fila seleccionada"
 
@@ -520,7 +520,6 @@
             pageSize: 10,
         }
     });
-
 
     $("#gridContainerL_" + id).dxDataGrid({
         dataSource: new DevExpress.data.CustomStore({
@@ -667,13 +666,22 @@
                 dataField: 'Resultado', caption: 'Resultado', alignment: 'left', allowEditing: true,
                 validationRules: [
                     { type: "required", message: "El Resultado no puede estar vacío" }
-                ]},
+                ]
+            },
             {
                 dataField: 'Destino', caption: 'Destino', alignment: 'left', allowEditing: true,
                 validationRules: [
                     { type: "required", message: "El Destino no puede estar vacío" }
-                ]},
-            {dataField: 'Estado', caption: 'Estado', alignment: 'left', allowEditing: false}
+                ]
+            },
+            {
+                dataField: 'DepositoCad', caption: 'Deposito', alignment: 'left', allowEditing: true,
+                validationRules: [
+                    { type: "required", message: "El Resultado no puede estar vacío" }
+                ]
+            },
+            
+            { dataField: 'ESTADO', caption: 'Estado', alignment: 'left', allowEditing: false}
 
         ],
         toolbar: {
@@ -780,12 +788,6 @@
         }
     });
 
-
-
-
-
-
-
     $("#gridContainerC_" + id).dxDataGrid({
         dataSource: new DevExpress.data.CustomStore({
             key: 'IdContenedor',
@@ -880,7 +882,7 @@
                 ]
             },
 
-            {dataField: 'Estado', caption: 'Estado', alignment: 'left', allowEditing: false}
+            { dataField: 'ESTADO', caption: 'Estado', alignment: 'left', allowEditing: false}
 
         ],
         toolbar: {
@@ -969,6 +971,7 @@
         }
 
     });
+
     $("#gridContainerO_" + id).dxDataGrid({
         dataSource: new DevExpress.data.CustomStore({
             key: 'IdOperativa',
@@ -1133,52 +1136,6 @@
                     displayExpr: 'Nombre'
                 },
             },
-
-
-
-            /*
-             {
-                dataField: 'idAgenteCarga',
-                caption: 'Agte. Aduana',
-                 alignment: 'left',
-                 editorType: 'dxSelectBox',  // Utilizando un dropdown
-                allowEditing: true,
-                editorOptions: {
-                    dataSource: {
-                        key: "idAgenteCarga",
-                        loadMode: "raw",
-                        load: function () {
-                            return $.ajax({
-                                url: '/Operaciones/ListarAgenteC',
-                                dataType: 'json',
-                                method: 'GET',
-                                success: function (response) {
-
-
-
-                                    console.log("el response es:", response);
-
-
-                                    return response;
-                                },
-                                error: function (xhr, status, error) {
-                                    throw new Error(error);
-                                }
-                            });
-                        }
-                    },
-                    displayExpr: 'Nombre', // Lo que se mostrará en el combo
-                    valueExpr: 'idAgenteCarga'// Lo que se guardará en la BD
-
-                },
-                validationRules: [{
-                    type: 'required'
-                }],
-            },*/
-
-
-
-
 
 
             {
