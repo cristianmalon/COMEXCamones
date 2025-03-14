@@ -30,6 +30,7 @@ namespace CAMTEX.Aplicacion
             {
                 var resultado = OperacionesRepositorio.Actualizar(entidad.entidad);
                 retorno.Success = true;
+                retorno.status = Convert.ToInt32(resultado["codigoIDOp"]);
                 retorno.error = false;
             }
             catch (Exception ex)
