@@ -29,12 +29,38 @@ namespace CAMTEX.Aplicacion
 
         public Response Eliminar(Request<AgenteCarga> entidad)
         {
-            throw new NotImplementedException();
+            Response retorno = new Response();
+            try
+            {
+                var resultado = AgenteCargaRepositorio.Eliminar(entidad.entidad);
+                retorno.Success = true;
+                retorno.error = false;
+
+            }
+            catch (Exception ex)
+            {
+                retorno.error = true;
+                retorno.mensaje = ex.Message;
+            }
+            return retorno;
         }
 
         public Response Insertar(Request<AgenteCarga> entidad)
         {
-            throw new NotImplementedException();
+            Response retorno = new Response();
+            try
+            {
+                var resultado = AgenteCargaRepositorio.Insertar(entidad.entidad);
+                retorno.Success = true;
+                retorno.error = false;
+
+            }
+            catch (Exception ex)
+            {
+                retorno.error = true;
+                retorno.mensaje = ex.Message;
+            }
+            return retorno;
         }
 
         public Response<List<AgenteCarga>> Listar(Request<AgenteCarga> entidad)
@@ -51,9 +77,8 @@ namespace CAMTEX.Aplicacion
                     lista.Add(new AgenteCarga()
                     {
                         idAgenteCarga = Util.CapturaInt0(row, "idAgenteCarga"),
-                        Nombre = Util.CapturaString(row, "Nombre"),
-                        U_DIN_AADU = Util.CapturaString(row, "U_DIN_AADU"),
-                        U_DIN_ACAR = Util.CapturaString(row, "U_DIN_ACAR"),
+                        Nombre = Util.CapturaString(row, "Nombre")
+                        
                         
                     });
                 }

@@ -219,6 +219,7 @@
     var OrdenCompraSAP = lista[0].NumeroOrden;
     CargarCombo();
     console.log("lista", lista);
+    console.log("dataProducto", dataProducto);
 
     console.log("FileIDv", $("#FileIDv").val());
     var filecreado = $("#FileIDv").val();
@@ -235,21 +236,43 @@
     var codigosExistentes ;
     $("#btnGuardarDatosImp_" + id).click(function () {
 
-        debugger;
+        let tabPanel;
+        let activeTab;
+        if ("@ViewBag.ViewID" === 'R') {
+            tabPanel = $("#tabPanel").dxTabPanel("instance");
+                activeTab = tabPanel.option("selectedItem");
+
+        } else if ("@ViewBag.ViewID" === 'E') {
+            tabPanel = $("#tabPanelE").dxTabPanel("instance");
+            activeTab = tabPanel.option("selectedItem");
+
+        }
+
+        if (!activeTab || !activeTab.id) {
+            DevExpress.ui.dialog.alert("No se pudo obtener la pestaña activa.", "Error");
+            return;
+        }
+        console.log(" activeTab: ", activeTab);
+
+        let currentId = activeTab.id;
+        console.log("id actual: ", currentId);
+
+
+        //debugger;
         var BE = {
             FileID: $('#FileIDv').val(),
-            OrdenCompraSAP: OrdenCompraSAP,
-            NumeroOperacion: $("#txtNOp_" + id).val(),
-            IdVia: $("#cboVia_" + id).val(),
-            BL: $("#txtBL_" + id).val(),
-            IdDeposito: $("#txtDeposito_" + id).val(),
+            OrdenCompraSAP: activeTab.title,
+            NumeroOperacion: $("#txtNOp_" + currentId).val(),
+            IdVia: $("#cboVia_" + currentId).val(),
+            BL: $("#txtBL_" + currentId).val(),
+            IdDeposito: $("#txtDeposito_" + currentId).val(),
             //SerieFactura: $("#txtNOp_" + id).val(),
-            NumFactura: $("#txtFactura_" + id).val(),
-            FechaIngreso: $("#txtFechaIngreso_" + id).val(),
-            FechaEmbarque: $("#txtFechaEmbarque_" + id).val(),
-            Garantia: $("#txtGarantia_" + id).val(),
-            IdSituacion: $("#cboSituacion_" + id).val(),
-            IdLineaNaviera: $("#cboLineaNaviera_" + id).val()
+            NumFactura: $("#txtFactura_" + currentId).val(),
+            FechaIngreso: $("#txtFechaIngreso_" + currentId).val(),
+            FechaEmbarque: $("#txtFechaEmbarque_" + currentId).val(),
+            Garantia: $("#txtGarantia_" + currentId).val(),
+            IdSituacion: $("#cboSituacion_" + currentId).val(),
+            IdLineaNaviera: $("#cboLineaNaviera_" + currentId).val()
 
         }
         console.log(BE);
@@ -494,7 +517,7 @@
         }
     });
 
-  
+
     $("#gridContainerL_" + id).dxDataGrid({
         dataSource: new DevExpress.data.CustomStore({
             key: 'IdLote',
@@ -522,9 +545,14 @@
                     .then(data => {
                         data.forEach(row => row.OrdenID = @Model.id); // Agregar OrdenID a cada fila
 
+                        console.log("data Lote:", data);
 
                         // Guardar los valores de la columna Codigo
-                        codigosExistentes = data.map(row => row.Codigo);
+                        codigosExistentes = data.map(row => ({
+                            IdLote: row.IdLote,
+                            Codigo: row.Codigo,
+                            Nombre: row.NroLotes
+                        }));
                         console.log("Codigos existentes:", codigosExistentes);
 
                         return data;
@@ -532,7 +560,7 @@
             },
             insert(values) {
                 // Verificar si el código ya existe
-                if (codigosExistentes.includes(values.Codigo)) {
+                if (codigosExistentes.some(lote => lote.IdLote === values.IdLote)) {
                     console.log('El valor ya existe en el detalle.');
                     DevExpress.ui.notify("Codigo ya esta agregado.", "error", 2000);
 
@@ -578,7 +606,7 @@
             }
             console.log("activeT: ", activeT);
             console.log("lista para LOTE",lista);
-                       
+
             var IdOP = activeT.idop;
 
 
@@ -604,7 +632,7 @@
                 },
                 validationRules: [
                     { type: "required", message: "El código no puede estar vacío" },
-                    
+
                 ]
 
             },
@@ -937,10 +965,9 @@
         }
 
     });
-
     $("#gridContainerO_" + id).dxDataGrid({
         dataSource: new DevExpress.data.CustomStore({
-            key: 'CodigoLote',
+            key: 'IdOperativa',
             load() {
 
 
@@ -962,18 +989,46 @@
 
 
 
-                return sendRequest(`/Operaciones/ListarOperacionesImp?OcId=${IdOP}&file=${filecreado}`)
-                    .then(data => {
-                        data.forEach(row => row.OrdenID = @Model.id); // Agregar OrdenID a cada fila
-                        return data;
+                return sendRequest(`/Operaciones/ListarOperacionesO?OcId=${IdOP}&file=${filecreado}`)
+                .then(data => {
+
+
+                        console.log("data Operativa:", data);
+                                            return data;
                     });
+
+
             },
-           /* insert(values) {
-                values.Estado = 'A';
+            update(key, values) {
+                console.log("Actualizando:", key, values);
+
+                var tabP;
+                var activeT;
+                if ("@ViewBag.ViewID" === 'R') {
+                    tabP = $("#tabPanel").dxTabPanel("instance");
+                    activeT = tabP.option("selectedItem");
+
+                } else if ("@ViewBag.ViewID" === 'E') {
+                    tabP = $("#tabPanelE").dxTabPanel("instance");
+                    activeT = tabP.option("selectedItem");
+
+                }
+                console.log("activeT: ", activeT);
+
+
+                values.FileID = filecreado;
+                values.IdOperaciones = activeT.idop;
+                console.log(values);
+                return sendRequest(`/Operaciones/ActualizarOperacionImp`, 'PUT', JSON.stringify(values));
+            },
+
+            insert(values) {
                 console.log("values:", values);
                 console.log("JSON.stringify(values):", JSON.stringify(values));
                 return sendRequest(`/Operaciones/InsertarOperacionesImp`, 'POST', JSON.stringify(values));
             },
+
+            /*
             remove(key) {
                 var values = { CodigoLote: key }
                 return sendRequest(`/Operaciones/EliminarOperacionesImp/${key}`, 'DELETE', JSON.stringify(values));
@@ -991,6 +1046,7 @@
         editing: {
             mode: "row", // También puedes usar 'popup' o 'batch'
             allowAdding: true, // Permitir agregar filas nuevas
+            allowUpdating:true,
             allowDeleting: true, // Permitir eliminar filas
             useIcons: true // Asegura que los iconos de edición sean visibles
         },
@@ -1011,6 +1067,7 @@
 
 
             var IdOP = activeT.idop;
+            console.log("codigosExistentes para Operativa:", codigosExistentes);
 
 
             e.data.IdOPeraciones = IdOP ; // Valor predeterminado para IdFile
@@ -1018,11 +1075,11 @@
             e.data.Estado = 'A'; // Valor predeterminado para IdOPeraciones
         },
         columns: [
-            { dataField: 'FileID', caption: 'FileID', alignment: 'left', allowEditing: false },
-            { dataField: 'IdOperaciones', caption: 'IdOperaciones', alignment: 'left', allowEditing: false },
-            { dataField: 'IdDatoGeneral', caption: 'IdDatoGeneral', alignment: 'left', allowEditing: false },
+            { dataField: 'IdFile', caption: 'FileID', alignment: 'left', allowEditing: false },
+            { dataField: 'IdOPeraciones', caption: 'IdOperaciones', alignment: 'left', allowEditing: false },
+            { dataField: 'IdOperativa', caption: 'IdOperativa', alignment: 'left', allowEditing: false, visible:false },
             {
-                dataField: 'FechaEmbarque', caption: 'Fecha', alignment: 'left', allowEditing: true,
+                dataField: 'FechaOperacion', caption: 'Fecha', alignment: 'left', allowEditing: true,
                 dataType: 'date', // Indica que el campo es de tipo fecha
                 format: 'dd/MM/yyyy', // Opcional: Especifica el formato de fecha
                 editorOptions: { // Opcional: Configura el editor de fecha
@@ -1033,16 +1090,105 @@
                     { type: "required", message: "La Evaluacion no puede estar vacío" }
                 ]
             },
-            { dataField: 'CodigoLote', caption: 'Codigo', alignment: 'left', allowEditing: false },
-            { dataField: 'Lote', caption: 'Nro Lote', alignment: 'left', allowEditing: false },
+            {
+                dataField: 'IdLote', caption: 'Codigo', alignment: 'left', allowEditing: true,
+                lookup: {
+                    dataSource: () => codigosExistentes,
+                    displayExpr: 'Codigo',
+                    valueExpr: 'IdLote'
+                },
+                setCellValue: function (newData, value) {
+                    const selectedLote = codigosExistentes.find(lote => lote.IdLote === value);
+
+                    if (selectedLote) {
+                        newData.IdLote = selectedLote.IdLote;
+                        newData.NroOperacion = selectedLote.Nombre; // Actualiza la columna "Lote"
+
+                        // Busca la cantidad en dataProducto basado en CodigoArticulo
+                        const producto = dataProducto.find(p => p.CodigoArticulo === selectedLote.Codigo);
+                        newData.Cantidad = producto ? producto.Qty : 0; // Si no encuentra, asigna 0
+                    }
+                },
+                calculateDisplayValue: function (rowData) {
+                    const selectedLote = codigosExistentes.find(lote => lote.IdLote === rowData.IdLote);
+                    return selectedLote ? selectedLote.Codigo : null; // Muestra el Codigo sin afectar los datos internos
+                }
+            },
+
+            { dataField: 'NroOperacion', caption: 'Nro Lote', alignment: 'left', allowEditing: false },
+
+            {
+                dataField: 'IdAgenteCarga',
+                caption: 'Agte. Aduana',
+                alignment: 'left',
+                allowEditing: true,
+                lookup: {
+                    dataSource: @Html.Raw(Json.Encode(Model.ListaAgenteCarga)),
+                    valueExpr: 'idAgenteCarga',
+                    displayExpr: 'Nombre'
+                },
+            },
+
+
+
+            /*
+             {
+                dataField: 'idAgenteCarga',
+                caption: 'Agte. Aduana',
+                 alignment: 'left',
+                 editorType: 'dxSelectBox',  // Utilizando un dropdown
+                allowEditing: true,
+                editorOptions: {
+                    dataSource: {
+                        key: "idAgenteCarga",
+                        loadMode: "raw",
+                        load: function () {
+                            return $.ajax({
+                                url: '/Operaciones/ListarAgenteC',
+                                dataType: 'json',
+                                method: 'GET',
+                                success: function (response) {
+
+
+
+                                    console.log("el response es:", response);
+
+
+                                    return response;
+                                },
+                                error: function (xhr, status, error) {
+                                    throw new Error(error);
+                                }
+                            });
+                        }
+                    },
+                    displayExpr: 'Nombre', // Lo que se mostrará en el combo
+                    valueExpr: 'idAgenteCarga'// Lo que se guardará en la BD
+
+                },
+                validationRules: [{
+                    type: 'required'
+                }],
+            },*/
+
+
+
+
 
 
             {
-                dataField: 'U_DIN_AADU', caption: 'Agte. Aduana', alignment: 'left', allowEditing: false },
+                dataField: 'IdAgentes',
+                caption: 'Agte. Carga',
+                alignment: 'left',
+                allowEditing: true,
+                lookup: {
+                    dataSource: @Html.Raw(Json.Encode(Model.ListaAgentes)), // Datos del combo
+                    displayExpr: 'Nombre', // Lo que se mostrará en el combo
+                    valueExpr: 'idAgentes', // Lo que se guardará en la BD
+                },
 
-            {
-                dataField: 'U_DIN_ACAR', caption: 'Agte. Carga', alignment: 'left', allowEditing: false },
-            { dataField: 'Cantidad', caption: 'Qty', alignment: 'left', allowEditing: false },
+            },
+            { dataField: 'Cantidad', caption: 'Qty', alignment: 'left', allowEditing: true },
 
         ],
         toolbar: {
@@ -1067,12 +1213,43 @@
 
                             }
                             let currentId = activeTab.id;
-
+                            console.log("activeTab Op: ", activeTab);
+                            console.log("currentId Op: ", currentId);
                             var dataGrid = $("#gridContainerO_" + currentId).dxDataGrid("instance");
                             dataGrid.refresh(); // Recargar los datos del grid
                         }
                     }
-                }
+                },
+                {
+                    location: "before",
+                    widget: "dxButton",
+                    options: {
+                        icon: "add",
+                        text: "Agregar",
+                        onClick: function () {
+                            let tabPanel;
+                            let activeTab;
+                            if ("@ViewBag.ViewID" === 'R') {
+                                tabPanel = $("#tabPanel").dxTabPanel("instance");
+                                 activeTab = tabPanel.option("selectedItem");
+
+                            } else if ("@ViewBag.ViewID" === 'E') {
+                                tabPanel = $("#tabPanelE").dxTabPanel("instance");
+                                activeTab = tabPanel.option("selectedItem");
+
+                            }
+                            let currentId = activeTab.id;
+                            console.log("activeTab Op: ", activeTab);
+                            console.log("currentId Op: ", currentId);
+
+
+
+
+                            var dataGrid = $("#gridContainerO_" + currentId).dxDataGrid("instance");
+                            dataGrid.addRow(); // Agrega una nueva fila en el grid
+                        }
+                    }
+                },
             ]
         },
         hoverStateEnabled: false,

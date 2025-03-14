@@ -45,7 +45,7 @@
         {
             dataField: 'U_DIN_ACAR', caption: 'AGENTE CARGA', alignment: 'left',
         },
-        
+
     ];
 
 
@@ -64,6 +64,18 @@
                     return data;
                 });
             },
+            insert(values) {
+                console.log(values);
+                return sendRequest(`/AgenteCarga/InsertarAgenteCarga`, 'POST', JSON.stringify(values));
+            },
+            
+            remove(key) {
+                var values = { idAgenteCarga: key }
+                //values.IdUbicacion = key;
+                return sendRequest(`/AgenteCarga/DeleteAgenteCarga`, 'DELETE', JSON.stringify(values));
+            },
+
+
         });
 
 
@@ -100,7 +112,64 @@
                     pageIndex: 0 // Set the initial page index
                 },
 
+                editing: {
+                    mode: 'popup',
+                    allowUpdating: false,
+                    useIcons: true,
+                    allowAdding: true,
+                    allowDeleting: true,//sirve para confirmar tu eliminacion
+                    popup: {
+                        title: 'Agente Carga',
+                        showTitle: true,
+                        width: 670,
+                        height: 350,
+                    },
 
+                    form: {
+                        items: [{
+                            itemType: 'group',
+                            colCount: 2,
+                            colSpan: 2,
+                            
+                            items: [
+
+                               
+                                {
+                                    dataField: 'Nombre',
+                                    validationRules: [{
+                                        type: 'required'
+                                    }],                                    
+                                },
+                                {
+                                    itemType: 'empty', // Esto agrega un espacio vacío en la segunda columna
+                                },
+
+                                {
+                                    dataField: 'U_DIN_AADU',
+                                    caption: 'Agente Aduana',
+                                    validationRules: [{
+                                        type: 'required'
+                                    }]
+                                },
+                                {
+                                    itemType: 'empty', // Esto agrega un espacio vacío en la segunda columna
+                                },
+                                {
+                                    dataField: 'U_DIN_ACAR', caption: 'Agente Carga',
+
+                                    validationRules: [{
+                                        type: 'required'
+                                    }]
+                                },
+                               
+
+                            ]
+                        }],
+
+
+
+                    },
+                },
                 onEditorPreparing: {},
                 onrRowInserted(e) {
                     e.component.navigateToRow(e.key);
@@ -126,7 +195,27 @@
                                     );
                             },
                             cssClass: "toolbar-title-container" // Clase para el contenedor del título
-                        }, {
+                        },
+                        {
+                            location: "after",
+                            widget: "dxButton",
+                            options: {
+                                icon: "add",
+                                text: "AGREGAR",
+                                onClick: function () {
+                                    dataGrid.addRow();
+                                },
+                                stylingMode: "outlined", // Cambia el estilo del botón a outlined
+                                // Modifica el color del botón
+                                elementAttr: {
+                                    class: "ClsAgregar custom-button-style" // Puedes cambiar "dx-color-blue" por otro color de tu elección
+                                }
+                            },
+                        },
+
+
+
+                        {
                             location: 'after',
                             widget: 'dxButton',
                             options: {

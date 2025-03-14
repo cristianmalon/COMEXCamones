@@ -24,7 +24,20 @@ namespace CAMTEX.Aplicacion
 
         public Response Actualizar(Request<OperacionesImp> entidad)
         {
-            throw new NotImplementedException();
+            Response retorno = new Response();
+            try
+            {
+                var resultado = OperacionesImpRepositorio.Actualizar(entidad.entidad);
+                retorno.Success = true;
+                retorno.error = false;
+
+            }
+            catch (Exception ex)
+            {
+                retorno.error = true;
+                retorno.mensaje = ex.Message;
+            }
+            return retorno;
         }
 
         public Response Eliminar(Request<OperacionesImp> entidad)
@@ -53,6 +66,7 @@ namespace CAMTEX.Aplicacion
                         FileID = Util.CapturaInt0(row, "FileID"),
                         IdOperaciones = Util.CapturaInt0(row, "IdOperaciones"),
                         IdDatoGeneral = Util.CapturaInt0(row, "IdDatoGeneral"),
+                        FechaEmbarque = Util.CapturaDatetime(row, "FechaEmbarque"),
                         CodigoLote = Util.CapturaString(row, "CodigoLote"),
                         Lote = Util.CapturaString(row, "Lote"),
                         U_DIN_AADU = Util.CapturaString(row, "U_DIN_AADU"),
