@@ -14,12 +14,41 @@ namespace CAMTEX.Repositorio
     {
         public IDictionary<string, object> Actualizar(Operativa entidad)
         {
-            throw new NotImplementedException();
+            Dictionary<string, object> retorno = new Dictionary<string, object>();
+
+            oConn.AddParameter("@opcion", 1);
+
+            oConn.AddParameter("@NuevaFechaO", entidad.FechaOperacion);
+            oConn.AddParameter("@Cantidad", entidad.Cantidad);
+
+            oConn.AddParameter("@IdAgente", entidad.IdAgentes);
+                        
+            oConn.AddParameter("@IdAgenteCarga", entidad.IdAgenteCarga);
+            oConn.AddParameter("@IdOperativa", entidad.IdOperativa);
+            oConn.AddParameter("@IdLoteA", entidad.IdLote);
+            oConn.AddParameter("@NroOperacionA", entidad.NroOperacion);
+            
+
+            DataTable dt = oConn.ExecuteDataTable("[DBO].[Usp_OperacionesImp]");
+
+            retorno.Add("resultado", true);
+            retorno.Add("mensaje", "OK");
+            return retorno;
         }
 
         public IDictionary<string, object> Eliminar(Operativa entidad)
         {
-            throw new NotImplementedException();
+            Dictionary<string, object> retorno = new Dictionary<string, object>();
+
+            oConn.AddParameter("@opcion", 3);
+            oConn.AddParameter("@IdOperativaD", entidad.IdOperativa);
+            //oConn.AddParameter("@Usuario", entidad.USUARIO_REG);
+            //oConn.AddParameter("@MaquinaPC", entidad.HOST_REG);
+            DataTable dt = oConn.ExecuteDataTable("[DBO].[Usp_OperacionesImp]");
+
+            retorno.Add("resultado", true);
+            retorno.Add("mensaje", "OK");
+            return retorno;
         }
 
         public IDictionary<string, object> Insertar(Operativa entidad)

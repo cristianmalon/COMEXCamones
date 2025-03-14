@@ -18,7 +18,7 @@ namespace CAMTEX.Entidades
         [DataMember] public DateTime? FechaOperacion { get; set; }
         [DataMember] public int IdAgentes { get; set; }
         [DataMember] public int IdAgenteCarga { get; set; }
-        [DataMember] public decimal Cantidad { get; set; }
+        [DataMember] public decimal? Cantidad { get; set; }
     }
 }
 

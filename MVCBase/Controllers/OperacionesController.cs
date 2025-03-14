@@ -877,7 +877,7 @@ namespace MVCBase.Controllers
 
         [HttpPut]
         [AllowAnonymous]
-        public JsonResult ActualizarOperacionImp(OperacionesImp entidad)
+        public JsonResult ActualizarOperacionImp(Operativa entidad)
         {
             
 
@@ -887,9 +887,9 @@ namespace MVCBase.Controllers
                 {
 
                     Response response = new Response();
-                    var datos = new Request<OperacionesImp>();
+                    var datos = new Request<Operativa>();
                     datos.entidad = entidad;
-                    response = new OperacionesImpAplicacion(new OperacionesImpRepositorio()).Actualizar(datos);
+                    response = new OperativaAplicacion(new OperativaRepositorio()).Actualizar(datos);
 
                     return Json(new
                     {
@@ -955,6 +955,58 @@ namespace MVCBase.Controllers
                         result = response.Success ? Utiles.MessageSaveSuccess() : response.mensaje,
                         id = 0,
                         nuevoFileID = response.Success ? Convert.ToInt32(response.output) : 0 // Nuevo campo con el ID generado
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception ex)
+                {
+                    return Json(new
+                    {
+                        rpta = false,
+                        errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                        url = Url.Action("Index"),
+                        result = Utiles.MessageServerError() + " - " + ex.Message.ToString(),
+                        //combo = 0
+                        id = 0
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    rpta = false,
+                    errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                    url = Url.Action("Index"),
+                    result = Utiles.MessageModelStateInvalid()
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+        }
+
+
+
+        [HttpDelete]
+        [AllowAnonymous]
+        public JsonResult EliminarOperacionesImp(Operativa entidad)
+        {
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+
+                    Response response = new Response();
+                    var datos = new Request<Operativa>();
+                    datos.entidad = entidad;
+                    response = new OperativaAplicacion(new OperativaRepositorio()).Eliminar(datos);
+
+                    return Json(new
+                    {
+                        rpta = response.Success,
+                        errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                        url = Url.Action("Index"),
+                        result = response.Success ? Utiles.MessageSaveSuccess() : response.mensaje,
+                        id = 0
                     }, JsonRequestBehavior.AllowGet);
                 }
                 catch (Exception ex)
