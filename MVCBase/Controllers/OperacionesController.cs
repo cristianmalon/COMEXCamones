@@ -74,6 +74,7 @@ namespace MVCBase.Controllers
             //datos.entidad = entidad;
             datos.entidad = new Producto();
             datos.entidad.OrdenID = orderData.id;
+            datos.entidad.OrccnSap = orderData.OrdenCompraSAP;
             datos.entidad.FileID = FileID;
             var lista = new ProductoAplicacion(new ProductoRepositorio()).ListarPaginado(datos);
             orderData.ListaProducto = lista.response;
@@ -88,6 +89,23 @@ namespace MVCBase.Controllers
             orderData.ListaAgenteCarga = ListarAgenteCarga.response;
             var ListarAgentes = new AgentesAplicacion(new AgentesRepositorio()).Listar(new Request<Agentes>());
             orderData.ListaAgentes = ListarAgentes.response;
+
+            var listaDatoImportacion = new OrdenesCompraAplicacion(new OrdenesCompraRepositorio()).DatoImportacion_listar(orderData);
+            if (listaDatoImportacion.response != null && listaDatoImportacion.response.Count>0)
+            {
+                orderData.IdDatoGeneral = listaDatoImportacion.response[0].IdDatoGeneral;
+                orderData.NumeroOperacion = listaDatoImportacion.response[0].NumeroOperacion;
+                orderData.IdVia = listaDatoImportacion.response[0].IdVia;
+                orderData.BL = listaDatoImportacion.response[0].BL;
+                orderData.IdDeposito = listaDatoImportacion.response[0].IdDeposito;
+                orderData.NumFactura = listaDatoImportacion.response[0].NumFactura;
+                orderData.FechaIngreso = listaDatoImportacion.response[0].FechaIngreso;
+                orderData.FechaEmbarque = listaDatoImportacion.response[0].FechaEmbarque;
+                orderData.Garantia = listaDatoImportacion.response[0].Garantia;
+                orderData.IdSituacion = listaDatoImportacion.response[0].IdSituacion;
+                orderData.IdLineaNaviera = listaDatoImportacion.response[0].IdLineaNaviera;
+            }
+            
 
             return PartialView("_BuscarOrdC", orderData);
         }
