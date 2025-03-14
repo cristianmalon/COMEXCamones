@@ -218,22 +218,99 @@
 
     console.log("id de vista: ", id);
     var lista = []
-    lista.push(@Html.Raw(maeCCodJson));//  @Html.Raw(maeCCodJson); // Convertir JSON en objeto JavaScript
     dataProducto = @Html.Raw(Json.Encode(Model.ListaProducto));
-    var OrdenCompraSAP = lista[0].NumeroOrden;
-    CargarCombo();
-    console.log("lista", lista);
-    console.log("dataProducto", dataProducto);
+    $(document).ready(function () {
 
-    console.log("FileIDv", $("#FileIDv").val());
-    var filecreado = $("#FileIDv").val();
+        lista.push(@Html.Raw(maeCCodJson));//  @Html.Raw(maeCCodJson); // Convertir JSON en objeto JavaScript
+
+        var OrdenCompraSAP = lista[0].NumeroOrden;
+        CargarCombo();
+        console.log("lista", lista);
+        console.log("dataProducto", dataProducto);
+
+        console.log("FileIDv", $("#FileIDv").val());
+        var filecreado = $("#FileIDv").val();
 
 
-    if (!filecreado) { // Verifica si filecreado está vacío (null, undefined, "", 0, false, NaN)
-        filecreado = "@Model.FileID"; // Asigna el valor de @Model.FileID
-        $("#FileIDv").val(filecreado); // Actualiza el valor en el campo
-    }
+        if (!filecreado) { // Verifica si filecreado está vacío (null, undefined, "", 0, false, NaN)
+            filecreado = "@Model.FileID"; // Asigna el valor de @Model.FileID
+            $("#FileIDv").val(filecreado); // Actualiza el valor en el campo
+        }
+        if (lista[0].IdDatoGeneral != 0) {
+            debugger;
+            let tabPanel;
+            let activeTab;
+            if ("@ViewBag.ViewID" === 'R') {
+                tabPanel = $("#tabPanel").dxTabPanel("instance");
+                activeTab = tabPanel.option("selectedItem");
 
+            } else if ("@ViewBag.ViewID" === 'E') {
+                tabPanel = $("#tabPanelE").dxTabPanel("instance");
+                activeTab = tabPanel.option("selectedItem");
+
+            }
+
+            if (!activeTab || !activeTab.id) {
+                DevExpress.ui.dialog.alert("No se pudo obtener la pestaña activa.", "Error");
+                return;
+            }
+            console.log(" activeTab: ", activeTab);
+
+            let currentId = activeTab.id;
+            console.log("id actual: ", currentId);
+
+            $("#txtNOp_" + currentId).val(lista[0].NumeroOperacion);
+            $("#cboVia_" + currentId).val(lista[0].IdVia);
+            $("#txtBL_" + currentId).val(lista[0].BL);
+            $("#txtDeposito_" + currentId).val(lista[0].IdDeposito);
+            $("#txtFactura_" + currentId).val(lista[0].NumFactura);
+            $("#txtFechaIngreso_" + currentId).val(lista[0].FechaIngreso);
+            $("#txtFechaEmbarque_" + currentId).val(lista[0].FechaEmbarque);
+            $("#txtGarantia_" + currentId).val(lista[0].Garantia);
+            $("#cboSituacion_" + currentId).val(lista[0].IdSituacion);
+            $("#cboLineaNaviera_" + currentId).val(lista[0].IdLineaNaviera);
+
+        }
+
+    })
+
+
+    //var DatosOC =  @Html.Raw(Json.Encode(Model));
+    @*if (lista[0].IdDatoGeneral != 0) {
+        debugger;
+        let tabPanel;
+        let activeTab;
+        if ("@ViewBag.ViewID" === 'R') {
+            tabPanel = $("#tabPanel").dxTabPanel("instance");
+                activeTab = tabPanel.option("selectedItem");
+
+        } else if ("@ViewBag.ViewID" === 'E') {
+            tabPanel = $("#tabPanelE").dxTabPanel("instance");
+            activeTab = tabPanel.option("selectedItem");
+
+        }
+
+        if (!activeTab || !activeTab.id) {
+            DevExpress.ui.dialog.alert("No se pudo obtener la pestaña activa.", "Error");
+            return;
+        }
+        console.log(" activeTab: ", activeTab);
+
+        let currentId = activeTab.id;
+        console.log("id actual: ", currentId);
+
+        $("#txtNOp_" + currentId).val(lista[0].NumeroOperacion);
+        $("#cboVia_" + currentId).val(lista[0].IdVia);
+        $("#txtBL_" + currentId).val(lista[0].BL);
+        $("#txtDeposito_" + currentId).val(lista[0].IdDeposito);
+        $("#txtFactura_" + currentId).val(lista[0].NumFactura);
+        $("#txtFechaIngreso_" + currentId).val(lista[0].FechaIngreso);
+        $("#txtFechaEmbarque_" + currentId).val(lista[0].FechaEmbarque);
+        $("#txtGarantia_" + currentId).val(lista[0].Garantia);
+        $("#cboSituacion_" + currentId).val(lista[0].IdSituacion);
+        $("#cboLineaNaviera_" + currentId).val(lista[0].IdLineaNaviera);
+
+    }*@
 
     // Convertir el array a una cadena separada por comas para enviarlo en la URL
     var maeCCodString = lista.join(',');

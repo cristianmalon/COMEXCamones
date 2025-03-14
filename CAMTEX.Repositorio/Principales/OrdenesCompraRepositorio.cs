@@ -84,5 +84,13 @@ namespace CAMTEX.Repositorio
             DataTable dt = oConn.ExecuteDataTable("[DBO].[USP_LineaNaviera_listar]");
             return dt;
         }
+
+        public DataTable DatoImportacion_listar(OrdenesCompra entidad)
+        {
+            oConn.AddParameter("@FileID", entidad.FileID);
+            oConn.AddParameter("@OrdenCompraSAP", entidad.NumeroOrden);
+            DataTable dt = oConn.ExecuteDataTable("[DBO].[USP_DatoImportacion_listar]");
+            return dt;
+        }
     }
 }

@@ -69,6 +69,7 @@ namespace CAMTEX.Aplicacion
                     {
                         id = Util.CapturaInt0(row, "OrdenID"),
                         NumeroOrden = Util.CapturaString(row, "NumeroOrdenC"),
+                        OrdenCompraSAP = Util.CapturaString(row, "NumeroOrdenC"),
                         PrvCCod = Util.CapturaString(row, "PrvCCod"),
                         PrvDDes = Util.CapturaString(row, "PrvDDes"),
                         
@@ -171,6 +172,44 @@ namespace CAMTEX.Aplicacion
                     {
                         IdLineaNaviera = Util.CapturaInt0(row, "IdLineaNaviera"),
                         DesLineaNaviera = Util.CapturaString(row, "LineaNaviera"),
+                    });
+                }
+
+                retorno.error = false;
+                retorno.response = lista;
+            }
+            catch (Exception ex)
+            {
+                retorno.error = true;
+                retorno.mensaje = ex.Message;
+            }
+            return retorno;
+        }
+        public Response<List<OrdenesCompra>> DatoImportacion_listar(OrdenesCompra entidad)
+        {
+            Response<List<OrdenesCompra>> retorno = new Response<List<OrdenesCompra>>();
+
+            try
+            {
+                DataTable dt = OrdenesCompraRepositorio.DatoImportacion_listar(entidad);
+                List<OrdenesCompra> lista = new List<OrdenesCompra>();
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    lista.Add(new OrdenesCompra()
+                    {
+                        IdOperaciones = Util.CapturaInt0(row, "IdOperaciones"),
+                        IdDatoGeneral = Util.CapturaInt0(row, "IdDatoGeneral"),
+                        NumeroOperacion = Util.CapturaString(row, "NumeroOperacion"),
+                        IdVia = Util.CapturaInt0(row, "IdVia"),
+                        BL = Util.CapturaInt0(row, "BL"),
+                        IdDeposito = Util.CapturaInt0(row, "IdDeposito"),
+                        NumFactura = Util.CapturaString(row, "NumFactura"),
+                        FechaIngreso = Util.CapturaDatetime(row, "FechaIngreso"),
+                        FechaEmbarque = Util.CapturaDatetime(row, "FechaEmbarque"),
+                        Garantia = Util.CapturaInt0(row, "Garantia"),
+                        IdSituacion = Util.CapturaInt0(row, "IdSituacion"),
+                        IdLineaNaviera = Util.CapturaInt0(row, "IdLineaNaviera"),
                     });
                 }
 
