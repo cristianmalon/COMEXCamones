@@ -65,9 +65,10 @@ namespace MVCBase.Controllers
 
         }
         [AllowAnonymous]
-        public ActionResult VROrdenCompra(string id , OrdenesCompra orderData,int FileID)
+        public ActionResult VROrdenCompra(string id , OrdenesCompra orderData,int FileID, string ViewID)
         {
             ViewBag.Id = id;
+            ViewBag.ViewID = ViewID;
             //traemos los demas campos
             var datos = new Request<Producto>();
             //datos.entidad = entidad;
@@ -82,8 +83,35 @@ namespace MVCBase.Controllers
             orderData.ListaViatransporte= ListarViaTransporte.response;
             var ListarLineaNaviera = new OrdenesCompraAplicacion(new OrdenesCompraRepositorio()).ListarLineaNaviera();
             orderData.ListaLineaNaviera = ListarLineaNaviera.response;
+
+            var ListarAgenteCarga = new AgenteCargaAplicacion(new AgenteCargaRepositorio()).Listar(new Request<AgenteCarga>());
+            orderData.ListaAgenteCarga = ListarAgenteCarga.response;
+            var ListarAgentes = new AgentesAplicacion(new AgentesRepositorio()).Listar(new Request<Agentes>());
+            orderData.ListaAgentes = ListarAgentes.response;
+
             return PartialView("_BuscarOrdC", orderData);
         }
+
+
+
+        [HttpGet]
+        [AllowAnonymous]
+        public JsonResult ListarAgenteC()
+        {
+            var datos = new Request<AgenteCarga>();
+            //datos.entidad = entidad;
+            datos.entidad = new AgenteCarga();
+            ////datos.entidad.IdSede = VariablesWeb.Usuario.IdSede;
+            var lista = new AgenteCargaAplicacion(new AgenteCargaRepositorio()).Listar(datos);
+            //return Json(new { data = lista.response });
+            var data = lista.response.Select(AgenteC => new { idAgenteCarga = AgenteC.idAgenteCarga, Nombre = AgenteC.Nombre.Trim() }).ToArray();
+
+
+            return Json(data, JsonRequestBehavior.AllowGet);
+        }
+
+       
+
 
         [HttpPost]
         [AllowAnonymous]
@@ -284,6 +312,7 @@ namespace MVCBase.Controllers
                 {
                     result = response.Success,
                     errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                    status = response.status,
                     url = Url.Action("Index"),
                     msg = response.Success ? Utiles.MessageSaveSuccess() : response.mensaje,
                 }, JsonRequestBehavior.AllowGet);
@@ -812,6 +841,228 @@ namespace MVCBase.Controllers
         }
 
         /*FIN CONTENEDOR*/
+
+
+
+
+
+        /*INICIO OPERACIONES*/
+
+        [HttpGet]
+        [AllowAnonymous]
+        public JsonResult ListarOperacionesO(int OcId, int file)
+        {
+            var datos = new Request<Operativa>();
+            //datos.entidad = entidad;
+            datos.entidad = new Operativa();
+            datos.entidad.IdOPeraciones = OcId;
+            datos.entidad.IdFile = file;
+            ////datos.entidad.IdSede = VariablesWeb.Usuario.IdSede;
+            var lista = new OperativaAplicacion(new OperativaRepositorio()).Listar(datos);
+            //return Json(new { data = lista.response });
+            var rpta = Json(new
+            {
+                //data = lista.response
+                result = !lista.error,
+                IsError = lista.error,
+                Datos = JsonConvert.SerializeObject(lista.response),
+                msg = lista.mensaje
+            }, JsonRequestBehavior.AllowGet);
+            rpta.MaxJsonLength = int.MaxValue;
+
+            return rpta;
+        }
+
+
+
+        [HttpPut]
+        [AllowAnonymous]
+        public JsonResult ActualizarOperacionImp(Operativa entidad)
+        {
+            
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+
+                    Response response = new Response();
+                    var datos = new Request<Operativa>();
+                    datos.entidad = entidad;
+                    response = new OperativaAplicacion(new OperativaRepositorio()).Actualizar(datos);
+
+                    return Json(new
+                    {
+                        rpta = response.Success,
+                        errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                        url = Url.Action("Index"),
+                        result = response.Success ? Utiles.MessageSaveSuccess() : response.mensaje,
+                        id = 0
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception ex)
+                {
+                    return Json(new
+                    {
+                        rpta = false,
+                        errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                        url = Url.Action("Index"),
+                        result = Utiles.MessageServerError() + " - " + ex.Message.ToString(),
+                        //combo = 0
+                        id = 0
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    rpta = false,
+                    errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                    url = Url.Action("Index"),
+                    result = Utiles.MessageModelStateInvalid()
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+        }
+
+
+
+
+        [HttpPost]
+        [AllowAnonymous]
+        public JsonResult InsertarOperacionesImp(Operativa entidad)
+        {
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    Response response = new Response();
+
+                    
+
+                    var datos = new Request<Operativa>();
+                    datos.entidad = entidad;
+                    response = new OperativaAplicacion(new OperativaRepositorio()).Insertar(datos);
+
+                    return Json(new
+                    {
+                        rpta = response.Success,
+                        errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                        NuevoFileID = response.output,
+                        url = Url.Action("Index"),
+                        result = response.Success ? Utiles.MessageSaveSuccess() : response.mensaje,
+                        id = 0,
+                        nuevoFileID = response.Success ? Convert.ToInt32(response.output) : 0 // Nuevo campo con el ID generado
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception ex)
+                {
+                    return Json(new
+                    {
+                        rpta = false,
+                        errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                        url = Url.Action("Index"),
+                        result = Utiles.MessageServerError() + " - " + ex.Message.ToString(),
+                        //combo = 0
+                        id = 0
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    rpta = false,
+                    errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                    url = Url.Action("Index"),
+                    result = Utiles.MessageModelStateInvalid()
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+        }
+
+
+
+        [HttpDelete]
+        [AllowAnonymous]
+        public JsonResult EliminarOperacionesImp(Operativa entidad)
+        {
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+
+                    Response response = new Response();
+                    var datos = new Request<Operativa>();
+                    datos.entidad = entidad;
+                    response = new OperativaAplicacion(new OperativaRepositorio()).Eliminar(datos);
+
+                    return Json(new
+                    {
+                        rpta = response.Success,
+                        errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                        url = Url.Action("Index"),
+                        result = response.Success ? Utiles.MessageSaveSuccess() : response.mensaje,
+                        id = 0
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception ex)
+                {
+                    return Json(new
+                    {
+                        rpta = false,
+                        errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                        url = Url.Action("Index"),
+                        result = Utiles.MessageServerError() + " - " + ex.Message.ToString(),
+                        //combo = 0
+                        id = 0
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    rpta = false,
+                    errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                    url = Url.Action("Index"),
+                    result = Utiles.MessageModelStateInvalid()
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+        }
+
+
+        /*FIN OPERACIONES*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

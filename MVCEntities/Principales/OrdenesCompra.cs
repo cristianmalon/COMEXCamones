@@ -34,6 +34,10 @@ namespace CAMTEX.Entidades
         [DataMember] public List<Situacion> ListaSituacion { get; set; }
         [DataMember] public List<ViaTransporte> ListaViatransporte { get; set; }
         [DataMember] public List<LineaNaviera> ListaLineaNaviera { get; set; }
+        
+        
+        [DataMember] public List<AgenteCarga> ListaAgenteCarga { get; set; }
+        [DataMember] public List<Agentes> ListaAgentes { get; set; }
 
         
         [DataMember] public int IdOperaciones { get; set; }

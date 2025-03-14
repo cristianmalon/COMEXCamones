@@ -63,6 +63,7 @@
     <Compile Include="InstruccionEmbarque.cs" />
     <Compile Include="Menu\ENMenu.cs" />
     <Compile Include="Principales\AgenteCarga.cs" />
+    <Compile Include="Principales\Agentes.cs" />
     <Compile Include="Principales\Almacen.cs" />
     <Compile Include="Principales\Articulo.cs" />
     <Compile Include="Principales\CondPago.cs" />
@@ -72,6 +73,8 @@
     <Compile Include="Principales\Incoterm.cs" />
     <Compile Include="Principales\Lotes.cs" />
     <Compile Include="Principales\Operaciones.cs" />
+    <Compile Include="Principales\OperacionesImp.cs" />
+    <Compile Include="Principales\Operativa.cs" />
     <Compile Include="Principales\OrdenesCompra.cs" />
     <Compile Include="Principales\Pais.cs" />
     <Compile Include="Principales\Producto.cs" />

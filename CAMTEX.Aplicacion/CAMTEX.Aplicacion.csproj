@@ -46,6 +46,7 @@
     <Compile Include="Despacho_OS\CDSD01Aplicacion.cs" />
     <Compile Include="Despacho_OS\HojaRutaAplicacion.cs" />
     <Compile Include="Principales\AgenteCargaAplicacion.cs" />
+    <Compile Include="Principales\AgentesAplicacion.cs" />
     <Compile Include="Principales\AlmacenAplicacion.cs" />
     <Compile Include="Principales\ArticuloAplicacion.cs" />
     <Compile Include="Principales\CondPagoAplicacion.cs" />
@@ -56,6 +57,8 @@
     <Compile Include="Principales\InstruccionEmbarqueAplicacion.cs" />
     <Compile Include="Principales\LotesAplicacion.cs" />
     <Compile Include="Principales\OperacionesAplicacion.cs" />
+    <Compile Include="Principales\OperacionesImpAplicacion.cs" />
+    <Compile Include="Principales\OperativaAplicacion.cs" />
     <Compile Include="Principales\OrdenesCompraAplicacion.cs" />
     <Compile Include="Principales\PaisAplicacion.cs" />
     <Compile Include="Principales\ProductoAplicacion.cs" />

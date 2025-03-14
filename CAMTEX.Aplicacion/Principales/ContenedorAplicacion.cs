@@ -77,8 +77,8 @@ namespace CAMTEX.Aplicacion
                     {
                         IdFile = Util.CapturaInt0(row, "FileID"),
                         IdOPeraciones = Util.CapturaInt0(row, "IdOperaciones"),
-                        IdContenedor = Util.CapturaInt0(row, "IdLote"),
-                        Contenedor = Util.CapturaString(row, "CodigoLote")                
+                        IdContenedor = Util.CapturaInt0(row, "IdContenedor"),
+                        Contenedor = Util.CapturaString(row, "Contenedor")                
                         
                     });
                 }

@@ -126,6 +126,8 @@
                 } else {
                     console.log("No hay pestañas abiertas.");
                 }
+
+
             }
         }).dxTabPanel('instance');
 
@@ -140,8 +142,10 @@
 
         function loadPartialView(itemData, itemIndex, itemElement) {
 
+            console.log("itemData.idop: ", itemData.idop);
             var uniqueId = itemData.id;
             var orderData = itemData.data;
+            orderData[0].IdOperaciones = itemData.idop;
             console.log("uniqueId: ", uniqueId);
             console.log("orderData: ", orderData);
 
@@ -157,7 +161,8 @@
                 data: JSON.stringify({
                     id: uniqueId,
                     orderData: orderData[0], // Aquí envías todo el objeto
-                    FileID:$('#FileIDv').val()
+                    FileID: $('#FileIDv').val(),
+                    ViewID: 'R'
                 }),
                 success: function (response) {
                     itemElement.find('.tab-content').html(response);
@@ -248,6 +253,9 @@
 
                         contentElement.append(result);
 
+                                              
+
+
                         // Crear el contenedor de botones (lo agregamos como elemento DOM limpio, no como string)
                         var buttonContainer = $('<div>').addClass('dx-popup-bottom-buttons').appendTo(contentElement);
 
@@ -329,6 +337,7 @@
                                                 id: uniqueId,
                                                 title: `${numeroOrden}`, // Mostrar ambos valores en el título
                                                 idoc: numeroOrdenId,
+                                                idop: res.status,
                                                 data: selectedRow // Pasamos todo el objeto seleccionado
                                             };
 
@@ -385,11 +394,17 @@
                         console.error('Error al cargar la vista parcial', error);
                     }
                 });
+
+
+
             },
             onShowing: function () {
                 var grid = $("#gridBOC").dxDataGrid("instance");
                 if (grid) {
                     grid.clearSelection(); // Limpia la selección anterior al abrir el popup
+                    grid.clearFilter(); // Limpia los filtros aplicados
+
+
                 }
             },
             onHidden: function () {
