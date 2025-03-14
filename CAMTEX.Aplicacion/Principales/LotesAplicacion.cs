@@ -81,9 +81,12 @@ namespace CAMTEX.Aplicacion
                         Codigo = Util.CapturaString(row, "CodigoLote"),
                         NroLotes = Util.CapturaString(row, "Lote"),
                         Evaluacion = Util.CapturaDatetime(row, "Evaluacion"),
-                        EstadoLote = Util.CapturaString(row, "EstadoLote"),
-                        Resultado = Util.CapturaString(row, "Resultado"),
-                        Destino = Util.CapturaInt0(row, "IdDestinoPlanta"),
+
+                        EstadoLote = Util.CapturaString(row, "EstadoCad"),
+                        Resultado = Util.CapturaString(row, "ResultadoCad"),
+                        Destino = Util.CapturaString(row, "DepositoCad"),
+                        DepositoCad = Util.CapturaString(row, "DestinoCad"),
+
                         ESTADO = Util.CapturaString(row, "Estado")
 
                     });
