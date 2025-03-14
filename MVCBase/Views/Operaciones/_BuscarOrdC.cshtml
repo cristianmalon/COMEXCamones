@@ -219,10 +219,11 @@
     console.log("id de vista: ", id);
     var lista = []
     dataProducto = @Html.Raw(Json.Encode(Model.ListaProducto));
+    lista.push(@Html.Raw(maeCCodJson));//  @Html.Raw(maeCCodJson); // Convertir JSON en objeto JavaScript
     var filecreado = $("#FileIDv").val();
     $(document).ready(function () {
 
-        lista.push(@Html.Raw(maeCCodJson));//  @Html.Raw(maeCCodJson); // Convertir JSON en objeto JavaScript
+
 
         var OrdenCompraSAP = lista[0].NumeroOrden;
         CargarCombo();
@@ -230,7 +231,7 @@
         console.log("dataProducto", dataProducto);
 
         console.log("FileIDv", $("#FileIDv").val());
-        
+
 
 
         if (!filecreado) { // Verifica si filecreado está vacío (null, undefined, "", 0, false, NaN)
