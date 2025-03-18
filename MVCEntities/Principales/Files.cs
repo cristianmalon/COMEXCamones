@@ -51,6 +51,9 @@ namespace CAMTEX.Entidades
         [DataMember] public string AgenteAduana { get; set; }
 
         [DataMember] public string ViaTransporte { get; set; }
+        
+        
+        [DataMember] public string TarCCod { get; set; }
 
 
 
