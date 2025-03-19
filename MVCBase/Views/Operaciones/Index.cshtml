@@ -101,6 +101,9 @@
         {
             dataField: 'LineaNaviera', caption: 'ViaTransporte', alignment: 'left',
         },
+        {
+            dataField: 'TarCCod', caption: 'Tipo', alignment: 'left',
+        },
         //{
         //    dataField: 'EstadoCalidad', caption: 'EstadoCalidad', alignment: 'left',
         //},
@@ -386,7 +389,7 @@
 
         if (selectedData.length > 0) {
 
-            console.log("selectedRowData para editar: ", selectedData);
+            console.log("selectedRowData para editar  no me trae tarccod: ", selectedData);
 
             $("#popupContainerEF").dxPopup({
                     width: 1300,
