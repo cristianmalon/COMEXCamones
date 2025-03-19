@@ -89,6 +89,8 @@ namespace MVCBase.Controllers
             orderData.ListaAgenteCarga = ListarAgenteCarga.response;
             var ListarAgentes = new AgentesAplicacion(new AgentesRepositorio()).Listar(new Request<Agentes>());
             orderData.ListaAgentes = ListarAgentes.response;
+            var ListarDeposito = new OrdenesCompraAplicacion(new OrdenesCompraRepositorio()).ListarDeposito();
+            orderData.ListaDeposito = ListarDeposito.response;
 
             var listaDatoImportacion = new OrdenesCompraAplicacion(new OrdenesCompraRepositorio()).DatoImportacion_listar(orderData);
             if (listaDatoImportacion.response != null && listaDatoImportacion.response.Count>0)
@@ -104,6 +106,8 @@ namespace MVCBase.Controllers
                 orderData.Garantia = listaDatoImportacion.response[0].Garantia;
                 orderData.IdSituacion = listaDatoImportacion.response[0].IdSituacion;
                 orderData.IdLineaNaviera = listaDatoImportacion.response[0].IdLineaNaviera;
+                orderData.IdAgente = listaDatoImportacion.response[0].IdAgente;
+                orderData.IdAgenteCarga = listaDatoImportacion.response[0].IdAgenteCarga;
             }
             
 

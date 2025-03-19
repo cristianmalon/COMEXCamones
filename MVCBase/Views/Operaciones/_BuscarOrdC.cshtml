@@ -93,84 +93,97 @@
     </div>
 
     <div id="tab2_@ViewBag.Id" class="tab-contentss" style="display: none;">
-        <div class="container">
+        <div class="container" style="margin-top: 10px;">
             <div class="form-group row">
                 <div class="col-md-3">
                     <label>Nro Operación</label>
                     <input type="text" id="txtNOp_@ViewBag.Id" class="form-control">
                 </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-4">
-                    <label>DUA</label>
-                    <input type="text" id="txtDUA_@ViewBag.Id" class="form-control">
-                </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label>B/L AWB</label>
                     <input type="text" id="txtBL_@ViewBag.Id" class="form-control">
                 </div>
-                <div class="col-md-4">
-                    <label>Depósito</label>
-                    <input type="text" id="txtDeposito_@ViewBag.Id" class="form-control">
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-4">
-                    <label>Garantía</label>
-                    <input type="text" id="txtGarantia_@ViewBag.Id" class="form-control">
-                </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label>Nro Factura</label>
                     <input type="text" id="txtFactura_@ViewBag.Id" class="form-control">
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label>Fecha Factura</label>
                     <input type="date" id="txtFechaFactura_@ViewBag.Id" class="form-control">
                 </div>
             </div>
-
-            <div class="row">
-                <div class="col-md-4">
+            <div class="form-group row">
+                <div class="col-md-3">
                     <label>Fecha Ingreso</label>
                     <input type="date" id="txtFechaIngreso_@ViewBag.Id" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")">
                 </div>
-                <div class="col-md-4">
-                    <label>Situación</label>
-                    <select id="cboSituacion_@ViewBag.Id" class="form-control"></select>
-                </div>
-                <div class="col-md-4">
-                    <label>Línea Naviera</label>
-                    <select id="cboLineaNaviera_@ViewBag.Id" class="form-control"> </select>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label>Fecha Logística</label>
                     <input type="date" id="txtFechaLogistica_@ViewBag.Id" class="form-control">
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label>Fecha Embarque</label>
                     <input type="date" id="txtFechaEmbarque_@ViewBag.Id" class="form-control">
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label>Fecha Depósito</label>
                     <input type="date" id="txtFechaDeposito_@ViewBag.Id" class="form-control">
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-4">
-                    <label>Incoterm</label>
-                    <input type="text" id="txtIncoterm_@ViewBag.Id" class="form-control">
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <label>Línea Naviera</label>
+                    <select id="cboLineaNaviera_@ViewBag.Id" class="form-control"> </select>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label>Vía</label>
                     <select id="cboVia_@ViewBag.Id" class="form-control"> </select>
                 </div>
+                <div class="col-md-3">
+                    <label>Depósito</label>
+                    <select id="cboDeposito_@ViewBag.Id" class="form-control"> </select>
+                    @*<input type="text" id="txtDeposito_@ViewBag.Id" class="form-control">*@
+                </div>
+                <div class="col-md-3">
+                    <label>Dirección</label>
+                    <input type="text" id="txtDepositoDirecc_@ViewBag.Id" class="form-control" disabled="disabled">
+                </div>
             </div>
+
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <label>Nro DUA</label>
+                    <input type="text" id="txtDUA_@ViewBag.Id" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label>Garantía</label>
+                    <input type="text" id="txtGarantia_@ViewBag.Id" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label>Situación</label>
+                    <select id="cboSituacion_@ViewBag.Id" class="form-control"></select>
+                </div>
+                <div class="col-md-3">
+                    <label>Incoterm</label>
+                    <input type="text" id="txtIncoterm_@ViewBag.Id" class="form-control">
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <label>Agente Carga</label>
+                    <select id="cboAgenteCarga_@ViewBag.Id" class="form-control"> </select>
+                    @*<input type="text" id="txtDeposito_@ViewBag.Id" class="form-control">*@
+                </div>
+                <div class="col-md-3">
+                    <label>Agentes</label>
+                    <select id="cboAgentes_@ViewBag.Id" class="form-control"> </select>
+                    @*<input type="text" id="txtDeposito_@ViewBag.Id" class="form-control">*@
+                </div>
+
+            </div>
+
             <div class="form-group">
                 <div class="col-md-12 text-right">
                     <button type="button" id="btnGuardarDatosImp_@ViewBag.Id" class="btn btn-primary">Guardar</button>
@@ -264,15 +277,23 @@
             $("#txtNOp_" + currentId).val(lista[0].NumeroOperacion);
             $("#cboVia_" + currentId).val(lista[0].IdVia);
             $("#txtBL_" + currentId).val(lista[0].BL);
-            $("#txtDeposito_" + currentId).val(lista[0].IdDeposito);
+            $("#cboDeposito_" + currentId).val(lista[0].IdDeposito);
             $("#txtFactura_" + currentId).val(lista[0].NumFactura);
-            $("#txtFechaIngreso_" + currentId).val(lista[0].FechaIngreso);
-            $("#txtFechaEmbarque_" + currentId).val(lista[0].FechaEmbarque);
+            $("#txtFechaIngreso_" + currentId).val(fecha(lista[0].FechaIngreso));
+            $("#txtFechaEmbarque_" + currentId).val(fecha(lista[0].FechaEmbarque));
             $("#txtGarantia_" + currentId).val(lista[0].Garantia);
             $("#cboSituacion_" + currentId).val(lista[0].IdSituacion);
             $("#cboLineaNaviera_" + currentId).val(lista[0].IdLineaNaviera);
-
+            $("#cboAgentes_" + currentId).val(lista[0].IdAgente);
+            $("#cboAgenteCarga_" + currentId).val(lista[0].IdAgenteCarga);
+            var ListaDeposito =  @Html.Raw(Json.Encode(Model.ListaDeposito));
+            $.each(ListaDeposito, function (i, item) {
+                if (item.IdDeposito == lista[0].IdDeposito) {
+                    $("#txtDepositoDirecc_" + currentId).val(item.Direccion);
+                }
+            });
         }
+
 
     })
 
@@ -348,15 +369,16 @@
             NumeroOperacion: $("#txtNOp_" + currentId).val(),
             IdVia: $("#cboVia_" + currentId).val(),
             BL: $("#txtBL_" + currentId).val(),
-            IdDeposito: $("#txtDeposito_" + currentId).val(),
+            IdDeposito: $("#cboDeposito_" + currentId).val(),
             //SerieFactura: $("#txtNOp_" + id).val(),
             NumFactura: $("#txtFactura_" + currentId).val(),
             FechaIngreso: $("#txtFechaIngreso_" + currentId).val(),
             FechaEmbarque: $("#txtFechaEmbarque_" + currentId).val(),
             Garantia: $("#txtGarantia_" + currentId).val(),
             IdSituacion: $("#cboSituacion_" + currentId).val(),
-            IdLineaNaviera: $("#cboLineaNaviera_" + currentId).val()
-
+            IdLineaNaviera: $("#cboLineaNaviera_" + currentId).val(),
+            IdAgente: $("#cboAgentes_" + currentId).val(),
+            IdAgenteCarga: $("#cboAgenteCarga_" + currentId).val()
         }
         console.log(BE);
         // Llamada AJAX al controlador
@@ -1331,7 +1353,33 @@
         $(this).addClass("active");
     });
 
+     $("#cboDeposito_" + id).change(function () {
+            if ("@ViewBag.ViewID" === 'R') {
+                tabPanel = $("#tabPanel").dxTabPanel("instance");
+                activeTab = tabPanel.option("selectedItem");
 
+            } else if ("@ViewBag.ViewID" === 'E') {
+                tabPanel = $("#tabPanelE").dxTabPanel("instance");
+                activeTab = tabPanel.option("selectedItem");
+
+            }
+
+            if (!activeTab || !activeTab.id) {
+                DevExpress.ui.dialog.alert("No se pudo obtener la pestaña activa.", "Error");
+                return;
+            }
+
+        let currentId = activeTab.id;
+         var ListaDeposito =  @Html.Raw(Json.Encode(Model.ListaDeposito));
+         var IdDeposito = $("#cboDeposito_" + currentId).val();
+        $("#txtDepositoDirecc_" + currentId).val("");
+         $.each(ListaDeposito, function (i, item) {
+             if (item.IdDeposito == IdDeposito) {
+                 $("#txtDepositoDirecc_" + currentId).val(item.Direccion);
+             }
+        });
+
+     });
 
 
 
@@ -1383,9 +1431,48 @@
         $.each(ListaViatransporte, function (i, item) {
             $(cboVia).append('<option value="' + item.IdVia + '">' + item.DesViaTransporte + '</option>');
         });
+
+        var cboDeposito = $("#cboDeposito_" + id);
+        var ListaDeposito =  @Html.Raw(Json.Encode(Model.ListaDeposito));
+        $(cboDeposito).empty();
+        $(cboDeposito).append('<option value = "">-- SELECCIONAR --</option>');
+        $.each(ListaDeposito, function (i, item) {
+            $(cboDeposito).append('<option value="' + item.IdDeposito + '">' + item.DesDeposito + '</option>');
+        });
+
+        var cboAgenteCarga = $("#cboAgenteCarga_" + id);
+        var ListaAgenteCarga =  @Html.Raw(Json.Encode(Model.ListaAgenteCarga));
+        $(cboAgenteCarga).empty();
+        $(cboAgenteCarga).append('<option value = "">-- SELECCIONAR --</option>');
+        $.each(ListaAgenteCarga, function (i, item) {
+            $(cboAgenteCarga).append('<option value="' + item.idAgenteCarga + '">' + item.Nombre + '</option>');
+        });
+
+        var cboAgentes = $("#cboAgentes_" + id);
+        var ListaAgentes =  @Html.Raw(Json.Encode(Model.ListaAgentes));
+        $(cboAgentes).empty();
+        $(cboAgentes).append('<option value = "">-- SELECCIONAR --</option>');
+        $.each(ListaAgentes, function (i, item) {
+            $(cboAgentes).append('<option value="' + item.idAgentes + '">' + item.Nombre + '</option>');
+        });
     }
 
+    function fecha(dato) {
+        debugger
+        let date = new Date(
+            parseInt(dato.replace(/(^.*\()|([+-].*$)/g, ''))
+        );
 
+        let day = date.getDate()
+        let month = date.getMonth() + 1
+        let year = date.getFullYear()
+
+        if (month < 10) {
+            return `${year}-0${month}-${day}`
+        } else {
+            return `${year}-${month}-${day}`
+        }
+    }
 </script>
 
 

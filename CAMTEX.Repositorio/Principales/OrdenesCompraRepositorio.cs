@@ -35,6 +35,8 @@ namespace CAMTEX.Repositorio
                 oConn.AddParameter("@Garantia", entidad.Garantia);
                 oConn.AddParameter("@IdSituacion", entidad.IdSituacion);
                 oConn.AddParameter("@IdLineaNaviera", entidad.IdLineaNaviera);
+                oConn.AddParameter("@IdAgente", entidad.IdAgente);
+                oConn.AddParameter("@IdAgenteCarga", entidad.IdAgenteCarga);
                 oConn.AddParameter("@Usuario", entidad.Usuario);
                 oConn.AddParameter("@Host", entidad.Host);
                 DataTable dt = oConn.ExecuteDataTable("USP_DatoImportacion");
@@ -82,6 +84,11 @@ namespace CAMTEX.Repositorio
         public DataTable ListarLineaNaviera()
         {
             DataTable dt = oConn.ExecuteDataTable("[DBO].[USP_LineaNaviera_listar]");
+            return dt;
+        }
+        public DataTable ListarDeposito()
+        {
+            DataTable dt = oConn.ExecuteDataTable("[DBO].[USP_Deposito_listar]");
             return dt;
         }
 
