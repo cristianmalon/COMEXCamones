@@ -38,8 +38,8 @@ namespace CAMTEX.Entidades
         
         [DataMember] public List<AgenteCarga> ListaAgenteCarga { get; set; }
         [DataMember] public List<Agentes> ListaAgentes { get; set; }
+        [DataMember] public List<Deposito> ListaDeposito { get; set; }
 
-        
         [DataMember] public int IdOperaciones { get; set; }
         [DataMember] public int IdDatoGeneral { get; set; }
         [DataMember] public string NumeroOperacion { get; set; }
@@ -50,9 +50,11 @@ namespace CAMTEX.Entidades
         [DataMember] public string NumFactura { get; set; }
         [DataMember] public DateTime? FechaIngreso { get; set; }
         [DataMember] public DateTime? FechaEmbarque { get; set; }
-        [DataMember] public int Garantia { get; set; }
+        [DataMember] public int? Garantia { get; set; }
         [DataMember] public int? IdSituacion { get; set; }
         [DataMember] public int? IdLineaNaviera { get; set; }
+        [DataMember] public int? IdAgente { get; set; }
+        [DataMember] public int? IdAgenteCarga { get; set; }
 
         [DataMember] public string Usuario { get; set; }
         [DataMember] public string Host { get; set; }
@@ -72,5 +74,11 @@ namespace CAMTEX.Entidades
     {
         [DataMember] public int IdLineaNaviera { get; set; }
         [DataMember] public string DesLineaNaviera { get; set; }
+    }
+    public class Deposito
+    {
+        [DataMember] public int IdDeposito { get; set; }
+        [DataMember] public string DesDeposito { get; set; }
+        [DataMember] public string Direccion { get; set; }
     }
 }
