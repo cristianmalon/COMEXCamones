@@ -1,0 +1,269 @@
+[33mcommit e8dd93d16b1cc716055189bf4ad596c631e7c8a9[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mDevJuan[m[33m, [m[1;31morigin/DevJuan[m[33m)[m
+Merge: ccb08d1 e2ef8ee
+Author: felipeecc <70174692+felipeecc@users.noreply.github.com>
+Date:   Fri Mar 14 18:21:42 2025 -0500
+
+    Merge pull request #27 from cristianmalon/master
+    
+    ss
+
+[33mcommit e2ef8eefafe1f997e4a0dc23dfc8326a73d0314b[m[33m ([m[1;31morigin/master[m[33m)[m
+Merge: 7cf0114 b3658b7
+Author: felipeecc <70174692+felipeecc@users.noreply.github.com>
+Date:   Fri Mar 14 18:21:09 2025 -0500
+
+    Merge pull request #26 from cristianmalon/DevFelipe
+    
+    cambio
+
+[33mcommit b3658b773c730f37717a47b19950a9270d7aad76[m[33m ([m[1;31morigin/DevFelipe[m[33m)[m
+Author: felipeecc <70174692+felipeecc@users.noreply.github.com>
+Date:   Fri Mar 14 18:19:41 2025 -0500
+
+    cambio
+
+[33mcommit ccb08d1064c3bc67d2d776e6c390e7abc53ca67e[m
+Merge: 054f46c 7cf0114
+Author: felipeecc <70174692+felipeecc@users.noreply.github.com>
+Date:   Fri Mar 14 18:12:03 2025 -0500
+
+    Merge pull request #25 from cristianmalon/master
+    
+    cambio
+
+[33mcommit 7cf0114fc9fe67badb2ffea1062565f58f37b00a[m
+Merge: 29c21a1 c0211ca
+Author: felipeecc <70174692+felipeecc@users.noreply.github.com>
+Date:   Fri Mar 14 18:11:33 2025 -0500
+
+    Merge pull request #24 from cristianmalon/DevFelipe
+    
+    Dev felipe
+
+[33mcommit c0211ca6e9826f1e808a66b9bf867b9c3f5f109a[m
+Author: felipeecc <70174692+felipeecc@users.noreply.github.com>
+Date:   Fri Mar 14 18:01:35 2025 -0500
+
+    cambio
+
+[33mcommit 054f46ced6c520d443ca23e8f5dd549bae2938db[m
+Merge: afd5591 29c21a1
+Author: felipeecc <70174692+felipeecc@users.noreply.github.com>
+Date:   Fri Mar 14 17:59:11 2025 -0500
+
+    Merge pull request #23 from cristianmalon/master
+    
+    cambios
+
+[33mcommit 87add87e00b9cb6f9dc21b3da065e359b4d3bea1[m
+Merge: 55fe6c0 29c21a1
+Author: felipeecc <70174692+felipeecc@users.noreply.github.com>
+Date:   Fri Mar 14 17:58:44 2025 -0500
+
+    Merge pull request #22 from cristianmalon/master
+    
+    cambios
+
+[33mcommit 29c21a1e5577708d2e0118602ead318f19cb3f5d[m
+Merge: 87afde5 afd5591
+Author: felipeecc <70174692+felipeecc@users.noreply.github.com>
+Date:   Fri Mar 14 17:58:13 2025 -0500
+
+    Merge pull request #21 from cristianmalon/DevJuan
+    
+    Dev juan
+
+[33mcommit 87afde51a2dc50eb2c98bbdffd7d75859e99af8e[m
+Merge: a6c23fa 55fe6c0
+Author: felipeecc <70174692+felipeecc@users.noreply.github.com>
+Date:   Fri Mar 14 17:56:13 2025 -0500
+
+    Merge pull request #20 from cristianmalon/DevFelipe
+    
+    Dev felipe
+
+[33mcommit 55fe6c0ae137693cf39e7e6f068c276b9ec03d8e[m
+Author: felipeecc <70174692+felipeecc@users.noreply.github.com>
+Date:   Fri Mar 14 17:48:23 2025 -0500
+
+    cambios Felipe
+
+[33mcommit afd5591c3b19025911ae302c59bc63c7ec4980e2[m
+Author: jchumbiray <jchumbiray@DI5179>
+Date:   Fri Mar 14 17:46:49 2025 -0500
+
+    cambios en editar
+
+[33mcommit 7d87ff4dbaf5c556f062fca0e80d62059ef169f9[m
+Author: jchumbiray <jchumbiray@DI5179>
+Date:   Fri Mar 14 16:28:40 2025 -0500
+
+    se termino con el grid Lotes
+
+[33mcommit 700df1c55d4e71abfdd12ae3e6944de58d0e7d45[m
+Merge: 0f29a5d a6c23fa
+Author: felipeecc <70174692+felipeecc@users.noreply.github.com>
+Date:   Fri Mar 14 15:43:30 2025 -0500
+
+    Merge pull request #19 from cristianmalon/master
+    
+    ultimo
+
+[33mcommit a6c23fa0ecd4816e52a20602b233f563d18339c0[m
+Merge: 2c00453 0f29a5d
+Author: felipeecc <70174692+felipeecc@users.noreply.github.com>
+Date:   Fri Mar 14 15:42:42 2025 -0500
+
+    Merge pull request #18 from cristianmalon/DevFelipe
+    
+    Merge pull request #15 from cristianmalon/master
+
+[33mcommit 2c004539dd2d2a3b55d324bbdd3b5d2edfdaf3f2[m
+Merge: 67cc124 c3c0046
+Author: felipeecc <70174692+felipeecc@users.noreply.github.com>
+Date:   Fri Mar 14 15:42:05 2025 -0500
+
+    Merge pull request #17 from cristianmalon/DevJuan
+    
+    Dev juan
+
+[33mcommit c3c0046ea6286b0b8690104eaf40974ba523ac06[m
+Author: jchumbiray <jchumbiray@DI5179>
+Date:   Fri Mar 14 15:17:41 2025 -0500
+
+    se termino la gestion de Operativa
+
+[33mcommit fbfe20f96db9e9b837e30cfdfdcf24352795153a[m
+Author: jchumbiray <jchumbiray@DI5179>
+Date:   Fri Mar 14 12:48:50 2025 -0500
+
+    se agrego la gestion de la tabla Operativa
+
+[33mcommit 817164837d0068d69a199e013f08aedb29496896[m
+Author: jchumbiray <jchumbiray@DI5179>
+Date:   Wed Mar 12 15:36:14 2025 -0500
+
+    se agrego grid Operaciones
+
+[33mcommit 8e7c4096f10ed119aa458601491252e7c7b25f10[m
+Author: jchumbiray <jchumbiray@DI5179>
+Date:   Tue Mar 11 18:21:46 2025 -0500
+
+    avance de boton agregar producto
+
+[33mcommit b0b9f1e91d3f5d14bfa87facac41e9a959ab392a[m
+Author: jchumbiray <jchumbiray@DI5179>
+Date:   Tue Mar 11 16:13:09 2025 -0500
+
+    se corrigio Lotes y Contenedores (agregar y eliminar).
+
+[33mcommit 92bf5b7d1fa02eb45be11bc89fe7c7ece586df34[m
+Merge: ea7ae66 0a446c3
+Author: jchumbiray <jchumbiray@DI5179>
+Date:   Tue Mar 11 09:57:22 2025 -0500
+
+    Merge branch 'DevJuan' of https://github.com/cristianmalon/COMEXCamones into DevJuan
+
+[33mcommit ea7ae669e2461b5accd838a22adb9953d138725d[m
+Author: jchumbiray <jchumbiray@DI5179>
+Date:   Tue Mar 11 09:51:53 2025 -0500
+
+    se agrego indentificador de R y E para paneles
+
+[33mcommit 0a446c3605686425c2588877a689363c41ff0762[m
+Merge: c53cec0 67cc124
+Author: felipeecc <70174692+felipeecc@users.noreply.github.com>
+Date:   Tue Mar 11 08:47:59 2025 -0500
+
+    Merge pull request #16 from cristianmalon/master
+    
+    Merge pull request #14 from cristianmalon/DevJuan
+
+[33mcommit 0f29a5d322269b87709954034360de70976211c7[m
+Merge: 14bb56e 67cc124
+Author: felipeecc <70174692+felipeecc@users.noreply.github.com>
+Date:   Tue Mar 11 08:46:33 2025 -0500
+
+    Merge pull request #15 from cristianmalon/master
+    
+    cambios
+
+[33mcommit 67cc124ae4f489b95b3c16a51ce2fe9e467e5826[m
+Merge: fbf5b5a c53cec0
+Author: felipeecc <70174692+felipeecc@users.noreply.github.com>
+Date:   Tue Mar 11 08:44:01 2025 -0500
+
+    Merge pull request #14 from cristianmalon/DevJuan
+    
+    Dev juan
+
+[33mcommit c53cec0fede8a99ea309d0fd73b8905d4ba45c87[m
+Merge: c3d29f8 fbf5b5a
+Author: felipeecc <70174692+felipeecc@users.noreply.github.com>
+Date:   Tue Mar 11 08:43:53 2025 -0500
+
+    Merge branch 'master' into DevJuan
+
+[33mcommit fbf5b5af24ba315e10488b24fe346e6e79620c3c[m
+Merge: 0abd59d 14bb56e
+Author: felipeecc <70174692+felipeecc@users.noreply.github.com>
+Date:   Tue Mar 11 08:39:53 2025 -0500
+
+    Merge pull request #13 from cristianmalon/DevFelipe
+    
+    Dev felipe
+
+[33mcommit 14bb56edd775cf0fde2b92fb7ea98ea8daeec522[m
+Author: felipeecc <70174692+felipeecc@users.noreply.github.com>
+Date:   Tue Mar 11 08:37:04 2025 -0500
+
+    Felipe
+
+[33mcommit c3d29f847cc5a64bcd9df04c84661ade2d30eeff[m
+Author: jchumbiray <jchumbiray@DI5179>
+Date:   Mon Mar 10 17:50:43 2025 -0500
+
+    se agrego la parte de editar el cambio de estado al eliminar,
+
+[33mcommit 487211e1d133b5887d89468c43b6d57bccea355f[m
+Author: jchumbiray <jchumbiray@DI5179>
+Date:   Mon Mar 10 17:21:00 2025 -0500
+
+    se agrego el cambio de estados, y se agrego el boton editar
+
+[33mcommit e516872ecfa088556548ca6dd4ba5f94cb2d5527[m
+Author: jchumbiray <jchumbiray@DI5179>
+Date:   Fri Feb 28 18:23:50 2025 -0500
+
+    se agrego el cambio de estado al eliminar pestaña  o/c,
+    se agrego parte de editar .
+
+[33mcommit d156553ff8df175bc6da7b78281f85ee33b7653a[m
+Merge: 20850c3 0abd59d
+Author: felipeecc <70174692+felipeecc@users.noreply.github.com>
+Date:   Fri Feb 28 09:07:53 2025 -0500
+
+    Merge pull request #12 from cristianmalon/master
+    
+    Merge pull request #10 from cristianmalon/DevFelipe
+
+[33mcommit acf07d057a21dfa8b813dd73fc76b42a664c2a9a[m
+Merge: 06294f0 0abd59d
+Author: felipeecc <70174692+felipeecc@users.noreply.github.com>
+Date:   Fri Feb 28 09:06:16 2025 -0500
+
+    Merge pull request #11 from cristianmalon/master
+    
+    cambio
+
+[33mcommit 0abd59dc94fdd43d1dc2bb5c550db87c71a8a1f3[m
+Merge: 9e5f992 20850c3
+Author: felipeecc <70174692+felipeecc@users.noreply.github.com>
+Date:   Fri Feb 28 09:05:43 2025 -0500
+
+    Merge pull request #10 from cristianmalon/DevFelipe
+    
+    Dev felipe
+
+[33mcommit 20850c3fa952948c0b12b1b490bc23c028ff2888[m
+Author: felipeecc <701

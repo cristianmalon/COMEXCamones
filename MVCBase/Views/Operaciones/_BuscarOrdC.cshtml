@@ -82,9 +82,9 @@
         <li class="nav-item">
             <a class="nav-link" href="#" data-target="tab5_@ViewBag.Id">Operaciones</a>
         </li>
-        <li class="nav-item">
+        @*<li class="nav-item">
             <a class="nav-link" href="#" data-target="tab6_@ViewBag.Id">Facturas Relacionadas</a>
-        </li>
+        </li>*@
     </ul>
 
     <!-- Contenedores de paneles -->
@@ -207,10 +207,10 @@
         <div id="gridContainerO_@ViewBag.Id"></div>
     </div>
 
-    <div id="tab6_@ViewBag.Id" class="tab-contentss" style="display: none;">
+    @*<div id="tab6_@ViewBag.Id" class="tab-contentss" style="display: none;">
         <div class="form-group form-inline"><div class="col-md-3"><label>FACTURAS RELACIONADAS</label></div></div>
         <div id="gridContainerF_@ViewBag.Id"></div>
-    </div>
+    </div>*@
 </div>
 
 
@@ -233,7 +233,23 @@
     var lista = []
     dataProducto = @Html.Raw(Json.Encode(Model.ListaProducto));
     lista.push(@Html.Raw(maeCCodJson));//  @Html.Raw(maeCCodJson); // Convertir JSON en objeto JavaScript
-    var filecreado = $("#FileIDv").val();
+
+
+    var filecreado;
+
+    if ("@ViewBag.ViewID" === 'R') {
+        filecreado = $("#FileIDv").val();
+
+
+    } else if ("@ViewBag.ViewID" === 'E') {
+        filecreado = $("#FileIDE").val();
+
+
+    }
+
+
+
+
     $(document).ready(function () {
 
 
@@ -243,7 +259,7 @@
         console.log("lista", lista);
         console.log("dataProducto", dataProducto);
 
-        console.log("FileIDv", $("#FileIDv").val());
+        console.log("FileIDv", filecreado);
 
 
 
@@ -252,7 +268,7 @@
             $("#FileIDv").val(filecreado); // Actualiza el valor en el campo
         }
         if (lista[0].IdDatoGeneral != 0) {
-            debugger;
+            //debugger;
             let tabPanel;
             let activeTab;
             if ("@ViewBag.ViewID" === 'R') {
@@ -595,6 +611,35 @@
                         }
                     }
                 },
+
+                {
+                    widget: "dxButton",
+                    options: {
+                        icon: "refresh",
+                        text: "Actualizar",
+                        onClick() {
+                            let tabPanel;
+                            let activeTab;
+                            if ("@ViewBag.ViewID" === 'R') {
+                                tabPanel = $("#tabPanel").dxTabPanel("instance");
+                                activeTab = tabPanel.option("selectedItem");
+                            } else if ("@ViewBag.ViewID" === 'E') {
+                                tabPanel = $("#tabPanelE").dxTabPanel("instance");
+                                activeTab = tabPanel.option("selectedItem");
+                            }
+
+                            if (!activeTab || !activeTab.id) {
+                                DevExpress.ui.dialog.alert("No se pudo obtener la pestaña activa.", "Error");
+                                return;
+                            }
+
+                            console.log("Refrescando grid de la pestaña: ", activeTab.id);
+                            $("#gridContainerP_" +activeTab.id).dxDataGrid("instance").refresh();
+                        }
+                    },
+                    location: "before"
+                }
+
                 /*{
                     location: "after",
                     widget: "dxButton",
@@ -788,6 +833,35 @@
         ],
         toolbar: {
             items: [
+
+                 {
+                    widget: "dxButton",
+                    options: {
+                        icon: "refresh",
+                        text: "Actualizar",
+                        onClick() {
+                            let tabPanel;
+                            let activeTab;
+                            if ("@ViewBag.ViewID" === 'R') {
+                                tabPanel = $("#tabPanel").dxTabPanel("instance");
+                                activeTab = tabPanel.option("selectedItem");
+                            } else if ("@ViewBag.ViewID" === 'E') {
+                                tabPanel = $("#tabPanelE").dxTabPanel("instance");
+                                activeTab = tabPanel.option("selectedItem");
+                            }
+
+                            if (!activeTab || !activeTab.id) {
+                                DevExpress.ui.dialog.alert("No se pudo obtener la pestaña activa.", "Error");
+                                return;
+                            }
+
+                            console.log("Refrescando grid de la pestaña: ", activeTab.id);
+                            $("#gridContainerL_" + activeTab.id).dxDataGrid("instance").refresh();
+                        }
+                    },
+                    location: "before"
+                },
+
                 {
                     widget: "dxButton",
                     options: {
@@ -822,7 +896,9 @@
                     },
                     location: "before"
                 },
-                {
+
+
+                @*{
                     widget: "dxButton",
                     options: {
                         icon: "trash",
@@ -876,7 +952,7 @@
                         }
                     },
                     location: "before"
-                }
+                }*@
             ]
         },
         hoverStateEnabled: false,
@@ -989,6 +1065,35 @@
         ],
         toolbar: {
             items: [
+
+                 {
+                    widget: "dxButton",
+                    options: {
+                        icon: "refresh",
+                        text: "Actualizar",
+                        onClick() {
+                            let tabPanel;
+                            let activeTab;
+                            if ("@ViewBag.ViewID" === 'R') {
+                                tabPanel = $("#tabPanel").dxTabPanel("instance");
+                                activeTab = tabPanel.option("selectedItem");
+                            } else if ("@ViewBag.ViewID" === 'E') {
+                                tabPanel = $("#tabPanelE").dxTabPanel("instance");
+                                activeTab = tabPanel.option("selectedItem");
+                            }
+
+                            if (!activeTab || !activeTab.id) {
+                                DevExpress.ui.dialog.alert("No se pudo obtener la pestaña activa.", "Error");
+                                return;
+                            }
+
+                            console.log("Refrescando grid de la pestaña: ", activeTab.id);
+                            $("#gridContainerC_" +activeTab.id).dxDataGrid("instance").refresh();
+                        }
+                    },
+                    location: "before"
+                },
+
                 {
                     widget: "dxButton",
                     options: {
@@ -1014,7 +1119,11 @@
                     },
                     location: "before"
                 },
-                {
+
+
+
+
+                @*{
                     widget: "dxButton",
                     options: {
                         icon: "trash",
@@ -1059,7 +1168,7 @@
                         }
                     },
                     location: "before"
-                }
+                }*@
             ]
         },
         hoverStateEnabled: false,
@@ -1327,11 +1436,11 @@
         }
     });
 
-    $("#gridContainerF_" + id).dxDataGrid({
-        dataSource: [], // Data real
-        columns: ["Factura", "Monto", "Proveedor"],
-        showBorders: true
-    });
+    //$("#gridContainerF_" + id).dxDataGrid({
+    //    dataSource: [], // Data real
+    //    columns: ["Factura", "Monto", "Proveedor"],
+    //    showBorders: true
+    //});
 
     // Ocultar todos los tabs excepto el primero
     $(".tab-contentss").hide();

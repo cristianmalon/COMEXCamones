@@ -85,7 +85,7 @@
                         <div id="btnGuardarTodasOCE"  style="display: none;"></div>
                     </div>
                     <!-- Campo oculto para guardar nuevoFileID -->
-                    <input type="hidden" id="FileIDv" value="" />
+                    <input type="hidden" id="FileIDE" value="" />
 
                 </div>
             </div>
@@ -118,6 +118,7 @@
         $("#txtFileE").val(filaSeleccionada.NombreF);
         $("#txtUsuarioE").val(filaSeleccionada.UsuarioCreacion);
 
+        document.getElementById("FileIDE").value = filaSeleccionada.FileId; // Asigna un nuevo ID
 
         console.log("filaSeleccionada Editar: ", filaSeleccionada);
 
@@ -132,14 +133,27 @@
             showNavButtons: true,
             repaintChangesOnly: true,
             onSelectionChanged: function (e) {
-                console.log("Pestaña activa AA:", e.component.option("selectedIndex"));
+                console.log("Pestaña activa:", e.component.option("selectedIndex"));
+
                 $(".tab-contentss").hide();
                 if (e.addedItems.length > 0 && e.addedItems[0].id) {
-                    $("#tab1_" + e.addedItems[0].id).show();
+                    let id = e.addedItems[0].id;
+                    $("#tab1_" + id).show();
+
+                    // Forzar refresh en todos los grids dentro de la pestaña activa
+                    setTimeout(() => {
+                        ["L", "C", "O", "P"].forEach(prefix => {
+                            let grid = $("#gridContainer" + prefix + "_" + id).dxDataGrid("instance");
+                            if (grid) {
+                                grid.refresh();
+                            }
+                        });
+                    }, 200); // Pequeño delay para asegurar que los grids están listos en el DOM
                 } else {
                     console.log("No hay pestañas abiertas.");
                 }
             }
+
         }).dxTabPanel('instance');
 
         // Función titleTemplate, loadPartialView, closeButtonHandler (como antes)
@@ -155,28 +169,31 @@
         function loadPartialView(itemData, itemIndex, itemElement) {
             var uniqueId = itemData.id;
             var orderData = itemData.data;
-            console.log("uniqueId: ", uniqueId);
+            console.log("itemData: ", itemData);
             console.log("orderData: ", orderData[0]);
+            console.log("uniqueId: ", uniqueId);
+
             console.log("orderData[0].FileId: ", orderData[0].FileId);
+            console.log("FileId: ", filaSeleccionada.FileId);
 
             const tabPanelItems2 = tabPanelE.option('dataSource');
             console.log("tabPanelItems2: ", tabPanelItems2[0]?.idoc);
+
             $('<div>').addClass('tab-content').attr("data-id", uniqueId).appendTo(itemElement);
 
-
+            // Determinar si es una vista nueva o ya cargada
+            var isNewView = !orderData[0].OrdenID; // Si no tiene OrdenID, es una nueva vista
 
             var transformedOrderData = {
-                id: orderData[0].OrdenID,
-                FileID: orderData[0].FileId,
-                NumeroOrden: orderData[0].OrdC,
-                PrvDDes: orderData[0].Proveedor,
-                PrvCCod: orderData[0].CodProv,
-                MaeDDes: orderData[0].DesArt,
-                
+                id: isNewView ? itemData.data[0].id : orderData[0].OrdenID,
+                FileID: filaSeleccionada.FileId,
+                NumeroOrden: isNewView ? itemData.data[0].NumeroOrden : orderData[0].OrdC,
+                PrvDDes: isNewView ? itemData.data[0].PrvDDes : orderData[0].Proveedor,
+                PrvCCod: isNewView ? itemData.data[0].PrvCCod : orderData[0].CodProv,
+                MaeDDes: isNewView ? itemData.data[0].MaeDDes : orderData[0].DesArt,
             };
 
-
-
+            console.log("transformedOrderData: ", transformedOrderData);
 
             $.ajax({
                 url: '/Operaciones/VROrdenCompra',
@@ -185,7 +202,7 @@
                 data: JSON.stringify({
                     id: uniqueId,
                     orderData: transformedOrderData,
-                    FileID: orderData[0].FileId,
+                    FileID: filaSeleccionada.FileId,
                     ViewID: 'E'
                 }),
                 success: function (response) {
@@ -197,6 +214,8 @@
             });
         }
 
+
+
         function closeButtonHandler(itemData) {
             DevExpress.ui.dialog.confirm("¿Estás seguro de que deseas quitar esta O/C?", "Confirmación")
                 .done(function (dialogResult) {
@@ -205,14 +224,17 @@
                         const index = tabPanelItems.findIndex(tab => tab.id === itemData.id);
 
                         console.log("CLOSE itemData: ", itemData);
-                        console.log("CLOSE File: ", $('#FileIDv').val());
+                        console.log("CLOSE File: ", filaSeleccionada.FileId);
                         console.log("CLOSE index: ", index);
                         console.log("CLOSE itemData.data: ", itemData.data);
                         console.log("CLOSE itemData.data: ", itemData.data[0].OrdenID);
+                        console.log("CLOSE itemData.data: ", itemData.data[0].id);
 
-                        // Parámetros para el AJAX
-                        const fileId = $('#FileIDv').val();
-                        const ordenId = itemData.data[0].OrdenID;
+                        var isNewViewC = !itemData.data[0].OrdenID; // Si no tiene OrdenID, es una nueva vista
+                        // Parámetros para el AJAX    itemData.data[0].id : orderData[0].OrdenID
+                        const fileId = filaSeleccionada.FileId;
+                        //const ordenId = itemData.data[0].OrdenID;
+                        const ordenId = isNewViewC ? itemData.data[0].id : itemData.data[0].OrdenID;
 
                         $.ajax({
                             url: '/Operaciones/ActualizarEstadoOrdenxFile',
@@ -323,29 +345,28 @@
 
                                 // Verificar si ya existe una pestaña con la misma combinación de NumeroOrden + Item
                                 var existeOrden = IdordenesAbiertas.some(oc => oc.OrdenID === numeroOrdenId);
+                                console.log("IdordenesAbiertasTAR: ", IdordenesAbiertasTAR);
+                                console.log("IdordenesAbiertas: ", IdordenesAbiertasTAR);
 
-                                // Si es el primer registro, guardamos el TarDNem y permitimos continuar
-                                if (IdordenesAbiertasTAR.length === 0) {
-                                    IdordenesAbiertasTAR.push({ OrdenID: numeroOrdenId, TarDNem: tarDNem });
-                                } else {
-                                    // Obtener el primer TarDNem guardado
-                                    var primerTarDNem = IdordenesAbiertasTAR[0].TarDNem;
+                                var tabPanelItemsE = tabPanelE.option('dataSource');
 
-                                    // Validar si el TarDNem actual es diferente al primero
-                                    if (tarDNem !== primerTarDNem) {
-                                        DevExpress.ui.dialog.alert("Tipo de O/C diferente.", "Aviso");
-                                        return;
-                                    }
+                                console.log("tabPanelItemsE: ", tabPanelItemsE);
+                                console.log("numeroOrdenId: ", numeroOrdenId);
+
+                                if (tabPanelItemsE.some(item => item.idoc === String(numeroOrdenId))) {
+                                    DevExpress.ui.dialog.alert("Esta O/C ya está abierta.", "Aviso");
+                                    return;
                                 }
-
-                                if (existeOrden) {
-                                    DevExpress.ui.dialog.alert("Esta  O/C ya está abierta.", "Aviso");
+                                if (tabPanelItemsE.some(item => item.TarCCod === tarDNem.charAt(0))) {
+                                    DevExpress.ui.dialog.alert("Esta O/C ya está abierta.", "Aviso");
                                     return;
                                 }
 
+                                
+
                                 // Guardamos en Base los productos seleccionados
                                 var BEOperaciones = {
-                                    FileID: $('#FileIDv').val(),
+                                    FileID: filaSeleccionada.FileId,
                                     OrdenID: selectedRow[0].id,
                                 }
                                 var root = "<ROOT>";
@@ -393,6 +414,11 @@
                                             IdordenesAbiertas.push({ OrdenID: numeroOrdenId });
 
                                             console.log("IdordenesAbiertas: ", IdordenesAbiertas);
+                                            console.log("id: ", uniqueId);
+                                            console.log("title: ", numeroOrden);
+                                            console.log("idoc: ", numeroOrdenId);
+                                            console.log("idop: ", res.status);
+                                            console.log("data: ", selectedRow);
 
                                             popupE.hide();
 
