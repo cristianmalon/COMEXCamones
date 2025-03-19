@@ -220,7 +220,20 @@
     var dataProducto = [];
 
     var id = "@ViewBag.Id";
+    @*var tabPanelM;
+    var activeTabM;
+    var currentIdM;
+    if ("@ViewBag.ViewID" === 'R') {
+        tabPanelM = $("#tabPanel").dxTabPanel("instance");
+        activeTabM = tabPanelM.option("selectedItem");
 
+    } else if ("@ViewBag.ViewID" === 'E') {
+        tabPanelM = $("#tabPanelE").dxTabPanel("instance");
+        activeTabM = tabPanelM.option("selectedItem");
+
+    }
+    currentIdM = activeTabM.id;
+    console.log("currentIdM: ", currentIdM);*@
 
 
 
@@ -256,7 +269,7 @@
 
         var OrdenCompraSAP = lista[0].NumeroOrden;
         CargarCombo();
-        console.log("lista", lista);
+        console.log("lista usada en dato imp", lista);
         console.log("dataProducto", dataProducto);
 
         console.log("FileIDv", filecreado);
@@ -708,6 +721,32 @@
                         return data;
                     });
             },
+            update(key, values) {
+                console.log("Actualizando:", key, values);
+
+                var tabP;
+                var activeT;
+                if ("@ViewBag.ViewID" === 'R') {
+                    tabP = $("#tabPanel").dxTabPanel("instance");
+                    activeT = tabP.option("selectedItem");
+
+                } else if ("@ViewBag.ViewID" === 'E') {
+                    tabP = $("#tabPanelE").dxTabPanel("instance");
+                    activeT = tabP.option("selectedItem");
+
+                }
+                console.log("activeT: ", activeT);
+
+
+                values.IdFile = filecreado;
+                values.IdOperaciones = activeT.idop;
+                values.IdLote = key;
+                console.log(values);
+                return sendRequest(`/Operaciones/ActualizarLote`, 'PUT', JSON.stringify(values));
+            },
+
+
+
             insert(values) {
                 // Verificar si el código ya existe
                 if (codigosExistentes.some(lote => lote.IdLote === values.IdLote)) {
@@ -739,6 +778,7 @@
         editing: {
             mode: "row", // También puedes usar 'popup' o 'batch'
             allowAdding: true, // Permitir agregar filas nuevas
+            allowUpdating: true,
             allowDeleting: true, // Permitir eliminar filas
             useIcons: true // Asegura que los iconos de edición sean visibles
         },
@@ -1566,8 +1606,8 @@
         });
     }
 
-    function fecha(dato) {
-        debugger
+    /*function fecha(dato) {
+        //debugger
         let date = new Date(
             parseInt(dato.replace(/(^.*\()|([+-].*$)/g, ''))
         );
@@ -1581,7 +1621,30 @@
         } else {
             return `${year}-${month}-${day}`
         }
+    }*/
+
+    function fecha(dato) {
+        if (!dato) {
+            return ""; // Permitir vacío sin error
+        }
+
+        let timestamp = dato.match(/\d+/); // Extraer solo los números del formato /Date(1693459200000-0500)/
+
+        if (!timestamp) {
+            console.error("Error: Formato de fecha incorrecto", dato);
+            return "";
+        }
+
+        let date = new Date(parseInt(timestamp[0]));
+
+        let day = date.getDate().toString().padStart(2, '0');
+        let month = (date.getMonth() + 1).toString().padStart(2, '0');
+        let year = date.getFullYear();
+
+        return `${year}-${month}-${day}`;
     }
+
+
 </script>
 
 
