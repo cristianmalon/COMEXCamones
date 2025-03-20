@@ -23,7 +23,20 @@ namespace CAMTEX.Aplicacion
 
         public Response Actualizar(Request<Contenedores> entidad)
         {
-            throw new NotImplementedException();
+            Response retorno = new Response();
+            try
+            {
+                var resultado = ContenedorRepositorio.Actualizar(entidad.entidad);
+                retorno.Success = true;
+                retorno.error = false;
+
+            }
+            catch (Exception ex)
+            {
+                retorno.error = true;
+                retorno.mensaje = ex.Message;
+            }
+            return retorno;
         }
 
         public Response Eliminar(Request<Contenedores> entidad)

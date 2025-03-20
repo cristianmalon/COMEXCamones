@@ -804,9 +804,9 @@
             e.data.IdFile = filecreado; // Valor predeterminado para IdOPeraciones
         },
         columns: [
-            { dataField: 'IdFile', caption: 'IdFile', alignment: 'left', allowEditing: false },
-            { dataField: 'IdOPeraciones', caption: 'IdOPeraciones', alignment: 'left', allowEditing: false },
-            { dataField: 'IdLote', caption: 'IdLote', alignment: 'left', allowEditing: false },
+            { dataField: 'IdFile', caption: 'IdFile', alignment: 'left', allowEditing: false, visible: false },
+            { dataField: 'IdOPeraciones', caption: 'IdOPeraciones', alignment: 'left', allowEditing: false, visible: false},
+            { dataField: 'IdLote', caption: 'IdLote', alignment: 'left', allowEditing: false, visible: false },
 
             {
                 dataField: 'Codigo',
@@ -868,7 +868,7 @@
                 ]
             },
 
-            { dataField: 'ESTADO', caption: 'Estado', alignment: 'left', allowEditing: false}
+            { dataField: 'ESTADO', caption: 'Estado', alignment: 'left', allowEditing: false, visible: false}
 
         ],
         toolbar: {
@@ -1036,6 +1036,32 @@
                         return data;
                     });
             },
+            update(key, values) {
+                console.log("Actualizando:", key, values);
+
+                var tabP;
+                var activeT;
+                if ("@ViewBag.ViewID" === 'R') {
+                    tabP = $("#tabPanel").dxTabPanel("instance");
+                    activeT = tabP.option("selectedItem");
+
+                } else if ("@ViewBag.ViewID" === 'E') {
+                    tabP = $("#tabPanelE").dxTabPanel("instance");
+                    activeT = tabP.option("selectedItem");
+
+                }
+                console.log("activeT: ", activeT);
+
+
+                values.IdFile = filecreado;
+                values.IdOperaciones = activeT.idop;
+                values.IdContenedor = key;
+                console.log(values);
+                return sendRequest(`/Operaciones/ActualizarContenedor`, 'PUT', JSON.stringify(values));
+            },
+
+
+
             insert(values) {
                 values.Estado = 'A';
                 console.log("values:", values);
@@ -1059,6 +1085,7 @@
         editing: {
             mode: "row", // También puedes usar 'popup' o 'batch'
             allowAdding: true, // Permitir agregar filas nuevas
+            allowUpdating: true,
             allowDeleting: true, // Permitir eliminar filas
             useIcons: true // Asegura que los iconos de edición sean visibles
         },
@@ -1086,9 +1113,9 @@
             e.data.Estado = 'A'; // Valor predeterminado para IdOPeraciones
         },
         columns: [
-            { dataField: 'IdFile', caption: 'IdFile', alignment: 'left', allowEditing: false },
-            { dataField: 'IdOPeraciones', caption: 'IdOPeraciones', alignment: 'left', allowEditing: false },
-            { dataField: 'IdContenedor', caption: 'IdContenedor', alignment: 'left', allowEditing: false },
+            { dataField: 'IdFile', caption: 'IdFile', alignment: 'left', allowEditing: false, visible: false },
+            { dataField: 'IdOPeraciones', caption: 'IdOPeraciones', alignment: 'left', allowEditing: false, visible: false },
+            { dataField: 'IdContenedor', caption: 'IdContenedor', alignment: 'left', allowEditing: false, visible: false},
 
             {
                 dataField: 'Contenedor',
@@ -1100,7 +1127,7 @@
                 ]
             },
 
-            { dataField: 'ESTADO', caption: 'Estado', alignment: 'left', allowEditing: false}
+            { dataField: 'ESTADO', caption: 'Estado', alignment: 'left', allowEditing: false, visible: false}
 
         ],
         toolbar: {
@@ -1333,8 +1360,8 @@
             e.data.Estado = 'A'; // Valor predeterminado para IdOPeraciones
         },
         columns: [
-            { dataField: 'IdFile', caption: 'FileID', alignment: 'left', allowEditing: false },
-            { dataField: 'IdOPeraciones', caption: 'IdOperaciones', alignment: 'left', allowEditing: false },
+            { dataField: 'IdFile', caption: 'FileID', alignment: 'left', allowEditing: false, visible: false},
+            { dataField: 'IdOPeraciones', caption: 'IdOperaciones', alignment: 'left', allowEditing: false, visible: false},
             { dataField: 'IdOperativa', caption: 'IdOperativa', alignment: 'left', allowEditing: false, visible:false },
             {
                 dataField: 'FechaOperacion', caption: 'Fecha', alignment: 'left', allowEditing: true,
