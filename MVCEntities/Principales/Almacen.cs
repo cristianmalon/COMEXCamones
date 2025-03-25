@@ -10,9 +10,11 @@ namespace CAMTEX.Entidades
     [DataContract]
     public class Almacen:EntidadBase
     {
+        [DataMember] public int IdAlmacen { get; set; }
         [DataMember] public string AlmCCod { get; set; }
         [DataMember] public string TarCCod { get; set; }
         [DataMember] public string CCOCCod { get; set; }
         [DataMember] public string TipoAlmSunat { get; set; }
+        [DataMember] public string DesAlmacen { get; set; }
     }
 }
