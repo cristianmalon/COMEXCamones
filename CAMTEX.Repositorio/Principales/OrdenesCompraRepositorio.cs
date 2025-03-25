@@ -37,6 +37,14 @@ namespace CAMTEX.Repositorio
                 oConn.AddParameter("@IdLineaNaviera", entidad.IdLineaNaviera);
                 oConn.AddParameter("@IdAgente", entidad.IdAgente);
                 oConn.AddParameter("@IdAgenteCarga", entidad.IdAgenteCarga);
+                oConn.AddParameter("@EtaCallao", entidad.EtaCallao);
+                oConn.AddParameter("@VctSobreEst", entidad.VctSobreEst);
+                oConn.AddParameter("@IdArancel", entidad.IdArancel);
+                oConn.AddParameter("@IdPuerEm", entidad.IdPuerEm);
+                oConn.AddParameter("@IdAlmacen", entidad.IdAlmacen);
+                oConn.AddParameter("@FechaDeposito", entidad.FechaDeposito);
+                oConn.AddParameter("@IdIncoterm", entidad.IdIncoterm);
+                oConn.AddParameter("@NroDua", entidad.NroDua);
                 oConn.AddParameter("@Usuario", entidad.Usuario);
                 oConn.AddParameter("@Host", entidad.Host);
                 DataTable dt = oConn.ExecuteDataTable("USP_DatoImportacion");
@@ -89,6 +97,21 @@ namespace CAMTEX.Repositorio
         public DataTable ListarDeposito()
         {
             DataTable dt = oConn.ExecuteDataTable("[DBO].[USP_Deposito_listar]");
+            return dt;
+        }
+        public DataTable ListarArancel()
+        {
+            DataTable dt = oConn.ExecuteDataTable("[DBO].[USP_Arancel_listar]");
+            return dt;
+        }
+        public DataTable ListarPuertoEmbarque()
+        {
+            DataTable dt = oConn.ExecuteDataTable("[DBO].[USP_PuertoEmbarque_listar]");
+            return dt;
+        }
+        public DataTable ListarAlmacen()
+        {
+            DataTable dt = oConn.ExecuteDataTable("[DBO].[USP_Almacen_listar]");
             return dt;
         }
 

@@ -91,7 +91,14 @@ namespace MVCBase.Controllers
             orderData.ListaAgentes = ListarAgentes.response;
             var ListarDeposito = new OrdenesCompraAplicacion(new OrdenesCompraRepositorio()).ListarDeposito();
             orderData.ListaDeposito = ListarDeposito.response;
-
+            var ListarArancel = new OrdenesCompraAplicacion(new OrdenesCompraRepositorio()).ListarArancel();
+            orderData.ListaArancel = ListarArancel.response;
+            var ListaPuertoEmbarque = new OrdenesCompraAplicacion(new OrdenesCompraRepositorio()).ListarPuertoEmbarque();
+            orderData.ListaPuertoEmbarque = ListaPuertoEmbarque.response;
+            var ListaAlmacen = new OrdenesCompraAplicacion(new OrdenesCompraRepositorio()).ListarAlmacen();
+            orderData.ListaAlmacen = ListaAlmacen.response;
+            var ListarIncoter = new IncotermAplicacion(new IncotermRepositorio()).Listar(new Request<Incoterm>());
+            orderData.ListaIncoterm = ListarIncoter.response;
             var listaDatoImportacion = new OrdenesCompraAplicacion(new OrdenesCompraRepositorio()).DatoImportacion_listar(orderData);
             if (listaDatoImportacion.response != null && listaDatoImportacion.response.Count>0)
             {
@@ -101,6 +108,7 @@ namespace MVCBase.Controllers
                 orderData.BL = listaDatoImportacion.response[0].BL;
                 orderData.IdDeposito = listaDatoImportacion.response[0].IdDeposito;
                 orderData.NumFactura = listaDatoImportacion.response[0].NumFactura;
+                orderData.FechaFactura = listaDatoImportacion.response[0].FechaFactura;
                 orderData.FechaIngreso = listaDatoImportacion.response[0].FechaIngreso;
                 orderData.FechaEmbarque = listaDatoImportacion.response[0].FechaEmbarque;
                 orderData.Garantia = listaDatoImportacion.response[0].Garantia;
@@ -108,6 +116,14 @@ namespace MVCBase.Controllers
                 orderData.IdLineaNaviera = listaDatoImportacion.response[0].IdLineaNaviera;
                 orderData.IdAgente = listaDatoImportacion.response[0].IdAgente;
                 orderData.IdAgenteCarga = listaDatoImportacion.response[0].IdAgenteCarga;
+                orderData.EtaCallao = listaDatoImportacion.response[0].EtaCallao;
+                orderData.VctSobreEst = listaDatoImportacion.response[0].VctSobreEst;
+                orderData.IdArancel = listaDatoImportacion.response[0].IdArancel;
+                orderData.IdPuerEm = listaDatoImportacion.response[0].IdPuerEm;
+                orderData.IdAlmacen = listaDatoImportacion.response[0].IdAlmacen;
+                orderData.FechaDeposito = listaDatoImportacion.response[0].FechaDeposito;
+                orderData.NroDua = listaDatoImportacion.response[0].NroDua;
+                orderData.IdIncoterm = listaDatoImportacion.response[0].IdIncoterm;
             }
             
 
