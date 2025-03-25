@@ -14,7 +14,26 @@ namespace CAMTEX.Repositorio
     {
         public IDictionary<string, object> Actualizar(Lotes entidad)
         {
-            throw new NotImplementedException();
+            Dictionary<string, object> retorno = new Dictionary<string, object>();
+
+            oConn.AddParameter("@opcion", 3);
+
+            oConn.AddParameter("@CodigoLoteA", entidad.Codigo);
+            oConn.AddParameter("@LoteA", entidad.NroLotes);
+            oConn.AddParameter("@EvaluacionA", entidad.Evaluacion);
+            oConn.AddParameter("@EstadoCadA", entidad.EstadoLote);
+            oConn.AddParameter("@ResultadoCadA", entidad.Resultado);
+            oConn.AddParameter("@DepositoCadA", entidad.DepositoCad);
+            oConn.AddParameter("@DestinoCadA", entidad.Destino);
+
+            oConn.AddParameter("@IdLoteA", entidad.IdLote);
+
+
+            DataTable dt = oConn.ExecuteDataTable("[DBO].[Usp_Lotes]");
+
+            retorno.Add("resultado", true);
+            retorno.Add("mensaje", "OK");
+            return retorno;
         }
 
         public IDictionary<string, object> Eliminar(Lotes entidad)

@@ -16,11 +16,11 @@
                     <div class="form-group">
                         <div class="col-md-2">
                             <label>Nombre File</label>
-                            <input type="text" id="txtFileE" class="form-control" placeholder="Ingrese el código">
+                            <input type="text" id="txtFileE" class="form-control" placeholder="Ingrese el código" readonly>
                         </div>
                         <div class="col-md-3">
                             <label>Observación</label>
-                            <input type="text" id="txtObservacionE" class="form-control" placeholder="Ingrese la observación">
+                            <input type="text" id="txtObservacionE" class="form-control" placeholder="Ingrese la observación" readonly>
 
                         </div>
                        @*<div class="col-md-2">
@@ -191,6 +191,9 @@
                 PrvDDes: isNewView ? itemData.data[0].PrvDDes : orderData[0].Proveedor,
                 PrvCCod: isNewView ? itemData.data[0].PrvCCod : orderData[0].CodProv,
                 MaeDDes: isNewView ? itemData.data[0].MaeDDes : orderData[0].DesArt,
+                CNPDDes: isNewView ? itemData.data[0].CNPDDes : orderData[0].CNPDDes,
+                TarDNem: isNewView ? itemData.data[0].TarDNem : orderData[0].TarDNem,
+                OrcDMon: isNewView ? itemData.data[0].OrcDMon : orderData[0].OrcDMon,
             };
 
             console.log("transformedOrderData: ", transformedOrderData);

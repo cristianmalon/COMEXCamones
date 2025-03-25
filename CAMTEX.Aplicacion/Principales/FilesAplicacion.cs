@@ -99,7 +99,15 @@ namespace CAMTEX.Aplicacion
                         FechaEmbarque = Util.CapturaDatetime(row, "Fechaembarque"),
                         ViaTransporte = Util.CapturaString(row, "ViaTransporte"),
                         UsuarioCreacion = Util.CapturaString(row, "OperacionUsuarioLogCrea"),
-                        TarCCod = Util.CapturaString(row, "TarCCod")
+                        TarCCod = Util.CapturaString(row, "TarCCod"),
+
+
+
+                        TarDNem = Util.CapturaString(row, "TarDNem"),
+                        CNPDDes = Util.CapturaString(row, "CNPDDes"),
+                        OrcDMon = Util.CapturaString(row, "OrcDMon"),
+
+
                     });
                 }
 
