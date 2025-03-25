@@ -13,5 +13,6 @@ namespace CAMTEX.Entidades
         [DataMember] public int IdIncoterm { get; set; }
         [DataMember] public string U_DIN_INCO { get; set; }
         [DataMember] public string Descripcion { get; set; }
+        [DataMember] public string Codigo { get; set; }
     }
 }

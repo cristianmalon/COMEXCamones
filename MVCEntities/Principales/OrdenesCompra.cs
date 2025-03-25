@@ -39,15 +39,20 @@ namespace CAMTEX.Entidades
         [DataMember] public List<AgenteCarga> ListaAgenteCarga { get; set; }
         [DataMember] public List<Agentes> ListaAgentes { get; set; }
         [DataMember] public List<Deposito> ListaDeposito { get; set; }
+        [DataMember] public List<Arancel> ListaArancel { get; set; }
+        [DataMember] public List<PuertoEmbarque> ListaPuertoEmbarque { get; set; }
+        [DataMember] public List<Almacen> ListaAlmacen { get; set; }
+        [DataMember] public List<Incoterm> ListaIncoterm { get; set; }
 
         [DataMember] public int IdOperaciones { get; set; }
         [DataMember] public int IdDatoGeneral { get; set; }
         [DataMember] public string NumeroOperacion { get; set; }
         [DataMember] public int? IdVia { get; set; }
-        [DataMember] public int? BL { get; set; }
+        [DataMember] public string BL { get; set; }
         [DataMember] public int? IdDeposito { get; set; }
         [DataMember] public string SerieFactura { get; set; }
         [DataMember] public string NumFactura { get; set; }
+        [DataMember] public DateTime? FechaFactura { get; set; }
         [DataMember] public DateTime? FechaIngreso { get; set; }
         [DataMember] public DateTime? FechaEmbarque { get; set; }
         [DataMember] public int? Garantia { get; set; }
@@ -55,6 +60,15 @@ namespace CAMTEX.Entidades
         [DataMember] public int? IdLineaNaviera { get; set; }
         [DataMember] public int? IdAgente { get; set; }
         [DataMember] public int? IdAgenteCarga { get; set; }
+        [DataMember] public int? IdIncoterm { get; set; }
+
+        [DataMember] public DateTime? EtaCallao { get; set; }
+        [DataMember] public DateTime? VctSobreEst { get; set; }
+        [DataMember] public int? IdArancel { get; set; }
+        [DataMember] public int? IdPuerEm { get; set; }
+        [DataMember] public int? IdAlmacen { get; set; }
+        [DataMember] public DateTime? FechaDeposito { get; set; }
+        [DataMember] public string NroDua { get; set; }
 
         [DataMember] public string Usuario { get; set; }
         [DataMember] public string Host { get; set; }
@@ -81,4 +95,17 @@ namespace CAMTEX.Entidades
         [DataMember] public string DesDeposito { get; set; }
         [DataMember] public string Direccion { get; set; }
     }
+    public class Arancel
+    {
+        [DataMember] public int IdArancel  { get; set; }
+        [DataMember] public string AraDADV { get; set; }
+        [DataMember] public string AraNADV { get; set; }
+    }
+    public class PuertoEmbarque
+    {
+        [DataMember] public int IdPuerEm { get; set; }
+        [DataMember] public string DesPuertoEmbarque { get; set; }
+        [DataMember] public string Pais { get; set; }
+    }
+   
 }

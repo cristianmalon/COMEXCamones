@@ -105,17 +105,17 @@
                 </div>
                 <div class="col-md-3">
                     <label>Nro Factura</label>
-                    <input type="text" id="txtFactura_@ViewBag.Id" class="form-control">
+                    <input type="text" id="txtFactura_@ViewBag.Id" class="form-control" disabled="disabled">
                 </div>
                 <div class="col-md-3">
                     <label>Fecha Factura</label>
-                    <input type="date" id="txtFechaFactura_@ViewBag.Id" class="form-control">
+                    <input type="date" id="txtFechaFactura_@ViewBag.Id" class="form-control" disabled="disabled">
                 </div>
             </div>
             <div class="form-group row">
                 <div class="col-md-3">
-                    <label>Fecha Ingreso</label>
-                    <input type="date" id="txtFechaIngreso_@ViewBag.Id" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+                    <label>Fecha Ingreso a Planta</label>
+                    <input type="date" id="txtFechaIngreso_@ViewBag.Id" class="form-control">
                 </div>
                 <div class="col-md-3">
                     <label>Fecha Logística</label>
@@ -166,7 +166,7 @@
                 </div>
                 <div class="col-md-3">
                     <label>Incoterm</label>
-                    <input type="text" id="txtIncoterm_@ViewBag.Id" class="form-control">
+                    <select id="cboIncoterm_@ViewBag.Id" class="form-control"></select>
                 </div>
             </div>
 
@@ -177,13 +177,43 @@
                     @*<input type="text" id="txtDeposito_@ViewBag.Id" class="form-control">*@
                 </div>
                 <div class="col-md-3">
-                    <label>Agentes</label>
+                    <label>Agente Aduana</label>
                     <select id="cboAgentes_@ViewBag.Id" class="form-control"> </select>
                     @*<input type="text" id="txtDeposito_@ViewBag.Id" class="form-control">*@
                 </div>
-
+                <div class="col-md-3">
+                    <label>ETA Callao</label>
+                    <input type="date" id="txtEtaCallao_@ViewBag.Id" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label>Vcto Sobrestadia</label>
+                    <input type="date" id="txtSobrestadia_@ViewBag.Id" class="form-control">
+                </div>
             </div>
-
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <label>Arancel</label>
+                    <select id="cboArancel_@ViewBag.Id" class="form-control">
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label>Puerto Embarque</label>
+                    <select id="cboPuerto_@ViewBag.Id" class="form-control"></select>
+                </div>
+                <div class="col-md-3">
+                    <label>Pais</label>
+                    <input type="text" id="txtPais_@ViewBag.Id" class="form-control" disabled="disabled">
+                </div>
+                <div class="col-md-3">
+                    <label>Almacén</label>
+                    <select id="cboAlmacen_@ViewBag.Id" class="form-control">
+                        <option value="">-- SELECCIONAR --</option>
+                        <option value="1">0%</option>
+                        <option value="2">6%</option>
+                        <option value="3">11%</option>
+                    </select>
+                </div>
+            </div>
             <div class="form-group">
                 <div class="col-md-12 text-right">
                     <button type="button" id="btnGuardarDatosImp_@ViewBag.Id" class="btn btn-primary">Guardar</button>
@@ -308,6 +338,7 @@
             $("#txtBL_" + currentId).val(lista[0].BL);
             $("#cboDeposito_" + currentId).val(lista[0].IdDeposito);
             $("#txtFactura_" + currentId).val(lista[0].NumFactura);
+            $("#txtFechaFactura_" + currentId).val(fecha(lista[0].FechaFactura));
             $("#txtFechaIngreso_" + currentId).val(fecha(lista[0].FechaIngreso));
             $("#txtFechaEmbarque_" + currentId).val(fecha(lista[0].FechaEmbarque));
             $("#txtGarantia_" + currentId).val(lista[0].Garantia);
@@ -315,12 +346,29 @@
             $("#cboLineaNaviera_" + currentId).val(lista[0].IdLineaNaviera);
             $("#cboAgentes_" + currentId).val(lista[0].IdAgente);
             $("#cboAgenteCarga_" + currentId).val(lista[0].IdAgenteCarga);
+
+            $("#txtEtaCallao_" + currentId).val(fecha(lista[0].EtaCallao));
+            $("#txtSobrestadia_" + currentId).val(fecha(lista[0].VctSobreEst));
+            $("#cboArancel_" + currentId).val(lista[0].IdArancel);
+            $("#cboPuerto_" + currentId).val(lista[0].IdPuerEm);
+            $("#txtDUA_" + currentId).val(lista[0].NroDua);
+            $("#txtFechaDeposito_" + currentId).val(fecha(lista[0].FechaDeposito));
+            $("#cboAlmacen_" + currentId).val(lista[0].IdAlmacen);
+            $("#cboIncoterm_" + currentId).val(lista[0].IdIncoterm);
             var ListaDeposito =  @Html.Raw(Json.Encode(Model.ListaDeposito));
             $.each(ListaDeposito, function (i, item) {
                 if (item.IdDeposito == lista[0].IdDeposito) {
                     $("#txtDepositoDirecc_" + currentId).val(item.Direccion);
                 }
             });
+
+            var ListaPuertoEmbarque =  @Html.Raw(Json.Encode(Model.ListaPuertoEmbarque));
+            $.each(ListaPuertoEmbarque, function (i, item) {
+                if (item.IdPuerEm == lista[0].IdPuerEm) {
+                    $("#txtPais_" + currentId).val(item.Pais);
+                }
+            });
+
         }
 
 
@@ -393,7 +441,7 @@
 
         //debugger;
         var BE = {
-            FileID: $('#FileIDv').val(),
+            FileID: filecreado,//$('#FileIDv').val(),
             OrdenCompraSAP: activeTab.title,
             NumeroOperacion: $("#txtNOp_" + currentId).val(),
             IdVia: $("#cboVia_" + currentId).val(),
@@ -407,7 +455,15 @@
             IdSituacion: $("#cboSituacion_" + currentId).val(),
             IdLineaNaviera: $("#cboLineaNaviera_" + currentId).val(),
             IdAgente: $("#cboAgentes_" + currentId).val(),
-            IdAgenteCarga: $("#cboAgenteCarga_" + currentId).val()
+            IdAgenteCarga: $("#cboAgenteCarga_" + currentId).val(),
+            EtaCallao: $("#txtEtaCallao_" + currentId).val(),
+            VctSobreEst: $("#txtSobrestadia_" + currentId).val(),
+            IdArancel: $("#cboArancel_" + currentId).val(),
+            IdPuerEm: $("#cboPuerto_" + currentId).val(),
+            IdAlmacen: $("#cboAlmacen_" + currentId).val(),
+            NroDua:$("#txtDUA_" + currentId).val() ,
+            FechaDeposito: $("#txtFechaDeposito_" + currentId).val(),
+            IdIncoterm: $("#cboIncoterm_" + currentId).val()
         }
         console.log(BE);
         // Llamada AJAX al controlador
@@ -1550,6 +1606,33 @@
         });
 
      });
+    $("#cboPuerto_" + id).change(function () {
+            if ("@ViewBag.ViewID" === 'R') {
+                tabPanel = $("#tabPanel").dxTabPanel("instance");
+                activeTab = tabPanel.option("selectedItem");
+
+            } else if ("@ViewBag.ViewID" === 'E') {
+                tabPanel = $("#tabPanelE").dxTabPanel("instance");
+                activeTab = tabPanel.option("selectedItem");
+
+            }
+
+            if (!activeTab || !activeTab.id) {
+                DevExpress.ui.dialog.alert("No se pudo obtener la pestaña activa.", "Error");
+                return;
+            }
+
+        let currentId = activeTab.id;
+        var ListaPuertoEmbarque =  @Html.Raw(Json.Encode(Model.ListaPuertoEmbarque));
+        var IdPuerEm = $("#cboPuerto_" + currentId).val();
+        $("#txtPais_" + currentId).val("");
+        $.each(ListaPuertoEmbarque, function (i, item) {
+            if (item.IdPuerEm == IdPuerEm) {
+                $("#txtPais_" + currentId).val(item.Pais);
+             }
+        });
+
+     });
 
 
 
@@ -1625,6 +1708,38 @@
         $.each(ListaAgentes, function (i, item) {
             $(cboAgentes).append('<option value="' + item.idAgentes + '">' + item.Nombre + '</option>');
         });
+
+        var cboArancel = $("#cboArancel_" + id);
+        var ListaArancel =  @Html.Raw(Json.Encode(Model.ListaArancel));
+        $(cboArancel).empty();
+        $(cboArancel).append('<option value = "">-- SELECCIONAR --</option>');
+        $.each(ListaArancel, function (i, item) {
+            $(cboArancel).append('<option value="' + item.IdArancel + '">' + item.AraDADV + '</option>');
+        });
+
+        var cboPuerto = $("#cboPuerto_" + id);
+        var ListaPuertoEmbarque =  @Html.Raw(Json.Encode(Model.ListaPuertoEmbarque));
+        $(cboPuerto).empty();
+        $(cboPuerto).append('<option value = "">-- SELECCIONAR --</option>');
+        $.each(ListaPuertoEmbarque, function (i, item) {
+            $(cboPuerto).append('<option value="' + item.IdPuerEm + '">' + item.DesPuertoEmbarque + '</option>');
+        });
+
+        var cboAlmacen = $("#cboAlmacen_" + id);
+        var ListaAlmacen =  @Html.Raw(Json.Encode(Model.ListaAlmacen));
+        $(cboAlmacen).empty();
+        $(cboAlmacen).append('<option value = "">-- SELECCIONAR --</option>');
+        $.each(ListaAlmacen, function (i, item) {
+            $(cboAlmacen).append('<option value="' + item.IdAlmacen + '">' + item.DesAlmacen + '</option>');
+        });
+
+        var cboIncoterm = $("#cboIncoterm_" + id);
+        var ListaIncoterm =  @Html.Raw(Json.Encode(Model.ListaIncoterm));
+        $(cboIncoterm).empty();
+        $(cboIncoterm).append('<option value = "">-- SELECCIONAR --</option>');
+        $.each(ListaIncoterm, function (i, item) {
+            $(cboIncoterm).append('<option value="' + item.IdIncoterm + '">' + item.U_DIN_INCO + ' - ' + item.Descripcion+ '</option>');
+        });
     }
 
     /*function fecha(dato) {
@@ -1638,9 +1753,19 @@
         let year = date.getFullYear()
 
         if (month < 10) {
-            return `${year}-0${month}-${day}`
+            if (day < 10) {
+                return `${year}-0${month}-0${day}`
+            } else {
+                return `${year}-0${month}-${day}`
+            }
+
         } else {
-            return `${year}-${month}-${day}`
+            if (day < 10) {
+                return `${year}-${month}-0${day}`
+            } else {
+                return `${year}-${month}-${day}`
+            }
+
         }
     }*/
 
