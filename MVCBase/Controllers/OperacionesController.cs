@@ -737,6 +737,71 @@ namespace MVCBase.Controllers
 
         }
 
+
+
+        [HttpPut]
+        [AllowAnonymous]
+        public JsonResult ActualizarLote(Lotes entidad)
+        {
+
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+
+                    Response response = new Response();
+                    var datos = new Request<Lotes>();
+                    datos.entidad = entidad;
+                    response = new LotesAplicacion(new LotesRepositorio()).Actualizar(datos);
+
+                    return Json(new
+                    {
+                        rpta = response.Success,
+                        errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                        url = Url.Action("Index"),
+                        result = response.Success ? Utiles.MessageSaveSuccess() : response.mensaje,
+                        id = 0
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception ex)
+                {
+                    return Json(new
+                    {
+                        rpta = false,
+                        errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                        url = Url.Action("Index"),
+                        result = Utiles.MessageServerError() + " - " + ex.Message.ToString(),
+                        //combo = 0
+                        id = 0
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    rpta = false,
+                    errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                    url = Url.Action("Index"),
+                    result = Utiles.MessageModelStateInvalid()
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
         /*FIN LOTES*/
 
         /*CONTENEDOR*/
@@ -842,6 +907,63 @@ namespace MVCBase.Controllers
                     var datos = new Request<Contenedores>();
                     datos.entidad = entidad;
                     response = new ContenedorAplicacion(new ContenedorRepositorio()).Eliminar(datos);
+
+                    return Json(new
+                    {
+                        rpta = response.Success,
+                        errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                        url = Url.Action("Index"),
+                        result = response.Success ? Utiles.MessageSaveSuccess() : response.mensaje,
+                        id = 0
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception ex)
+                {
+                    return Json(new
+                    {
+                        rpta = false,
+                        errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                        url = Url.Action("Index"),
+                        result = Utiles.MessageServerError() + " - " + ex.Message.ToString(),
+                        //combo = 0
+                        id = 0
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    rpta = false,
+                    errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                    url = Url.Action("Index"),
+                    result = Utiles.MessageModelStateInvalid()
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+        }
+
+        
+        [HttpPut]
+        [AllowAnonymous]
+        public JsonResult ActualizarContenedor(Contenedores entidad)
+        {
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+
+                    Response response = new Response();
+
+                    entidad.HOST_ACT = VariablesWeb.HostName();
+                    entidad.USUARIO_ACT = VariablesWeb.Usuario.SUsrId;
+
+
+
+                    var datos = new Request<Contenedores>();
+                    datos.entidad = entidad;
+                    response = new ContenedorAplicacion(new ContenedorRepositorio()).Actualizar(datos);
 
                     return Json(new
                     {

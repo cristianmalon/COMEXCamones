@@ -229,7 +229,7 @@
 
     <div id="tab4_@ViewBag.Id" class="tab-contentss" style="display: none;">
         <div class="form-group form-inline"><div class="col-md-3"><label>CONTENEDORES</label></div></div>
-        <div id="gridContainerC_@ViewBag.Id"></div>
+        <div id="gridContainerC_@ViewBag.Id" style="padding-left:70px; padding-right:70px"></div>
     </div>
 
     <div id="tab5_@ViewBag.Id" class="tab-contentss" style="display: none;">
@@ -250,7 +250,20 @@
     var dataProducto = [];
 
     var id = "@ViewBag.Id";
+    @*var tabPanelM;
+    var activeTabM;
+    var currentIdM;
+    if ("@ViewBag.ViewID" === 'R') {
+        tabPanelM = $("#tabPanel").dxTabPanel("instance");
+        activeTabM = tabPanelM.option("selectedItem");
 
+    } else if ("@ViewBag.ViewID" === 'E') {
+        tabPanelM = $("#tabPanelE").dxTabPanel("instance");
+        activeTabM = tabPanelM.option("selectedItem");
+
+    }
+    currentIdM = activeTabM.id;
+    console.log("currentIdM: ", currentIdM);*@
 
 
 
@@ -286,7 +299,7 @@
 
         var OrdenCompraSAP = lista[0].NumeroOrden;
         CargarCombo();
-        console.log("lista", lista);
+        console.log("lista usada en dato imp", lista);
         console.log("dataProducto", dataProducto);
 
         console.log("FileIDv", filecreado);
@@ -527,36 +540,24 @@
             },
             {
                 dataField: 'Qty', caption: 'Qty.', alignment: 'left', allowEditing: false,
-
+                format: {
+                    type: "fixedPoint",
+                    precision: 0 // Sin decimales
+                },
                 setCellValue(newData, value) {
                     newData.Qty = Math.round(value); // Asegura que siempre sea entero
                 },
-                /*cellTemplate(container, options) {
-                    $("<div>")
-                        .text(options.value)
-                        .css({
-                            "background-color": "#ffffcc", // Color amarillo claro
-                            "color": "#000", // Texto negro para contraste
-                            "padding": "5px",
-                            "border-radius": "5px"
-                        })
-                        .appendTo(container);
-                },
-                editorOptions: {
-                    min: 0, // Evita valores negativos
-                    showSpinButtons: true // Muestra botones para incrementar/decrementar
-                },
-                validationRules: [
-                    { type: "required", message: "El valor no puede estar vacío." },
-                    { type: "numeric", message: "Solo se permiten números." },
-                    { type: "range", min: 0, message: "Debe ser 0 o mayor." }
-                ]*/
+                
             },
             {
                 dataField: 'Valor', caption: 'Valor', alignment: 'right', allowEditing: false,
-                calculateCellValue(rowData) {
-                    return rowData.Valor ? rowData.Valor.toFixed(2) : "0.00"; // Formatea a 2 decimales
-                }
+                format: {
+                    type: "fixedPoint",
+                    precision: 0 // Sin decimales
+                },
+                //calculateCellValue(rowData) {
+                //    return rowData.Valor ? rowData.Valor.toFixed(2) : "0.00"; // Formatea a 2 decimales
+                //}
             }
         ],
         summary: {
@@ -764,6 +765,32 @@
                         return data;
                     });
             },
+            update(key, values) {
+                console.log("Actualizando:", key, values);
+
+                var tabP;
+                var activeT;
+                if ("@ViewBag.ViewID" === 'R') {
+                    tabP = $("#tabPanel").dxTabPanel("instance");
+                    activeT = tabP.option("selectedItem");
+
+                } else if ("@ViewBag.ViewID" === 'E') {
+                    tabP = $("#tabPanelE").dxTabPanel("instance");
+                    activeT = tabP.option("selectedItem");
+
+                }
+                console.log("activeT: ", activeT);
+
+
+                values.IdFile = filecreado;
+                values.IdOperaciones = activeT.idop;
+                values.IdLote = key;
+                console.log(values);
+                return sendRequest(`/Operaciones/ActualizarLote`, 'PUT', JSON.stringify(values));
+            },
+
+
+
             insert(values) {
                 // Verificar si el código ya existe
                 if (codigosExistentes.some(lote => lote.IdLote === values.IdLote)) {
@@ -795,6 +822,7 @@
         editing: {
             mode: "row", // También puedes usar 'popup' o 'batch'
             allowAdding: true, // Permitir agregar filas nuevas
+            allowUpdating: true,
             allowDeleting: true, // Permitir eliminar filas
             useIcons: true // Asegura que los iconos de edición sean visibles
         },
@@ -820,9 +848,9 @@
             e.data.IdFile = filecreado; // Valor predeterminado para IdOPeraciones
         },
         columns: [
-            { dataField: 'IdFile', caption: 'IdFile', alignment: 'left', allowEditing: false },
-            { dataField: 'IdOPeraciones', caption: 'IdOPeraciones', alignment: 'left', allowEditing: false },
-            { dataField: 'IdLote', caption: 'IdLote', alignment: 'left', allowEditing: false },
+            { dataField: 'IdFile', caption: 'IdFile', alignment: 'left', allowEditing: false, visible: false },
+            { dataField: 'IdOPeraciones', caption: 'IdOPeraciones', alignment: 'left', allowEditing: false, visible: false},
+            { dataField: 'IdLote', caption: 'IdLote', alignment: 'left', allowEditing: false, visible: false },
 
             {
                 dataField: 'Codigo',
@@ -884,7 +912,7 @@
                 ]
             },
 
-            { dataField: 'ESTADO', caption: 'Estado', alignment: 'left', allowEditing: false}
+            { dataField: 'ESTADO', caption: 'Estado', alignment: 'left', allowEditing: false, visible: false}
 
         ],
         toolbar: {
@@ -1052,6 +1080,32 @@
                         return data;
                     });
             },
+            update(key, values) {
+                console.log("Actualizando:", key, values);
+
+                var tabP;
+                var activeT;
+                if ("@ViewBag.ViewID" === 'R') {
+                    tabP = $("#tabPanel").dxTabPanel("instance");
+                    activeT = tabP.option("selectedItem");
+
+                } else if ("@ViewBag.ViewID" === 'E') {
+                    tabP = $("#tabPanelE").dxTabPanel("instance");
+                    activeT = tabP.option("selectedItem");
+
+                }
+                console.log("activeT: ", activeT);
+
+
+                values.IdFile = filecreado;
+                values.IdOperaciones = activeT.idop;
+                values.IdContenedor = key;
+                console.log(values);
+                return sendRequest(`/Operaciones/ActualizarContenedor`, 'PUT', JSON.stringify(values));
+            },
+
+
+
             insert(values) {
                 values.Estado = 'A';
                 console.log("values:", values);
@@ -1075,6 +1129,7 @@
         editing: {
             mode: "row", // También puedes usar 'popup' o 'batch'
             allowAdding: true, // Permitir agregar filas nuevas
+            allowUpdating: true,
             allowDeleting: true, // Permitir eliminar filas
             useIcons: true // Asegura que los iconos de edición sean visibles
         },
@@ -1102,9 +1157,9 @@
             e.data.Estado = 'A'; // Valor predeterminado para IdOPeraciones
         },
         columns: [
-            { dataField: 'IdFile', caption: 'IdFile', alignment: 'left', allowEditing: false },
-            { dataField: 'IdOPeraciones', caption: 'IdOPeraciones', alignment: 'left', allowEditing: false },
-            { dataField: 'IdContenedor', caption: 'IdContenedor', alignment: 'left', allowEditing: false },
+            { dataField: 'IdFile', caption: 'IdFile', alignment: 'left', allowEditing: false, visible: false },
+            { dataField: 'IdOPeraciones', caption: 'IdOPeraciones', alignment: 'left', allowEditing: false, visible: false },
+            { dataField: 'IdContenedor', caption: 'IdContenedor', alignment: 'left', allowEditing: false, visible: false},
 
             {
                 dataField: 'Contenedor',
@@ -1116,7 +1171,7 @@
                 ]
             },
 
-            { dataField: 'ESTADO', caption: 'Estado', alignment: 'left', allowEditing: false}
+            { dataField: 'ESTADO', caption: 'Estado', alignment: 'left', allowEditing: false, visible: false}
 
         ],
         toolbar: {
@@ -1349,8 +1404,8 @@
             e.data.Estado = 'A'; // Valor predeterminado para IdOPeraciones
         },
         columns: [
-            { dataField: 'IdFile', caption: 'FileID', alignment: 'left', allowEditing: false },
-            { dataField: 'IdOPeraciones', caption: 'IdOperaciones', alignment: 'left', allowEditing: false },
+            { dataField: 'IdFile', caption: 'FileID', alignment: 'left', allowEditing: false, visible: false},
+            { dataField: 'IdOPeraciones', caption: 'IdOperaciones', alignment: 'left', allowEditing: false, visible: false},
             { dataField: 'IdOperativa', caption: 'IdOperativa', alignment: 'left', allowEditing: false, visible:false },
             {
                 dataField: 'FechaOperacion', caption: 'Fecha', alignment: 'left', allowEditing: true,
@@ -1417,7 +1472,13 @@
                 },
 
             },
-            { dataField: 'Cantidad', caption: 'Qty', alignment: 'left', allowEditing: true },
+            {
+                dataField: 'Cantidad', caption: 'Qty', alignment: 'left', allowEditing: true,
+                format: {
+                    type: "fixedPoint",
+                    precision: 0 // Sin decimales
+                },
+            },
 
         ],
         toolbar: {
@@ -1681,8 +1742,8 @@
         });
     }
 
-    function fecha(dato) {
-        debugger
+    /*function fecha(dato) {
+        //debugger
         let date = new Date(
             parseInt(dato.replace(/(^.*\()|([+-].*$)/g, ''))
         );
@@ -1706,7 +1767,30 @@
             }
 
         }
+    }*/
+
+    function fecha(dato) {
+        if (!dato) {
+            return ""; // Permitir vacío sin error
+        }
+
+        let timestamp = dato.match(/\d+/); // Extraer solo los números del formato /Date(1693459200000-0500)/
+
+        if (!timestamp) {
+            console.error("Error: Formato de fecha incorrecto", dato);
+            return "";
+        }
+
+        let date = new Date(parseInt(timestamp[0]));
+
+        let day = date.getDate().toString().padStart(2, '0');
+        let month = (date.getMonth() + 1).toString().padStart(2, '0');
+        let year = date.getFullYear();
+
+        return `${year}-${month}-${day}`;
     }
+
+
 </script>
 
 

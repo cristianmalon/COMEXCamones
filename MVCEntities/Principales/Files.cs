@@ -59,6 +59,14 @@ namespace CAMTEX.Entidades
 
 
 
+        [DataMember] public string TarDNem { get; set; }
+        [DataMember] public string CNPDDes { get; set; }
+        [DataMember] public string OrcDMon { get; set; }
+
+
+
+
+
 
 
 
