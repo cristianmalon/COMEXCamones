@@ -47,6 +47,33 @@ namespace CAMTEX.Repositorio
             }
         }
 
+        public IDictionary<string, object> Actualizar_Exportacion(Operaciones entidad)
+        {
+            Dictionary<string, object> retorno = new Dictionary<string, object>();
+            try
+            {
+                oConn.AddParameter("@FileID", entidad.FileId);
+                oConn.AddParameter("@IE_Anio", entidad.IE_Anio);
+                oConn.AddParameter("@IE_Nro", entidad.IE_Nro);
+                oConn.AddParameter("@Usuario", entidad.USUARIO_REG);
+                oConn.AddParameter("@Host", entidad.HOST_REG);
+                oConn.agregarParametroSalida("@AIdOperaciones", SqlDbType.Int, 4);
+
+                DataTable dt = oConn.ExecuteDataTable("USP_FileOperaciones_Expo");
+                string AIdOperaciones = Convert.ToString(oConn.obtenerParametroSalida("@AIdOperaciones"));
+
+
+                retorno.Add("resultado", true);
+                retorno.Add("codigoIDOp", AIdOperaciones);
+                retorno.Add("mensaje", "OK");
+                return retorno;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public IDictionary<string, object> Eliminar(Operaciones entidad)
         {
             Dictionary<string, object> retorno = new Dictionary<string, object>();

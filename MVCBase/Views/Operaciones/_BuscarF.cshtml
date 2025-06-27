@@ -1,47 +1,31 @@
-﻿@model CAMTEX.Entidades.Factura
+﻿@model CAMTEX.Entidades.InstruccionEmbarque
+@{ 
+    var maeCCodJson = @Html.Raw(Json.Encode(Model)); //Newtonsoft.Json.JsonConvert.SerializeObject(maeCCodArray); // Convertir a JSON
 
+}
 
 
 <div id="frmRegistrar_@ViewBag.Id">
     <div class="form-horizontal">
-        <div class="row">
+        
             <div class="col-md-12">
                 <div style="height:20px;"></div>
                 <div class="form-horizontal">
-                    <div class="form-group form-inline">
-                        <div class="col-md-3" style="display: none">
-                            <span class="input-group-btn">
-                                <label>Factura:</label>
-                                <input class="form-control input-sm text-box single-line" disabled="disabled"
-                                       id="txtNumeroFactura_@ViewBag.Id" value="@Model.U_DIN_NFACT">
-                            </span>
-                        </div>
+                    <div class="form-group">
                         <div class="col-md-3">
                             <label>Cliente:</label>
                             <input type="text" id="txtProveedor_@ViewBag.Id" class="form-control"
-                                   value="@Model.U_DIN_PROV" readonly>
-                        </div>
-                    </div>
-                    <div class="form-group form-inline">
-                        <div class="col-md-3">
-                            <label for="txtTipo">Tipo:</label>
-                            <input type="text" id="txtTipo_@ViewBag.Id" class="form-control"
-                                   value="" readonly>
+                                   value="@Model.Cliente" readonly>
                         </div>
                         <div class="col-md-3">
-                            <label for="txtCond">Condición:</label>
-                            <input type="text" id="txtCond_@ViewBag.Id" class="form-control"
-                                   value="@Model.U_DIN_COND" readonly>
-                        </div>
-                        <div class="col-md-3">
-                            <label for="txtFecha">Fecha:</label>
+                            <label for="txtFecha">Control Comex:</label>
                             <input type="text" id="txtFecha_@ViewBag.Id" class="form-control"
-                                   value="@Model.U_DIN_FFACT" readonly>
+                                   value="@Model.Control_Comex" readonly>
                         </div>
                         <div class="col-md-3">
-                            <label for="txtMoneda">Moneda:</label>
+                            <label for="txtMoneda">Cant Prendas:</label>
                             <input type="text" id="txtMoneda_@ViewBag.Id" class="form-control"
-                                   value="@Model.U_DIN_MON" readonly>
+                                   value="@Model.CantPrendas" readonly>
                         </div>
                     </div>
                     <div id="popupContainer"></div>
@@ -53,7 +37,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+       
     </div>
 </div>
 
@@ -63,142 +47,168 @@
     <!-- Menú de pestañas -->
     <ul class="nav nav-tabs" id="tabMenu_@ViewBag.Id">
         <li class="nav-item">
-            <a class="nav-link active" href="#" data-target="tab1_@ViewBag.Id">Guias Remisión</a>
+            <a class="nav-link active" href="#" data-target="tab1_@ViewBag.Id">Guias Relacionadas</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#" data-target="tab2_@ViewBag.Id">Datos Exportación</a>
+            <a class="nav-link" href="#" data-target="tab2_@ViewBag.Id">Productos</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#" data-target="tab3_@ViewBag.Id">Contenedores</a>
+            <a class="nav-link" href="#" data-target="tab3_@ViewBag.Id">Datos Exportación</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#" data-target="tab4_@ViewBag.Id">Facturas Relacionadas</a>
+            <a class="nav-link" href="#" data-target="tab4_@ViewBag.Id">Contenedores</a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" data-target="tab5_@ViewBag.Id">Facturas Relacionadas</a>
+        </li>
+
     </ul>
 
     <!-- Contenedores de paneles -->
     <div id="tab1_@ViewBag.Id" class="tab-contentss active">
+        <div id="gridContainerA_@ViewBag.Id"></div>
+    </div>
+    <div id="tab2_@ViewBag.Id" class="tab-contentss">
         <div id="gridContainerG_@ViewBag.Id"></div>
     </div>
 
-    <div id="tab2_@ViewBag.Id" class="tab-contentss" style="display: none;">
-        <div class="container">
+    <div id="tab3_@ViewBag.Id" class="tab-contentss" style="display: none;">
+        <div class="container" style="margin-top: 10px;">
             <div class="form-group row">
                 <div class="col-md-3">
                     <label>Nro Operación</label>
-                    <input type="text" id="txtNOp_@ViewBag.Id" class="form-control" readonly>
+                    <input type="text" id="txtNOp_@ViewBag.Id" class="form-control">
                 </div>
                 <div class="col-md-3">
-                    <label>Referencia Cliente</label>
-                    <input type="text" id="txtCliente_@ViewBag.Id" class="form-control" readonly>
-                </div>
-                <div class="col-md-3" style="display:none">
                     <label>B/L AWB</label>
-                    <input type="text" id="txtBL_@ViewBag.Id" class="form-control" readonly>
+                    <input type="text" id="txtBL_@ViewBag.Id" class="form-control">
                 </div>
-                <div class="col-md-3" style="display:none">
-                    <label>B/L AWB</label>
-                    <input type="text" id="txtBL_@ViewBag.Id" class="form-control" readonly>
+                <div class="col-md-3">
+                    <label>Nro Factura</label>
+                    <input type="text" id="txtFactura_@ViewBag.Id" class="form-control" disabled="disabled">
+                </div>
+                <div class="col-md-3">
+                    <label>Fecha Factura</label>
+                    <input type="date" id="txtFechaFactura_@ViewBag.Id" class="form-control" disabled="disabled">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <label>Fecha Ingreso a Planta</label>
+                    <input type="date" id="txtFechaIngreso_@ViewBag.Id" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label>Fecha Logística</label>
+                    <input type="date" id="txtFechaLogistica_@ViewBag.Id" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label>Fecha Embarque</label>
+                    <input type="date" id="txtFechaEmbarque_@ViewBag.Id" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label>Fecha Depósito</label>
+                    <input type="date" id="txtFechaDeposito_@ViewBag.Id" class="form-control">
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-3">
-                    <label>B/L AWB</label>
-                    <input type="text" id="txtBL_@ViewBag.Id" class="form-control" readonly>
-                </div>
-                <div class="col-md-3">
-                    <label>DUA</label>
-                    <input type="text" id="txtDUA_@ViewBag.Id" class="form-control" readonly>
-                </div>
-                <div class="col-md-3">
-                    <label>Depósito</label>
-                    <input type="text" id="txtDeposito_@ViewBag.Id" class="form-control" readonly>
-                </div>
-                <div class="col-md-3">
-                    <label>Garantía</label>
-                    <input type="text" id="txtGarantia_@ViewBag.Id" class="form-control" readonly>
-                </div>
-            </div>
-
-            <div class="row">
-
-                <div class="col-md-3">
-                    <label>Pais Destino</label>
-                    <input type="text" id="txtPais_@ViewBag.Id" class="form-control" readonly>
-                </div>
-                <div class="col-md-3">
-                    <label>Fecha Env. Cliente</label>
-                    <input type="text" id="txtFechaEnvCl_@ViewBag.Id" class="form-control" readonly>
-                </div>
-                <div class="col-md-3">
-                    <label>Fecha Aprob Cliente</label>
-                    <input type="text" id="txtFechaAprob_@ViewBag.Id" class="form-control" readonly>
-                </div>
-                <div class="col-md-3">
-                    <label>Fecha Despacho</label>
-                    <input type="text" id="txtFechaDesp_@ViewBag.Id" class="form-control" readonly>
-                </div>
-            </div>
-
-            <div class="row">
-
+            <div class="form-group row">
                 <div class="col-md-3">
                     <label>Línea Naviera</label>
-                    <input type="text" id="txtLineaNaviera_@ViewBag.Id" class="form-control" readonly>
-                </div>
-                <div class="col-md-3">
-                    <label>Flete Internacional</label>
-                    <input type="text" id="txtFlete_@ViewBag.Id" class="form-control" readonly>
-                </div>
-                <div class="col-md-3">
-                    <label>Booking Reserva</label>
-                    <input type="text" id="txtBook_@ViewBag.Id" class="form-control" readonly>
-                </div>
-                <div class="col-md-3">
-                    <label>ETD</label>
-                    <input type="text" id="txtETD_@ViewBag.Id" class="form-control" readonly>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-3">
-                    <label>Incoterm</label>
-                    <input type="text" id="txtIncoterm_@ViewBag.Id" class="form-control" readonly>
+                    <select id="cboLineaNaviera_@ViewBag.Id" class="form-control"> </select>
                 </div>
                 <div class="col-md-3">
                     <label>Vía</label>
-                    <input type="text" id="txtVia_@ViewBag.Id" class="form-control" readonly>
+                    <select id="cboVia_@ViewBag.Id" class="form-control"> </select>
+                </div>
+                <div class="col-md-3">
+                    <label>Depósito</label>
+                    <select id="cboDeposito_@ViewBag.Id" class="form-control"> </select>
+                    @*<input type="text" id="txtDeposito_@ViewBag.Id" class="form-control">*@
+                </div>
+                <div class="col-md-3">
+                    <label>Dirección</label>
+                    <input type="text" id="txtDepositoDirecc_@ViewBag.Id" class="form-control" disabled="disabled">
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <label>Nro DUA</label>
+                    <input type="text" id="txtDUA_@ViewBag.Id" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label>Garantía</label>
+                    <input type="text" id="txtGarantia_@ViewBag.Id" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label>Situación</label>
+                    <select id="cboSituacion_@ViewBag.Id" class="form-control"></select>
+                </div>
+                <div class="col-md-3">
+                    <label>Incoterm</label>
+                    <select id="cboIncoterm_@ViewBag.Id" class="form-control"></select>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <label>Agente Carga</label>
+                    <select id="cboAgenteCarga_@ViewBag.Id" class="form-control"> </select>
+                    @*<input type="text" id="txtDeposito_@ViewBag.Id" class="form-control">*@
                 </div>
                 <div class="col-md-3">
                     <label>Agente Aduana</label>
-                    <input type="text" id="txtAAduana_@ViewBag.Id" class="form-control" readonly>
+                    <select id="cboAgentes_@ViewBag.Id" class="form-control"> </select>
+                    @*<input type="text" id="txtDeposito_@ViewBag.Id" class="form-control">*@
                 </div>
                 <div class="col-md-3">
-                    <label>Agente Carga</label>
-                    <input type="text" id="txtACarga_@ViewBag.Id" class="form-control" readonly>
+                    <label>ETA Callao</label>
+                    <input type="date" id="txtEtaCallao_@ViewBag.Id" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label>Vcto Sobrestadia</label>
+                    <input type="date" id="txtSobrestadia_@ViewBag.Id" class="form-control">
                 </div>
             </div>
-            <div class="row">
+            <div class="form-group row">
                 <div class="col-md-3">
-                    <label>Operador Logístico</label>
-                    <input type="text" id="txtOLog_@ViewBag.Id" class="form-control" readonly>
+                    <label>Arancel</label>
+                    <select id="cboArancel_@ViewBag.Id" class="form-control">
+                    </select>
                 </div>
                 <div class="col-md-3">
-                    <label>Transp. Interno</label>
-                    <input type="text" id="txtTraInte_@ViewBag.Id" class="form-control" readonly>
+                    <label>Puerto Embarque</label>
+                    <select id="cboPuerto_@ViewBag.Id" class="form-control"></select>
+                </div>
+                <div class="col-md-3">
+                    <label>Pais</label>
+                    <input type="text" id="txtPais_@ViewBag.Id" class="form-control" disabled="disabled">
+                </div>
+                <div class="col-md-3">
+                    <label>Almacén</label>
+                    <select id="cboAlmacen_@ViewBag.Id" class="form-control">
+                        <option value="">-- SELECCIONAR --</option>
+                        <option value="1">0%</option>
+                        <option value="2">6%</option>
+                        <option value="3">11%</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-12 text-right">
+                    <button type="button" id="btnGuardarDatosImp_@ViewBag.Id" class="btn btn-primary">Guardar</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="tab3_@ViewBag.Id" class="tab-contentss" style="display: none;">
+    <div id="tab4_@ViewBag.Id" class="tab-contentss" style="display: none;">
         <div class="form-group form-inline"><div class="col-md-3"><label>CONTENEDORES</label></div></div>
         <div id="gridContainerC_@ViewBag.Id"></div>
     </div>
 
 
-    <div id="tab4_@ViewBag.Id" class="tab-contentss" style="display: none;">
+    <div id="tab5_@ViewBag.Id" class="tab-contentss" style="display: none;">
         <div class="form-group form-inline"><div class="col-md-3"><label>FACTURAS RELACIONADAS</label></div></div>
         <div id="gridContainerF_@ViewBag.Id"></div>
     </div>
@@ -209,28 +219,579 @@
 
 
 <script>
-
+    var dataProducto = [];
+    var dataOpeAlmacen = [];
     var id = "@ViewBag.Id"; // Obtener ID dinámico si es necesario
 
     var idOrdenCompra = null;
     console.log("id: ", id);
     // Crear todos los dxDataGrid en sus respectivos contenedores
-   
+
+    var lista = []
+    dataProducto = @Html.Raw(Json.Encode(Model.ListaProducto));
+    dataOpeAlmacen = @Html.Raw(Json.Encode(Model.ListaOpeAlmacen));
+    console.log("dataOpeAlmacen",dataOpeAlmacen);
+    lista.push(@Html.Raw(maeCCodJson));//  @Html.Raw(maeCCodJson); // Convertir JSON en objeto JavaScript
+    var filecreado;
+
+    if ("@ViewBag.ViewID" === 'R') {
+        filecreado = $("#FileIDv").val();
+
+
+    } else if ("@ViewBag.ViewID" === 'E') {
+        filecreado = $("#FileIDE").val();
+
+
+    }
+
+      $(document).ready(function () {
+
+
+
+        var OrdenCompraSAP = lista[0].NumeroOrden;
+        CargarCombo();
+        console.log("lista usada en dato imp", lista);
+        console.log("dataProducto", dataProducto);
+
+        console.log("FileIDv", filecreado);
+
+
+
+        @*if (!filecreado) { // Verifica si filecreado está vacío (null, undefined, "", 0, false, NaN)
+            filecreado = "@Model.FileID"; // Asigna el valor de @Model.FileID
+            $("#FileIDv").val(filecreado); // Actualiza el valor en el campo
+        }*@
+          if (lista[0].IdDatoGeneral != 0) {
+              debugger;
+            //debugger;
+            let tabPanel;
+            let activeTab;
+            if ("@ViewBag.ViewID" === 'R') {
+                tabPanel = $("#tabPanel").dxTabPanel("instance");
+                activeTab = tabPanel.option("selectedItem");
+
+            } else if ("@ViewBag.ViewID" === 'E') {
+                tabPanel = $("#tabPanelE").dxTabPanel("instance");
+                activeTab = tabPanel.option("selectedItem");
+
+            }
+
+            if (!activeTab || !activeTab.id) {
+                DevExpress.ui.dialog.alert("No se pudo obtener la pestaña activa.", "Error");
+                return;
+            }
+            console.log(" activeTab: ", activeTab);
+
+            let currentId = activeTab.id;
+            console.log("id actual: ", currentId);
+
+            $("#txtNOp_" + currentId).val(lista[0].NumeroOperacion);
+            $("#cboVia_" + currentId).val(lista[0].IdVia);
+            $("#txtBL_" + currentId).val(lista[0].BL);
+            $("#cboDeposito_" + currentId).val(lista[0].IdDeposito);
+            $("#txtFactura_" + currentId).val(lista[0].NumFactura);
+            $("#txtFechaFactura_" + currentId).val(fecha(lista[0].FechaFactura));
+            $("#txtFechaIngreso_" + currentId).val(fecha(lista[0].FechaIngreso));
+            $("#txtFechaEmbarque_" + currentId).val(fecha(lista[0].FechaEmbarque));
+            $("#txtGarantia_" + currentId).val(lista[0].Garantia);
+            $("#cboSituacion_" + currentId).val(lista[0].IdSituacion);
+            $("#cboLineaNaviera_" + currentId).val(lista[0].IdLineaNaviera);
+            $("#cboAgentes_" + currentId).val(lista[0].IdAgente);
+            $("#cboAgenteCarga_" + currentId).val(lista[0].IdAgenteCarga);
+
+            $("#txtEtaCallao_" + currentId).val(fecha(lista[0].EtaCallao));
+            $("#txtSobrestadia_" + currentId).val(fecha(lista[0].VctSobreEst));
+            $("#cboArancel_" + currentId).val(lista[0].IdArancel);
+            $("#cboPuerto_" + currentId).val(lista[0].IdPuerEm);
+            $("#txtDUA_" + currentId).val(lista[0].NroDua);
+            $("#txtFechaDeposito_" + currentId).val(fecha(lista[0].FechaDeposito));
+            $("#cboAlmacen_" + currentId).val(lista[0].IdAlmacen);
+            $("#cboIncoterm_" + currentId).val(lista[0].IdIncoterm);
+            var ListaDeposito =  @Html.Raw(Json.Encode(Model.ListaDeposito));
+            $.each(ListaDeposito, function (i, item) {
+                if (item.IdDeposito == lista[0].IdDeposito) {
+                    $("#txtDepositoDirecc_" + currentId).val(item.Direccion);
+                }
+            });
+
+            var ListaPuertoEmbarque =  @Html.Raw(Json.Encode(Model.ListaPuertoEmbarque));
+            $.each(ListaPuertoEmbarque, function (i, item) {
+                if (item.IdPuerEm == lista[0].IdPuerEm) {
+                    $("#txtPais_" + currentId).val(item.Pais);
+                }
+            });
+
+
+        }
+
+
+    })
+
+    $("#btnGuardarDatosImp_" + id).click(function () {
+
+        let tabPanel;
+        let activeTab;
+        tabPanel = $("#tabPanel").dxTabPanel("instance");
+                activeTab = tabPanel.option("selectedItem");
+
+        if (!activeTab || !activeTab.id) {
+            DevExpress.ui.dialog.alert("No se pudo obtener la pestaña activa.", "Error");
+            return;
+        }
+        console.log(" activeTab: ", activeTab);
+
+        let currentId = activeTab.id;
+        console.log("id actual: ", currentId);
+        var IE = activeTab.title.split('-');
+
+        //debugger;
+        var BE = {
+            FileID: $('#FileIDv').val(),
+            IE_Anio: IE[0],
+            IE_Nro: IE[1],
+            NumeroOperacion: $("#txtNOp_" + currentId).val(),
+            IdVia: $("#cboVia_" + currentId).val(),
+            BL: $("#txtBL_" + currentId).val(),
+            IdDeposito: $("#cboDeposito_" + currentId).val(),
+            //SerieFactura: $("#txtNOp_" + id).val(),
+            NumFactura: $("#txtFactura_" + currentId).val(),
+            FechaIngreso: $("#txtFechaIngreso_" + currentId).val(),
+            FechaEmbarque: $("#txtFechaEmbarque_" + currentId).val(),
+            Garantia: $("#txtGarantia_" + currentId).val(),
+            IdSituacion: $("#cboSituacion_" + currentId).val(),
+            IdLineaNaviera: $("#cboLineaNaviera_" + currentId).val(),
+            IdAgente: $("#cboAgentes_" + currentId).val(),
+            IdAgenteCarga: $("#cboAgenteCarga_" + currentId).val(),
+            EtaCallao: $("#txtEtaCallao_" + currentId).val(),
+            VctSobreEst: $("#txtSobrestadia_" + currentId).val(),
+            IdArancel: $("#cboArancel_" + currentId).val(),
+            IdPuerEm: $("#cboPuerto_" + currentId).val(),
+            IdAlmacen: $("#cboAlmacen_" + currentId).val(),
+            NroDua:$("#txtDUA_" + currentId).val() ,
+            FechaDeposito: $("#txtFechaDeposito_" + currentId).val(),
+            IdIncoterm: $("#cboIncoterm_" + currentId).val()
+        }
+        console.log(BE);
+        // Llamada AJAX al controlador
+        $.ajax({
+            datatype: 'json',
+            contentType: "application/json",
+            url: '/Operaciones/ActualizarDatosImportacion',  // Ruta del controlador y acción
+            type: 'POST',
+            data: JSON.stringify({ entidad: BE }),
+            success: function (response) {
+                console.log("response: ", response);
+                DevExpress.ui.dialog.alert("Datos de importación guardado correctamente.", "Éxito").done(function () {
+                });
+            },
+            error: function () {
+                DevExpress.ui.dialog.alert("Hubo un error al guardar los datos de importación.", "Error");
+            }
+        });
+    });
+     $("#cboDeposito_" + id).change(function () {
+            if ("@ViewBag.ViewID" === 'R') {
+                tabPanel = $("#tabPanel").dxTabPanel("instance");
+                activeTab = tabPanel.option("selectedItem");
+
+            } else if ("@ViewBag.ViewID" === 'E') {
+                tabPanel = $("#tabPanelE").dxTabPanel("instance");
+                activeTab = tabPanel.option("selectedItem");
+
+            }
+
+            if (!activeTab || !activeTab.id) {
+                DevExpress.ui.dialog.alert("No se pudo obtener la pestaña activa.", "Error");
+                return;
+            }
+
+        let currentId = activeTab.id;
+         var ListaDeposito =  @Html.Raw(Json.Encode(Model.ListaDeposito));
+         var IdDeposito = $("#cboDeposito_" + currentId).val();
+        $("#txtDepositoDirecc_" + currentId).val("");
+         $.each(ListaDeposito, function (i, item) {
+             if (item.IdDeposito == IdDeposito) {
+                 $("#txtDepositoDirecc_" + currentId).val(item.Direccion);
+             }
+        });
+
+     });
+    $("#cboPuerto_" + id).change(function () {
+            if ("@ViewBag.ViewID" === 'R') {
+                tabPanel = $("#tabPanel").dxTabPanel("instance");
+                activeTab = tabPanel.option("selectedItem");
+
+            } else if ("@ViewBag.ViewID" === 'E') {
+                tabPanel = $("#tabPanelE").dxTabPanel("instance");
+                activeTab = tabPanel.option("selectedItem");
+
+            }
+
+            if (!activeTab || !activeTab.id) {
+                DevExpress.ui.dialog.alert("No se pudo obtener la pestaña activa.", "Error");
+                return;
+            }
+
+        let currentId = activeTab.id;
+        var ListaPuertoEmbarque =  @Html.Raw(Json.Encode(Model.ListaPuertoEmbarque));
+        var IdPuerEm = $("#cboPuerto_" + currentId).val();
+        $("#txtPais_" + currentId).val("");
+        $.each(ListaPuertoEmbarque, function (i, item) {
+            if (item.IdPuerEm == IdPuerEm) {
+                $("#txtPais_" + currentId).val(item.Pais);
+             }
+        });
+
+     });
+    $("#gridContainerA_" + id).dxDataGrid({
+        dataSource: dataOpeAlmacen,
+        allowExpandAll: true,
+        expandAll: true,
+        keyExpr: 'id',
+        allowSorting: false,
+        allowFiltering: true,
+        allowColumnResizing: true,
+        height: 410,
+        fieldChooser: {
+            enabled: false,
+        },
+        selection: {
+            mode: "single" // Permite seleccionar una fila
+        },
+        columns: [
+            {
+                dataField: 'FechaGuia', caption: 'Fecha', width: 150, alignment: 'left', 
+            },
+            { dataField: 'NroGuia', width: 150, caption: 'Nro Guia', alignment: 'left', allowEditing: false },
+            { dataField: 'ArticuloGuia',  caption: 'Detalle', alignment: 'left', allowEditing: false },
+            {
+                dataField: 'Cantidad', caption: 'Cantidad', width: 150, alignment: 'right', allowEditing: false, format: ",##0.###"
+            },
+           
+            
+        ],
+        hoverStateEnabled: false,
+        filterRow: { visible: true },
+        showColumnLines: true,
+        showRowLines: true,
+        rowAlternationEnabled: true,
+        showBorders: true,
+        paging: {
+            pageSize: 10,
+        }
+
+    });
     $("#gridContainerG_" + id).dxDataGrid({
-        dataSource: [], // Data real
-        columns: ["Guias", "Descripcion", "P.U.","Qty.","Valor"],
-        showBorders: true
+        dataSource: dataProducto,
+        allowExpandAll: true,
+        expandAll: true,
+        keyExpr: 'IdFileProd',
+        allowSorting: false,
+        allowFiltering: true,
+        allowColumnResizing: true,
+        height: 410,
+        fieldChooser: {
+            enabled: false,
+        },
+        selection: {
+            mode: "single" // Permite seleccionar una fila
+        },
+        columns: [
+            { dataField: 'CodigoArticulo', caption: 'Codigo', alignment: 'left', allowEditing: false },
+            { dataField: 'Descripcion', width:350, caption: 'Descripcion', alignment: 'left', allowEditing: false },
+            {
+                dataField: 'PU', caption: 'P.U.', alignment: 'right', allowEditing: false,
+                calculateCellValue(rowData) {
+                    return rowData.PU ? rowData.PU.toFixed(2) : "0.00"; // Formatea a 2 decimales
+                }
+            },
+            {
+                dataField: 'Qty', caption: 'Qty.',  allowEditing: false,
+                format: {
+                    type: "fixedPoint",
+                    precision: 0 // Sin decimales
+                },
+                setCellValue(newData, value) {
+                    newData.Qty = Math.round(value); // Asegura que siempre sea entero
+                },
+
+            },
+            {
+                dataField: 'Valor', caption: 'Valor', alignment: 'right', allowEditing: false,
+                format: {
+                    type: "fixedPoint",
+                    //precision: 0 // Sin decimales
+                },
+                calculateCellValue(rowData) {
+                    return rowData.Valor ? rowData.Valor.toFixed(2) : "0.00"; // Formatea a 2 decimales
+                }
+            }
+        ],
+        summary: {
+            totalItems: [
+                {
+                    column: "Valor",
+                    summaryType: "sum",
+                    valueFormat: ",##0.###",
+                    displayFormat: "Total: {0}",
+                    alignment: "right"
+                }
+            ]
+        },
+        hoverStateEnabled: false,
+        filterRow: { visible: true },
+        showColumnLines: true,
+        showRowLines: true,
+        rowAlternationEnabled: true,
+        showBorders: true,
+        paging: {
+            pageSize: 10,
+        }
+
     });
 
     $("#gridContainerC_" + id).dxDataGrid({
-        dataSource: [], // Data real
-        columns: ["Contenedor"],
-        showBorders: true
+        dataSource: new DevExpress.data.CustomStore({
+            key: 'IdContenedor',
+            load() {
+
+
+                var tabP;
+                var activeT;
+                if ("@ViewBag.ViewID" === 'R') {
+                    tabP = $("#tabPanel").dxTabPanel("instance");
+                    activeT = tabP.option("selectedItem");
+
+                } else if ("@ViewBag.ViewID" === 'E') {
+                    tabP = $("#tabPanelE").dxTabPanel("instance");
+                    activeT = tabP.option("selectedItem");
+
+                }
+                console.log("activeT: ", activeT);
+
+
+                var IdOP = activeT.idop;
+
+
+
+                return sendRequest(`/Operaciones/ListarContenedores?OcId=${IdOP}&file=${filecreado}`);
+            },
+            update(key, values) {
+                console.log("Actualizando:", key, values);
+
+                var tabP;
+                var activeT;
+                if ("@ViewBag.ViewID" === 'R') {
+                    tabP = $("#tabPanel").dxTabPanel("instance");
+                    activeT = tabP.option("selectedItem");
+
+                } else if ("@ViewBag.ViewID" === 'E') {
+                    tabP = $("#tabPanelE").dxTabPanel("instance");
+                    activeT = tabP.option("selectedItem");
+
+                }
+                console.log("activeT: ", activeT);
+
+
+                values.IdFile = filecreado;
+                values.IdOperaciones = activeT.idop;
+                values.IdContenedor = key;
+                console.log(values);
+                return sendRequest(`/Operaciones/ActualizarContenedor`, 'PUT', JSON.stringify(values));
+            },
+
+
+
+            insert(values) {
+                values.Estado = 'A';
+                console.log("values:", values);
+                console.log("JSON.stringify(values):", JSON.stringify(values));
+                return sendRequest(`/Operaciones/InsertarContenedor`, 'POST', JSON.stringify(values));
+            },
+            remove(key) {
+                var values = { IdContenedor: key }
+                return sendRequest(`/Operaciones/EliminarContenedor/${key}`, 'DELETE', JSON.stringify(values));
+            }
+        }),
+        allowExpandAll: true,
+        expandAll: true,
+        allowSorting: false,
+        allowFiltering: true,
+        allowColumnResizing: true,
+        height: 300,
+        selection: {
+            mode: "single"
+        },
+        editing: {
+            mode: "row", // También puedes usar 'popup' o 'batch'
+            allowAdding: true, // Permitir agregar filas nuevas
+            allowUpdating: true,
+            allowDeleting: true, // Permitir eliminar filas
+            useIcons: true // Asegura que los iconos de edición sean visibles
+        },
+        onInitNewRow: function (e) {
+
+            var tabP;
+            var activeT;
+            if ("@ViewBag.ViewID" === 'R') {
+                tabP = $("#tabPanel").dxTabPanel("instance");
+                activeT = tabP.option("selectedItem");
+
+            } else if ("@ViewBag.ViewID" === 'E') {
+                tabP = $("#tabPanelE").dxTabPanel("instance");
+                activeT = tabP.option("selectedItem");
+
+            }
+            console.log("activeT: ", activeT);
+
+
+            var IdOP = activeT.idop;
+
+
+            e.data.IdOPeraciones = IdOP ; // Valor predeterminado para IdFile
+            e.data.IdFile = filecreado; // Valor predeterminado para IdOPeraciones
+            e.data.Estado = 'A'; // Valor predeterminado para IdOPeraciones
+        },
+        columns: [
+            { dataField: 'IdFile', caption: 'IdFile', alignment: 'left', allowEditing: false, visible: false },
+            { dataField: 'IdOPeraciones', caption: 'IdOPeraciones', alignment: 'left', allowEditing: false, visible: false },
+            { dataField: 'IdContenedor', caption: 'IdContenedor', alignment: 'left', allowEditing: false, visible: false},
+
+            {
+                dataField: 'Contenedor',
+                caption: 'Contenedor',
+                alignment: 'left',
+                allowEditing: true, // Permitir edición
+                validationRules: [
+                    { type: "required", message: "El Contenedor no puede estar vacío" }
+                ]
+            },
+
+            { dataField: 'ESTADO', caption: 'Estado', alignment: 'left', allowEditing: false, visible: false}
+
+        ],
+        toolbar: {
+            items: [
+
+                 {
+                    widget: "dxButton",
+                    options: {
+                        icon: "refresh",
+                        text: "Actualizar",
+                        onClick() {
+                            let tabPanel;
+                            let activeTab;
+                            if ("@ViewBag.ViewID" === 'R') {
+                                tabPanel = $("#tabPanel").dxTabPanel("instance");
+                                activeTab = tabPanel.option("selectedItem");
+                            } else if ("@ViewBag.ViewID" === 'E') {
+                                tabPanel = $("#tabPanelE").dxTabPanel("instance");
+                                activeTab = tabPanel.option("selectedItem");
+                            }
+
+                            if (!activeTab || !activeTab.id) {
+                                DevExpress.ui.dialog.alert("No se pudo obtener la pestaña activa.", "Error");
+                                return;
+                            }
+
+                            console.log("Refrescando grid de la pestaña: ", activeTab.id);
+                            $("#gridContainerC_" +activeTab.id).dxDataGrid("instance").refresh();
+                        }
+                    },
+                    location: "before"
+                },
+
+                {
+                    widget: "dxButton",
+                    options: {
+                        icon: "add",
+                        text: "Agregar Contenedor",
+                        onClick() {
+                            let tabPanel;
+                            let activeTab;
+                            if ("@ViewBag.ViewID" === 'R') {
+                                tabPanel = $("#tabPanel").dxTabPanel("instance");
+                                 activeTab = tabPanel.option("selectedItem");
+
+                            } else if ("@ViewBag.ViewID" === 'E') {
+                                tabPanel = $("#tabPanelE").dxTabPanel("instance");
+                                activeTab = tabPanel.option("selectedItem");
+
+                            }
+                            let currentId = activeTab.id;
+
+
+                            $("#gridContainerC_" + currentId).dxDataGrid("instance").addRow();
+                        }
+                    },
+                    location: "before"
+                },
+
+
+
+
+                @*{
+                    widget: "dxButton",
+                    options: {
+                        icon: "trash",
+                        text: "Eliminar Contenedor",
+                        onClick() {
+                            let tabPanel;
+                            let activeTab;
+                            if ("@ViewBag.ViewID" === 'R') {
+                                tabPanel = $("#tabPanel").dxTabPanel("instance");
+                                 activeTab = tabPanel.option("selectedItem");
+
+                            } else if ("@ViewBag.ViewID" === 'E') {
+                                tabPanel = $("#tabPanelE").dxTabPanel("instance");
+                                activeTab = tabPanel.option("selectedItem");
+
+                            }
+                            let currentId = activeTab.id;
+
+
+                            const gridC = $("#gridContainerC_" + currentId).dxDataGrid("instance");
+                            const selectedRowC = gridC.getSelectedRowsData();
+
+                            if (selectedRowC.length === 0) {
+                                DevExpress.ui.dialog.alert("Debe seleccionar un Contenedor para eliminar.", "Aviso");
+                                return;
+                            }
+
+                            const selectedIdContenedor = selectedRowC[0].IdContenedor;
+
+                            DevExpress.ui.dialog.confirm("¿Está seguro de eliminar este Contenedor?", "Confirmar eliminación").done(function (result) {
+                                if (result) {
+                                    gridC.getDataSource().store().remove(selectedIdContenedor)
+                                        .then(() => {
+                                            gridC.refresh();
+                                            DevExpress.ui.notify("Contenedor eliminado correctamente.", "success", 2000);
+                                        })
+                                        .catch(() => {
+                                            DevExpress.ui.notify("Error al eliminar el Contenedor.", "error", 2000);
+                                        });
+                                }
+                            });
+                        }
+                    },
+                    location: "before"
+                }*@
+            ]
+        },
+        hoverStateEnabled: false,
+        filterRow: { visible: true },
+        showColumnLines: true,
+        showRowLines: true,
+        rowAlternationEnabled: true,
+        showBorders: true,
+        paging: {
+            pageSize: 10,
+        }
     });
 
     $("#gridContainerF_" + id).dxDataGrid({
         dataSource: [], // Data real
-        columns: ["Factura","Proveedor","Fecha","Concepto","Valor","Moneda"],
+        columns: ["Factura","Cliente","Fecha","Concepto","Valor","Moneda"],
         showBorders: true
     });
 
@@ -252,7 +813,107 @@
         $("#tabMenu_" + id + " .nav-link").removeClass("active");
         $(this).addClass("active");
     });
+    function CargarCombo() {
+        var cboSituacion = $("#cboSituacion_" + id);
+        var ListaSituacion =  @Html.Raw(Json.Encode(Model.ListaSituacion));
+        $(cboSituacion).empty();
+        $(cboSituacion).append('<option value = "">-- SELECCIONAR --</option>');
+        $.each(ListaSituacion, function (i, item) {
+            $(cboSituacion).append('<option value="' + item.Idsituacion + '">' + item.DesSituacion + '</option>');
+        });
 
+        var cboLineaNaviera = $("#cboLineaNaviera_" + id);
+        var ListaLineaNaviera =  @Html.Raw(Json.Encode(Model.ListaLineaNaviera));
+        $(cboLineaNaviera).empty();
+        $(cboLineaNaviera).append('<option value = "">-- SELECCIONAR --</option>');
+        $.each(ListaLineaNaviera, function (i, item) {
+            $(cboLineaNaviera).append('<option value="' + item.IdLineaNaviera + '">' + item.DesLineaNaviera + '</option>');
+        });
+
+        var cboVia = $("#cboVia_" + id);
+        var ListaViatransporte =  @Html.Raw(Json.Encode(Model.ListaViatransporte));
+        $(cboVia).empty();
+        $(cboVia).append('<option value = "">-- SELECCIONAR --</option>');
+        $.each(ListaViatransporte, function (i, item) {
+            $(cboVia).append('<option value="' + item.IdVia + '">' + item.DesViaTransporte + '</option>');
+        });
+
+        var cboDeposito = $("#cboDeposito_" + id);
+        var ListaDeposito =  @Html.Raw(Json.Encode(Model.ListaDeposito));
+        $(cboDeposito).empty();
+        $(cboDeposito).append('<option value = "">-- SELECCIONAR --</option>');
+        $.each(ListaDeposito, function (i, item) {
+            $(cboDeposito).append('<option value="' + item.IdDeposito + '">' + item.DesDeposito + '</option>');
+        });
+
+        var cboAgenteCarga = $("#cboAgenteCarga_" + id);
+        var ListaAgenteCarga =  @Html.Raw(Json.Encode(Model.ListaAgenteCarga));
+        $(cboAgenteCarga).empty();
+        $(cboAgenteCarga).append('<option value = "">-- SELECCIONAR --</option>');
+        $.each(ListaAgenteCarga, function (i, item) {
+            $(cboAgenteCarga).append('<option value="' + item.idAgenteCarga + '">' + item.Nombre + '</option>');
+        });
+
+        var cboAgentes = $("#cboAgentes_" + id);
+        var ListaAgentes =  @Html.Raw(Json.Encode(Model.ListaAgentes));
+        $(cboAgentes).empty();
+        $(cboAgentes).append('<option value = "">-- SELECCIONAR --</option>');
+        $.each(ListaAgentes, function (i, item) {
+            $(cboAgentes).append('<option value="' + item.idAgentes + '">' + item.Nombre + '</option>');
+        });
+
+        var cboArancel = $("#cboArancel_" + id);
+        var ListaArancel =  @Html.Raw(Json.Encode(Model.ListaArancel));
+        $(cboArancel).empty();
+        $(cboArancel).append('<option value = "">-- SELECCIONAR --</option>');
+        $.each(ListaArancel, function (i, item) {
+            $(cboArancel).append('<option value="' + item.IdArancel + '">' + item.AraDADV + '</option>');
+        });
+
+        var cboPuerto = $("#cboPuerto_" + id);
+        var ListaPuertoEmbarque =  @Html.Raw(Json.Encode(Model.ListaPuertoEmbarque));
+        $(cboPuerto).empty();
+        $(cboPuerto).append('<option value = "">-- SELECCIONAR --</option>');
+        $.each(ListaPuertoEmbarque, function (i, item) {
+            $(cboPuerto).append('<option value="' + item.IdPuerEm + '">' + item.DesPuertoEmbarque + '</option>');
+        });
+
+        var cboAlmacen = $("#cboAlmacen_" + id);
+        var ListaAlmacen =  @Html.Raw(Json.Encode(Model.ListaAlmacen));
+        $(cboAlmacen).empty();
+        $(cboAlmacen).append('<option value = "">-- SELECCIONAR --</option>');
+        $.each(ListaAlmacen, function (i, item) {
+            $(cboAlmacen).append('<option value="' + item.IdAlmacen + '">' + item.DesAlmacen + '</option>');
+        });
+
+        var cboIncoterm = $("#cboIncoterm_" + id);
+        var ListaIncoterm =  @Html.Raw(Json.Encode(Model.ListaIncoterm));
+        $(cboIncoterm).empty();
+        $(cboIncoterm).append('<option value = "">-- SELECCIONAR --</option>');
+        $.each(ListaIncoterm, function (i, item) {
+            $(cboIncoterm).append('<option value="' + item.IdIncoterm + '">' + item.U_DIN_INCO + ' - ' + item.Descripcion+ '</option>');
+        });
+    }
+    function fecha(dato) {
+        if (!dato) {
+            return ""; // Permitir vacío sin error
+        }
+
+        let timestamp = dato.match(/\d+/); // Extraer solo los números del formato /Date(1693459200000-0500)/
+
+        if (!timestamp) {
+            console.error("Error: Formato de fecha incorrecto", dato);
+            return "";
+        }
+
+        let date = new Date(parseInt(timestamp[0]));
+
+        let day = date.getDate().toString().padStart(2, '0');
+        let month = (date.getMonth() + 1).toString().padStart(2, '0');
+        let year = date.getFullYear();
+
+        return `${year}-${month}-${day}`;
+    }
 </script>
 
 

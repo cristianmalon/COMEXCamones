@@ -59,6 +59,7 @@ namespace CAMTEX.Aplicacion
                 var resultado = FilesRepositorio.InsertarE(entidad.entidad);
                 retorno.Success = true;
                 retorno.error = false;
+                retorno.output = resultado["NuevoFileID"].ToString();
 
             }
             catch (Exception ex)
@@ -92,7 +93,7 @@ namespace CAMTEX.Aplicacion
                         NroOp = Util.CapturaString(row, "NroOp"),
                         Proveedor = Util.CapturaString(row, "Proveedor"),
                         OrdC = Util.CapturaString(row, "OrdC"),
-
+                        NumeroOperacion = Util.CapturaString(row, "NumeroOperacion"),
                         DesArt = Util.CapturaString(row, "DesArt"),
                         Situacion = Util.CapturaString(row, "Situacion"),
 
@@ -137,29 +138,16 @@ namespace CAMTEX.Aplicacion
                     lista.Add(new Files()
                     {
                         FileId = Util.CapturaInt0(row, "CodFile"),
+                        CodFile = Util.CapturaString(row, "FileName"),
+                        Detalle = Util.CapturaString(row, "Detalle"),
                         FechaOp = Util.CapturaDatetime(row, "FechaOp"),
-
                         NroOp = Util.CapturaString(row, "NroOp"),
+                        NumeroOperacion = Util.CapturaString(row, "NumeroOperacion"),
                         Proveedor = Util.CapturaString(row, "Proveedor"),
-                        OrdC = Util.CapturaString(row, "OrdC"),
-
-                        Producto = Util.CapturaString(row, "Producto"),
-                        DesArt = Util.CapturaString(row, "DesArt"),
-                        Solicitado = Util.CapturaInt0(row, "Solicitado"),
-
-                        DUA = Util.CapturaString(row, "DUA"),
-                        Deposito = Util.CapturaInt0(row, "Deposito"),
-                        Situacion = Util.CapturaString(row, "Situacion"),
-
-                        FechaIngreso = Util.CapturaDatetime(row, "FechaIngreso"),
-                        FechaEmbarque = Util.CapturaDatetime(row, "FechaEmbarque"),
-                       
-                        NumFactura = Util.CapturaInt0(row, "NumFactura"),
-                        LineaNaviera = Util.CapturaString(row, "LineaNaviera"),
-
-                        Contenedor = Util.CapturaInt0(row, "Contenedor"),
-                        AgenteAduana = Util.CapturaString(row, "AgenteAduana"),
-
+                        IE_Anio = Util.CapturaString(row, "IE_Anio"),
+                        IE_Nro = Util.CapturaString(row, "IE_Nro"),
+                        CantPrendas = Util.CapturaDecimal(row, "CantPrendas"),
+                        Control_Comex = Util.CapturaString(row, "Control_Comex")
                     });
                 }
 
@@ -181,6 +169,25 @@ namespace CAMTEX.Aplicacion
         public Response<List<Files>> Listar(Request<Files> entidad)
         {
             throw new NotImplementedException();
+        }
+
+        public Response ListarReporteImportacion()
+        {
+            Response retorno = new Response();
+            try
+            {
+                var dt = FilesRepositorio.ListarReporteImportacion();
+                retorno.Success = true;
+                retorno.error = false;
+                retorno.tabla = dt;
+
+            }
+            catch (Exception ex)
+            {
+                retorno.error = true;
+                retorno.mensaje = ex.Message;
+            }
+            return retorno;
         }
     }
 }

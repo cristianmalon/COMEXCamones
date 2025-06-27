@@ -298,6 +298,7 @@
     <Compile Include="Controllers\OperacionesController.cs" />
     <Compile Include="Controllers\PaisController.cs" />
     <Compile Include="Controllers\ProveedorController.cs" />
+    <Compile Include="Controllers\ReporteController.cs" />
     <Compile Include="Controllers\RutasController.cs" />
     <Compile Include="Controllers\SituacionEstadoController.cs" />
     <Compile Include="Controllers\TipArticuloController.cs" />
@@ -8170,6 +8171,8 @@
     <Content Include="Views\Operaciones\_BuscarF.cshtml" />
     <Content Include="Views\Operaciones\_BuscarIE.cshtml" />
     <Content Include="Views\Operaciones\_Editar.cshtml" />
+    <Content Include="Views\Operaciones\_EditarExp.cshtml" />
+    <Content Include="Views\Reporte\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CAMTEX.Aplicacion.Entidades\CAMTEX.Aplicacion.Entidades.csproj">

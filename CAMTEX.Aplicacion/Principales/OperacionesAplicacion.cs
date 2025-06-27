@@ -41,6 +41,24 @@ namespace CAMTEX.Aplicacion
             return retorno;
         }
 
+        public Response Actualizar_Exportacion(Request<Operaciones> entidad)
+        {
+            Response retorno = new Response();
+            try
+            {
+                var resultado = OperacionesRepositorio.Actualizar_Exportacion(entidad.entidad);
+                retorno.Success = true;
+                retorno.status = Convert.ToInt32(resultado["codigoIDOp"]);
+                retorno.error = false;
+            }
+            catch (Exception ex)
+            {
+                retorno.error = true;
+                retorno.mensaje = ex.Message;
+            }
+            return retorno;
+        }
+
         public Response Eliminar(Request<Operaciones> entidad)
         {
             Response retorno = new Response();
