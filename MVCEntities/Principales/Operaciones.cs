@@ -33,6 +33,9 @@ namespace CAMTEX.Entidades
 
         [DataMember] public string XML_Productos { get; set; }
 
-
+        [DataMember] public int IE_Anio { get; set; }
+        [DataMember] public int IE_Nro { get; set; }
+        [DataMember] public string Cliente { get; set; }
+        [DataMember] public string ControlComex { get; set; }
     }
 }

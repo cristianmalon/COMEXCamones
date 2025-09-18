@@ -11,11 +11,14 @@ namespace CAMTEX.Entidades
     public class Producto:EntidadBase
     {
         [DataMember] public int FileID { get; set; }
+        [DataMember] public int IdOperaciones { get; set; }
         [DataMember] public int IdFileProd { get; set; }
         [DataMember] public string Codigo { get; set; }
         [DataMember] public int OrcCItem { get; set; }
         [DataMember] public int OrdenID { get; set; }
         [DataMember] public string OrccnSap { get; set; }
+        [DataMember] public int IE_Anio { get; set; }
+        [DataMember] public int IE_Nro { get; set; }
         [DataMember] public string CodigoArticulo { get; set; }
         [DataMember] public string Descripcion { get; set; }
         [DataMember] public decimal PU { get; set; }

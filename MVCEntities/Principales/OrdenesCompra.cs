@@ -72,6 +72,8 @@ namespace CAMTEX.Entidades
 
         [DataMember] public string Usuario { get; set; }
         [DataMember] public string Host { get; set; }
+        [DataMember] public int? IE_Anio { get; set; }
+        [DataMember] public int? IE_Nro { get; set; }
 
     }
     public class Situacion

@@ -45,5 +45,15 @@ namespace CAMTEX.Repositorio
             DataTable dt = oConn.ExecuteDataTable("[DBO].[USP_FileOperacionesProductos_listar]");
             return dt;
         }
+
+        public DataTable ListarPaginadoExpo(Producto entidad)
+        {
+            oConn.AddParameter("@opcion", 2);
+            oConn.AddParameter("@FileID", entidad.FileID);
+            oConn.AddParameter("@IE_Anio", entidad.IE_Anio);
+            oConn.AddParameter("@IE_Nro", entidad.IE_Nro);
+            DataTable dt = oConn.ExecuteDataTable("[DBO].[USP_FileOperacionesProductos_listar]");
+            return dt;
+        }
     }
 }

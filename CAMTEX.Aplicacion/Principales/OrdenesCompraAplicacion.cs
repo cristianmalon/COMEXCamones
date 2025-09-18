@@ -349,5 +349,37 @@ namespace CAMTEX.Aplicacion
             }
             return retorno;
         }
+        public Response<List<Factura>> ListarFacTurasRelacionadas_IE(OrdenesCompra entidad)
+        {
+            Response<List<Factura>> retorno = new Response<List<Factura>>();
+
+            try
+            {
+                DataTable dt = OrdenesCompraRepositorio.ListarFacTurasRelacionadas_IE(entidad);
+                List<Factura> lista = new List<Factura>();
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    lista.Add(new Factura()
+                    {
+                        CardCode = Util.CapturaString(row, "CardCode"),
+                        CardName = Util.CapturaString(row, "CardName"),
+                        NumAtCard = Util.CapturaString(row, "NumAtCard"),
+                        DocDate = Util.CapturaString(row, "DocDate"),
+                        MONEDA = Util.CapturaString(row, "MONEDA"),
+                        NROEXPEDIENTE = Util.CapturaString(row, "NROEXPEDIENTE"),
+                    });
+                }
+
+                retorno.error = false;
+                retorno.response = lista;
+            }
+            catch (Exception ex)
+            {
+                retorno.error = true;
+                retorno.mensaje = ex.Message;
+            }
+            return retorno;
+        }
     }
 }

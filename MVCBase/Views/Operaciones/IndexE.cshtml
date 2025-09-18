@@ -9,7 +9,39 @@
     <div class="form-horizontal">
         <div class="panel panel-default">
             <div class="panel-body">
-
+                <div style="background: #002762;">
+                    <div class="form-horizontal">
+                        <div class="form-group" style="margin-bottom: 0px !important;padding-bottom:5px">
+                            <div class="col-md-6" style="padding-top: 5px;">
+                                <div class="toolbar-item">
+                                    <img src="/img/logo.png" class="toolbar-icon">
+                                    <span class="toolbar-title">Files (Exportaciones)</span>
+                                    <input id="txtanio" class="form-control txtano">
+                                </div>
+                            </div>
+                            <div class="col-md-6 " style="padding-top: 20px;">
+                                <button type="button"
+                                        class="btn btn-primary ClsRefresh  pull-right"
+                                        style="margin-right: 15px;"
+                                        name="btnActualizar" id="btnActualizar" onclick="Actualizar()">
+                                    <span class="glyphicon glyphicon-refresh"></span>&nbsp;Actualizar
+                                </button>
+                                <button type="button"
+                                        class="btn btn-warning ClsEditar  pull-right"
+                                        style="margin-right: 15px;"
+                                        name="btnEditar" id="btnEditar" onclick="EditarFile()">
+                                    <span class="glyphicon glyphicon-pencil"></span>&nbsp;Editar
+                                </button>
+                                <button type="button"
+                                        class="btn btn-success ClsAgregar pull-right"
+                                        style="margin-right: 15px;"
+                                        name="btnRegistrar" id="btnRegistrar" onclick="RegistrarFile()">
+                                    <span class="glyphicon glyphicon-plus"></span>&nbsp;Registrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div id="gridContainer">
 
                 </div>
@@ -25,11 +57,17 @@
 
 <script>
 
-
+    var today = new Date();
+    var year = today.getFullYear();
     $(document).ready(function () {
-
+        $("#txtanio").val(year);
         loadGridFile();
 
+        $('#txtanio').on('keypress', function (e) {
+            if (e.which === 13) {
+                Actualizar();
+            }
+        });
 
     })
 
@@ -38,57 +76,44 @@
 
     var columnsConfig = [
         {
-            dataField: 'FileId', caption: 'Id', alignment: 'left',
+            dataField: 'FileId', caption: 'Id File', alignment: 'left', visible: false
         },
         {
-            dataField: 'FechaOp', caption: 'FechaOp', alignment: 'left',
+            dataField: 'CodFile', caption: 'Cod File', alignment: 'left',
+        },
+        {
+            dataField: 'NombreF', caption: 'Nombre File', alignment: 'left',
+        },
+        {
+            dataField: 'FechaOp', caption: 'FechaOp', alignment: 'left', dataType: "date", format: "dd/MM/yyyy"
 
         },
         {
-            dataField: 'NroOp', caption: 'NroOp', alignment: 'left',
+            dataField: 'NroOp', caption: 'NroOp', alignment: 'left',  visible: false
         },
         {
-            dataField: 'Proveedor', caption: 'Proveedor', alignment: 'left',
+            dataField: 'NumeroOperacion', caption: 'Nro Operación', alignment: 'left',
         },
         {
-            dataField: 'OrdC', caption: 'OrdC', alignment: 'left',
+            dataField: 'Control_Comex', caption: 'Control Comex', alignment: 'left',
         },
         {
-            dataField: 'Producto', caption: 'Producto', alignment: 'left',
+            dataField: 'IE_Anio', caption: 'Instrucción Embarque Año', alignment: 'left',
         },
         {
-            dataField: 'DesArt', caption: 'DesArt', alignment: 'left',
+            dataField: 'IE_Nro', caption: 'Instrucción Embarque Nro', alignment: 'left',
         },
         {
-            dataField: 'Solicitado', caption: 'Solicitado', alignment: 'left',
+            dataField: 'Proveedor', caption: 'Cliente', alignment: 'left',
         },
         {
-            dataField: 'DUA', caption: 'DUA', alignment: 'left',
+            dataField: 'CantPrendas', caption: 'Cant Prendas', alignment: 'right',  format: ",##0.###"
         },
-        {
-            dataField: 'Deposito', caption: 'Deposito', alignment: 'left',
-        },
-        {
-            dataField: 'Situacion', caption: 'Situacion', alignment: 'left',
-        },
-        {
-            dataField: 'FechaIngreso', caption: 'FechaIngreso', alignment: 'left',
-        },
-        {
-            dataField: 'FechaEmbarque', caption: 'FechaEmbarque', alignment: 'left',
-        },
-        {
-            dataField: 'NumFactura', caption: 'NumFactura', alignment: 'left',
-        },
-        {
-            dataField: 'LineaNaviera', caption: 'LineaNaviera', alignment: 'left',
-        },
-        {
-            dataField: 'Contenedor', caption: 'Contenedor', alignment: 'left',
-        },
-        {
-            dataField: 'AgenteAduana', caption: 'AgenteAduana', alignment: 'left',
-        },
+         {
+            dataField: 'Detalle', alignment: 'left', visible: false
+        }
+
+
     ];
 
 
@@ -104,7 +129,7 @@
                 key: 'FileId',
 
                 load() {
-                    return sendRequest(`/Operaciones/ListarFilesE`).then(data => {
+                    return sendRequest(`/Operaciones/ListarFilesE?anio=` + $("#txtanio").val()).then(data => {
                         return data;
                     });
                 },
@@ -152,7 +177,7 @@
                     dataSource: {
 
                         store: DxSource,
-                        pageSize: 10, // Set the desired page size
+                        pageSize: 20, // Set the desired page size
                         pageIndex: 0 // Set the initial page index
                     },
 
@@ -163,153 +188,6 @@
                     },
                     columns: columnsConfig,
 
-
-                    toolbar: {
-                        items: [
-
-                            {
-                                location: "before", // Ubicación antes de los botones existentes
-                                template: function () {
-                                    return $("<div>")
-                                        .addClass("toolbar-item")
-                                        .append($("<img>")
-                                            .attr("src", "/img/logo.png") // Ruta de la imagen
-                                            .addClass("toolbar-icon") // Clase de estilo para la imagen
-                                        )
-                                        .append($("<span>")
-                                            .text("Files (Exportaciones)") // Texto del título
-                                            .addClass("toolbar-title") // Clase de estilo personalizada
-                                        );
-                                },
-                                cssClass: "toolbar-title-container" // Clase para el contenedor del título
-                            },
-                            {
-                                location: "after",
-                                widget: "dxButton",
-                                options: {
-                                    icon: "add",
-                                    text: "REGISTRAR",
-                                    onClick: function () {
-                                        //dataGrid.addRow();
-                                        RegistrarFile();
-                                    },
-                                    stylingMode: "outlined", // Cambia el estilo del botón a outlined
-                                    // Modifica el color del botón
-                                    elementAttr: {
-                                        class: "ClsAgregar custom-button-style" // Puedes cambiar "dx-color-blue" por otro color de tu elección
-                                    }
-                                },
-                            },
-                            /*EDITAR*/
-                            {
-                                location: "after",
-                                widget: "dxButton",
-                                options: {
-                                    icon: "edit",
-                                    text: "EDITAR",
-                                    onClick: function () {
-                                        const selectedRowIndex = dataGrid.option("focusedRowIndex");
-                                        if (selectedRowIndex !== undefined && selectedRowIndex !== -1) {
-
-
-                                            const visibleRows = dataGrid.getVisibleRows(); // Obtener las filas visibles
-
-                                            // Verificar que el índice seleccionado esté dentro del rango de las filas visibles
-                                            if (visibleRows[selectedRowIndex]) {
-                                                const selectedRowData = visibleRows[selectedRowIndex].data;
-
-                                                // Verificar si la fila tiene un 'Estado' válido (por ejemplo, que no esté eliminada)
-                                                if (selectedRowData && selectedRowData.Estado !== 0) {
-                                                    dataGrid.editRow(selectedRowIndex);
-                                                } else {
-                                                    Swal.fire({
-                                                        icon: 'error',
-                                                        title: 'Oops...',
-                                                        text: 'La fila seleccionada ha sido eliminada y no se puede editar.',
-                                                        customClass: {
-                                                            container: 'my-swal-container',
-                                                        },
-                                                    });
-                                                }
-                                            } else {
-                                                // Si no hay una fila en el índice seleccionado, muestra un mensaje de error
-                                                Swal.fire({
-                                                    icon: 'error',
-                                                    title: 'Oops...',
-                                                    text: 'La fila seleccionada no es válida o ya no está visible.',
-                                                    customClass: {
-                                                        container: 'my-swal-container',
-                                                    },
-                                                });
-                                            }
-
-                                        } else {
-                                            // Si no hay una fila seleccionada, muestra un mensaje o realiza otra acción
-                                            Swal.fire({
-                                                icon: 'error',
-                                                title: 'Oops...',
-                                                text: 'Selecciona una fila antes de editar.',
-                                                customClass: {
-                                                    container: 'my-swal-container', // Clase personalizada para ajustar z-index
-                                                },
-                                            });
-                                        }
-                                    },
-                                    stylingMode: "outlined", // Cambia el estilo del botón a outlined
-                                    // Modifica el color del botón
-                                    elementAttr: {
-                                        class: "ClsEditar custom-button-style" // Puedes cambiar "dx-color-blue" por otro color de tu elección
-                                    }
-
-                                },
-                            },
-                            /*FIN EDITAR*/
-
-
-
-
-                            {
-                                location: 'after',
-                                widget: 'dxButton',
-                                options: {
-                                    icon: 'refresh',
-                                    text: "ACTUALIZAR",
-                                    onClick() {
-                                        dataGrid.refresh();
-                                    },
-                                    stylingMode: "outlined", // Cambia el estilo del botón a outlined
-                                    // Modifica el color del botón
-                                    elementAttr: {
-                                        class: "ClsRefresh custom-button-style" // Puedes cambiar "dx-color-blue" por otro color de tu elección
-                                    }
-                                },
-                            },
-
-                            'exportButton',
-                        ],
-                    },
-
-                    export: {
-                        enabled: true,
-
-                    },
-
-
-                    onExporting(e) {
-                        const workbook = new ExcelJS.Workbook();
-                        const worksheet = workbook.addWorksheet('data');
-
-                        DevExpress.excelExporter.exportDataGrid({
-                            component: e.component,
-                            worksheet,
-                            autoFilterEnabled: true,
-                        }).then(() => {
-                            workbook.xlsx.writeBuffer().then((buffer) => {
-                                saveAs(new Blob([buffer], { type: 'application/octet-stream' }), 'data.xlsx');
-                            });
-                        });
-                        e.cancel = true;
-                    },
                     hoverStateEnabled: false,
                     filterRow: { visible: true },
                     showColumnLines: true,
@@ -320,7 +198,7 @@
                         mode: 'single',
                     },
                     paging: {
-                        pageSize: 10,  // Set the number of rows per page as per your requirement
+                        pageSize: 15,  // Set the number of rows per page as per your requirement
                     },
 
 
@@ -384,14 +262,81 @@
                         }
                     });
                 },
+                onHidden: function () { // Agregar este evento
+                    var gridPrincipal = $("#gridContainer").dxDataGrid("instance");
+                    if (gridPrincipal) {
+                        gridPrincipal.refresh(); // O gridPrincipal.reload()
+                    }
+                }
 
             }).dxPopup("show");
 
 
 
     }
+    function EditarFile() {
+
+        var grid = $('#gridContainer').dxDataGrid('instance');
+
+        var selectedData = grid.getSelectedRowsData();
+
+        if (selectedData.length > 0) {
+
+            console.log("selectedRowData para editar : ", selectedData);
+
+            $("#popupContainerEP").dxPopup({
+                    width: 1300,
+                    height: 900,
+                    showTitle: true,
+                    title: "Editar File (Exportación)",
+                    visible: false, // Mantén el popup oculto hasta que sea necesario
+                    dragEnabled: true,
+                    hideOnOutsideClick: true,
+                    contentTemplate: function (contentElement) {
+                        // Cargar el contenido mediante AJAX
+                        $.ajax({
+
+                            url: '@Url.Content("~/Operaciones/EditarExp?FileId=")' + selectedData[0].FileId,
+                            type: "GET",
+                            success: function (data) {
+                                contentElement.html(data);
+                            },
+                            error: function () {
+                                contentElement.html("<p>Error al cargar el contenido.</p>");
+                            }
+                        });
+                    },
+                    onHidden: function () { // Agregar este evento
+                        var gridPrincipal = $("#gridContainer").dxDataGrid("instance");
+                        if (gridPrincipal) {
+                            gridPrincipal.refresh(); // O gridPrincipal.reload()
+                        }
+                    }
+            }).dxPopup("show");
+
+        } else {
+            // Si no hay una fila seleccionada, muestra un mensaje o realiza otra acción
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Selecciona una fila antes de registrar.',
+                customClass: {
+                    container: 'my-swal-container', // Clase personalizada para ajustar z-index
+                },
+            });
+        }
+
+        /*POPUP DE LA VISTA REGISTRAR*/
 
 
+
+
+
+    }
+    function Actualizar() {
+        var dataGrid = $('#gridContainer').dxDataGrid('instance');
+        dataGrid.refresh();
+    }
 
 
 </script>
@@ -585,9 +530,8 @@
 
 
     #gridContainer .dx-datagrid-headers .dx-header-row {
-        -webkit-text-stroke-width: 0.5px;
+        
         -webkit-text-stroke-color: white;
-        text-shadow: 0px 2px 4px black;
     }
 
 
@@ -610,6 +554,9 @@
     }
 
     .dx-row.dx-column-lines.dx-header-row {
-        font-size: 10px;
+        font-size: 12px;
+    }
+    .txtano {
+        width: 120px !important
     }
 </style>

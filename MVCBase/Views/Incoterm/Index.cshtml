@@ -42,7 +42,9 @@
         {
             dataField: 'Descripcion', caption: 'Descripcion', alignment: 'left',
         },
-       
+        {
+            dataField: 'ESTADO_DES', caption: 'Estado', alignment: 'left',
+        },
 
     ];
 
@@ -62,6 +64,19 @@
                     return data;
                 });
             },
+            insert(values) {
+                console.log(values);
+                return sendRequest(`/Incoterm/InsertIncoter`, 'POST', JSON.stringify(values));
+            },
+            update(key, values) {
+                values.IdIncoterm = key;
+                console.log(values);
+                return sendRequest(`/Incoterm/UpdateIncoterm`, 'PUT', JSON.stringify(values));
+            },
+            remove(key) {
+                var values = { IdIncoterm: key }
+                return sendRequest(`/Incoterm/DeleteTablet`, 'DELETE', JSON.stringify(values));
+            },
         });
 
 
@@ -72,7 +87,32 @@
                 allowExpandAll: true,
                 expandAll: true,
                 keyExpr: 'IdIncoterm',
-
+                editing: {
+                    mode: 'popup',
+                    allowUpdating: true,
+                    useIcons: true,
+                    allowAdding: true,
+                    allowDeleting: true,
+                    popup: {
+                        title: 'Incoterm',
+                        showTitle: true,
+                        width: 850,
+                        height: 380,
+                    },
+                    form: {
+                        items: [{
+                            itemType: 'group',
+                            colCount: 2,
+                            colSpan: 2,
+                            items: ['U_DIN_INCO', 'Descripcion', //'Maquina',
+                                //, { dataField: "IPTablet", readOnly: true,},
+                                ],
+                        }],
+                    },
+                },
+                onRowInserted(e) {
+                    e.component.navigateToRow(e.key);
+                },
                 allowSorting: false,
                 allowFiltering: true,
                 allowColumnResizing: true,
@@ -83,7 +123,7 @@
 
                 showGrandTotals: false,
                 showColumnGrandTotals: false,
-                height: 700,
+                height: 750,
                 fieldChooser: {
                     enabled: false,
                 },
@@ -105,7 +145,17 @@
 
                 toolbar: {
                     items: [
-
+                        {
+                            location: "after",
+                            widget: "dxButton",
+                            options: {
+                                icon: "add",
+                                text: "AGREGAR",
+                                onClick: function () {
+                                    dataGrid.addRow();
+                                }
+                            },
+                        },
                         {
                             location: "before", // Ubicación antes de los botones existentes
                             template: function () {
@@ -173,7 +223,7 @@
                     mode: 'single',
                 },
                 paging: {
-                    pageSize: 10,  // Set the number of rows per page as per your requirement
+                    pageSize: 15,  // Set the number of rows per page as per your requirement
                 },
 
 
@@ -215,30 +265,6 @@
         display: flex;
         align-items: center;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -376,9 +402,7 @@
 
 
     #gridContainer .dx-datagrid-headers .dx-header-row {
-        -webkit-text-stroke-width: 0.5px;
         -webkit-text-stroke-color: white;
-        text-shadow: 0px 2px 4px black;
     }
 
 
@@ -396,13 +420,13 @@
     }
 
     #gridContainer .dx-datagrid-table.dx-datagrid-table-fixed tr.dx-row.dx-data-row.dx-column-lines {
-        font-size: 23px;
+        font-size: 15px;
         border: 2px solid #58a6d33b;
     }
 
     .dx-row.dx-column-lines.dx-header-row {
         font-weight: bolder;
-        font-size: 25px;
+        font-size: 15px;
     }
 </style>
 

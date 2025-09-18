@@ -24,17 +24,56 @@ namespace CAMTEX.Aplicacion
 
         public Response Actualizar(Request<Incoterm> entidad)
         {
-            throw new NotImplementedException();
+            Response retorno = new Response();
+            try
+            {
+                var resultado = IncotermRepositorio.Actualizar(entidad.entidad);
+                retorno.Success = true;
+                retorno.error = false;
+
+            }
+            catch (Exception ex)
+            {
+                retorno.error = true;
+                retorno.mensaje = ex.Message;
+            }
+            return retorno;
         }
 
         public Response Eliminar(Request<Incoterm> entidad)
         {
-            throw new NotImplementedException();
+            Response retorno = new Response();
+            try
+            {
+                var resultado = IncotermRepositorio.Eliminar(entidad.entidad);
+                retorno.Success = true;
+                retorno.error = false;
+
+            }
+            catch (Exception ex)
+            {
+                retorno.error = true;
+                retorno.mensaje = ex.Message;
+            }
+            return retorno;
         }
 
         public Response Insertar(Request<Incoterm> entidad)
         {
-            throw new NotImplementedException();
+            Response retorno = new Response();
+            try
+            {
+                var resultado = IncotermRepositorio.Insertar(entidad.entidad);
+                retorno.Success = true;
+                retorno.error = false;
+
+            }
+            catch (Exception ex)
+            {
+                retorno.error = true;
+                retorno.mensaje = ex.Message;
+            }
+            return retorno;
         }
 
         public Response<List<Incoterm>> Listar(Request<Incoterm> entidad)
@@ -52,7 +91,8 @@ namespace CAMTEX.Aplicacion
                     {
                         IdIncoterm = Util.CapturaInt0(row, "IdIncoterm"),
                         U_DIN_INCO = Util.CapturaString(row, "U_DIN_INCO"),
-                        Descripcion = Util.CapturaString(row, "Descripcion"),                       
+                        Descripcion = Util.CapturaString(row, "Descripcion"),
+                        ESTADO_DES= Util.CapturaString(row, "Estado"),
 
                     });
                 }

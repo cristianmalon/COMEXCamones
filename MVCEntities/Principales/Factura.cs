@@ -30,6 +30,17 @@ namespace CAMTEX.Entidades
         [DataMember] public string U_DIN_ACAR { get; set; }
         [DataMember] public string U_DIN_DEPO { get; set; }
 
+
+
+        [DataMember] public string CardCode { get; set; }
+        [DataMember] public string CardName { get; set; }
+        [DataMember] public string NumAtCard { get; set; }
+        [DataMember] public string DocDate { get; set; }
+        [DataMember] public string TaxDate { get; set; }
+        [DataMember] public string SOLES { get; set; }
+        [DataMember] public string DocTotalFC { get; set; }
+        [DataMember] public string MONEDA { get; set; }
+        [DataMember] public string NROEXPEDIENTE { get; set; }
     }
 }
 
