@@ -107,5 +107,37 @@ namespace CAMTEX.Aplicacion
             }
             return retorno;
         }
+        public Response<List<Producto>> ListarPaginadoExpo(Request<Producto> entidad)
+        {
+            Response<List<Producto>> retorno = new Response<List<Producto>>();
+
+            try
+            {
+                DataTable dt = ProductoRepositorio.ListarPaginadoExpo(entidad.entidad);
+                List<Producto> lista = new List<Producto>();
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    lista.Add(new Producto()
+                    {
+                        IdFileProd = Util.CapturaInt0(row, "IdFileProd"),
+                        CodigoArticulo = Util.CapturaString(row, "CodigoArticulo"),
+                        Descripcion = Util.CapturaString(row, "DescripcionArticulo"),
+                        PU = Util.CapturaDecimal(row, "PrecioUnitario"),
+                        Qty = Util.CapturaDecimal(row, "Cantidad"),
+                        Valor = Util.CapturaDecimal(row, "ValorOrden")
+                    });
+                }
+
+                retorno.error = false;
+                retorno.response = lista;
+            }
+            catch (Exception ex)
+            {
+                retorno.error = true;
+                retorno.mensaje = ex.Message;
+            }
+            return retorno;
+        }
     }
 }

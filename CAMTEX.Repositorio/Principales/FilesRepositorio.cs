@@ -55,11 +55,13 @@ namespace CAMTEX.Repositorio
             oConn.AddParameter("@Obs", entidad.Detalle);
             oConn.AddParameter("@Usuario", entidad.UsuarioCreacion);
             oConn.AddParameter("@Host", entidad.Estacion);
-
+            oConn.agregarParametroSalida("@NuevoFileID", SqlDbType.Int, int.MaxValue);
             DataTable dt = oConn.ExecuteDataTable("[DBO].[Usp_Files]");
 
+            int nuevoFileID = Convert.ToInt32(oConn.obtenerParametroSalida("@NuevoFileID"));
             retorno.Add("resultado", true);
             retorno.Add("mensaje", "OK");
+            retorno.Add("NuevoFileID", nuevoFileID); // Devolver el nuevo ID generado
             return retorno;
 
         }
@@ -68,6 +70,7 @@ namespace CAMTEX.Repositorio
         public DataTable ListarI(Files entidad)
         {
             oConn.AddParameter("@opcion", 1);
+            oConn.AddParameter("@anio", entidad.anio);
             DataTable dt = oConn.ExecuteDataTable("[DBO].[Usp_Files_Lista]");
             return dt;
         }
@@ -75,6 +78,7 @@ namespace CAMTEX.Repositorio
         public DataTable ListarE(Files entidad)
         {
             oConn.AddParameter("@opcion", 3);
+            oConn.AddParameter("@anio", entidad.anio);
             DataTable dt = oConn.ExecuteDataTable("[DBO].[Usp_Files]");
             return dt;
         }
@@ -86,6 +90,12 @@ namespace CAMTEX.Repositorio
         public DataTable Listar(Files entidad)
         {
             throw new NotImplementedException();
+        }
+
+        public DataTable ListarReporteImportacion()
+        {
+            DataTable dt = oConn.ExecuteDataTable("[DBO].[USP_ReporteImportacion]");
+            return dt;
         }
     }
 }

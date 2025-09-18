@@ -60,7 +60,7 @@
     <Compile Include="Despacho_OS\E_HojaRutacontrol.cs" />
     <Compile Include="Despacho_OS\E_HojaRutaControlDetalle.cs" />
     <Compile Include="Despacho_OS\E_Transportista.cs" />
-    <Compile Include="InstruccionEmbarque.cs" />
+    <Compile Include="Principales\InstruccionEmbarque.cs" />
     <Compile Include="Menu\ENMenu.cs" />
     <Compile Include="Principales\AgenteCarga.cs" />
     <Compile Include="Principales\Agentes.cs" />
@@ -72,6 +72,7 @@
     <Compile Include="Principales\Files.cs" />
     <Compile Include="Principales\Incoterm.cs" />
     <Compile Include="Principales\Lotes.cs" />
+    <Compile Include="Principales\OperacionAlmacen.cs" />
     <Compile Include="Principales\Operaciones.cs" />
     <Compile Include="Principales\OperacionesImp.cs" />
     <Compile Include="Principales\Operativa.cs" />

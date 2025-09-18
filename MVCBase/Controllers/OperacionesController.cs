@@ -51,6 +51,19 @@ namespace MVCBase.Controllers
 
         }
 
+        [AllowAnonymous]
+        public ActionResult EditarExp(int FileId)
+        {
+            Files entidad = new Files()
+            {
+                UsuarioCreacion = VariablesWeb.Usuario.SUsrId,
+                Estacion = VariablesWeb.HostName(),
+                FechaCreacion = DateTime.Now,
+                FileId= FileId
+            };
+            return PartialView("_RegistrarE", entidad);
+
+        }
 
         [AllowAnonymous]
         public ActionResult RegistrarE()
@@ -185,9 +198,74 @@ namespace MVCBase.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult VRFactura(string id, Factura FacturaData)
+        public ActionResult VRFactura(string id, InstruccionEmbarque FacturaData, int FileID)
         {
             ViewBag.Id = id;
+            ViewBag.ViewID = "R";
+            var datos = new Request<Producto>();
+            datos.entidad = new Producto();
+            datos.entidad.FileID = FileID;
+            datos.entidad.IE_Anio = FacturaData.IE_Anio;
+            datos.entidad.IE_Nro = FacturaData.IE_Nro;
+            var lista = new ProductoAplicacion(new ProductoRepositorio()).ListarPaginadoExpo(datos);
+            FacturaData.ListaProducto = lista.response;
+            var listaSituacion = new OrdenesCompraAplicacion(new OrdenesCompraRepositorio()).ListarSituacion();
+            FacturaData.ListaSituacion = listaSituacion.response;
+            var ListarViaTransporte = new OrdenesCompraAplicacion(new OrdenesCompraRepositorio()).ListarViaTransporte();
+            FacturaData.ListaViatransporte = ListarViaTransporte.response;
+            var ListarLineaNaviera = new OrdenesCompraAplicacion(new OrdenesCompraRepositorio()).ListarLineaNaviera();
+            FacturaData.ListaLineaNaviera = ListarLineaNaviera.response;
+
+            var ListarAgenteCarga = new AgenteCargaAplicacion(new AgenteCargaRepositorio()).Listar(new Request<AgenteCarga>());
+            FacturaData.ListaAgenteCarga = ListarAgenteCarga.response;
+            var ListarAgentes = new AgentesAplicacion(new AgentesRepositorio()).Listar(new Request<Agentes>());
+            FacturaData.ListaAgentes = ListarAgentes.response;
+            var ListarDeposito = new OrdenesCompraAplicacion(new OrdenesCompraRepositorio()).ListarDeposito();
+            FacturaData.ListaDeposito = ListarDeposito.response;
+            var ListarArancel = new OrdenesCompraAplicacion(new OrdenesCompraRepositorio()).ListarArancel();
+            FacturaData.ListaArancel = ListarArancel.response;
+            var ListaPuertoEmbarque = new OrdenesCompraAplicacion(new OrdenesCompraRepositorio()).ListarPuertoEmbarque();
+            FacturaData.ListaPuertoEmbarque = ListaPuertoEmbarque.response;
+            var ListaAlmacen = new OrdenesCompraAplicacion(new OrdenesCompraRepositorio()).ListarAlmacen();
+            FacturaData.ListaAlmacen = ListaAlmacen.response;
+            var ListarIncoter = new IncotermAplicacion(new IncotermRepositorio()).Listar(new Request<Incoterm>());
+            FacturaData.ListaIncoterm = ListarIncoter.response;
+            OrdenesCompra orderData = new OrdenesCompra();
+            orderData.FileID = FileID;
+            orderData.IE_Anio = FacturaData.IE_Anio;
+            orderData.IE_Nro = FacturaData.IE_Nro;
+            var ListaOperacionAlmacen = new InstruccionEmbarqueAplicacion(new InstruccionEmbarqueRepositorio()).OperacionAlmacen_listar(orderData);
+            FacturaData.ListaOpeAlmacen = ListaOperacionAlmacen.response;
+            var ListarFacTurasRelacionadas_IE = new OrdenesCompraAplicacion(new OrdenesCompraRepositorio()).ListarFacTurasRelacionadas_IE(orderData);
+            FacturaData.ListaFactura = ListarFacTurasRelacionadas_IE.response;
+
+            var listaDatoImportacion = new OrdenesCompraAplicacion(new OrdenesCompraRepositorio()).DatoImportacion_listar(orderData);
+            
+            if (listaDatoImportacion.response != null && listaDatoImportacion.response.Count > 0)
+            {
+                FacturaData.IdDatoGeneral = listaDatoImportacion.response[0].IdDatoGeneral;
+                FacturaData.NumeroOperacion = listaDatoImportacion.response[0].NumeroOperacion;
+                FacturaData.IdVia = listaDatoImportacion.response[0].IdVia;
+                FacturaData.BL = listaDatoImportacion.response[0].BL;
+                FacturaData.IdDeposito = listaDatoImportacion.response[0].IdDeposito;
+                FacturaData.NumFactura = listaDatoImportacion.response[0].NumFactura;
+                FacturaData.FechaFactura = listaDatoImportacion.response[0].FechaFactura;
+                FacturaData.FechaIngreso = listaDatoImportacion.response[0].FechaIngreso;
+                FacturaData.FechaEmbarque = listaDatoImportacion.response[0].FechaEmbarque;
+                FacturaData.Garantia = listaDatoImportacion.response[0].Garantia;
+                FacturaData.IdSituacion = listaDatoImportacion.response[0].IdSituacion;
+                FacturaData.IdLineaNaviera = listaDatoImportacion.response[0].IdLineaNaviera;
+                FacturaData.IdAgente = listaDatoImportacion.response[0].IdAgente;
+                FacturaData.IdAgenteCarga = listaDatoImportacion.response[0].IdAgenteCarga;
+                FacturaData.EtaCallao = listaDatoImportacion.response[0].EtaCallao;
+                FacturaData.VctSobreEst = listaDatoImportacion.response[0].VctSobreEst;
+                FacturaData.IdArancel = listaDatoImportacion.response[0].IdArancel;
+                FacturaData.IdPuerEm = listaDatoImportacion.response[0].IdPuerEm;
+                FacturaData.IdAlmacen = listaDatoImportacion.response[0].IdAlmacen;
+                FacturaData.FechaDeposito = listaDatoImportacion.response[0].FechaDeposito;
+                FacturaData.NroDua = listaDatoImportacion.response[0].NroDua;
+                FacturaData.IdIncoterm = listaDatoImportacion.response[0].IdIncoterm;
+            }
             return PartialView("_BuscarF", FacturaData);
         }
 
@@ -305,7 +383,8 @@ namespace MVCBase.Controllers
                         errores = Utiles.GetErrorsFromModelState(this.ModelState),
                         url = Url.Action("Index"),
                         result = response.Success ? Utiles.MessageSaveSuccess() : response.mensaje,
-                        id = 0
+                        id = 0,
+                        nuevoFileID = response.Success ? Convert.ToInt32(response.output) : 0 // Nuevo campo con el ID generado
                     }, JsonRequestBehavior.AllowGet);
                 }
                 catch (Exception ex)
@@ -368,6 +447,39 @@ namespace MVCBase.Controllers
             }
         }
 
+        [HttpPost]
+        [AllowAnonymous]
+        public JsonResult ActualizarOperacionesExpo(Operaciones entidad)
+        {
+
+            try
+            {
+                Response response = new Response();
+                var datos = new Request<Operaciones>();
+                entidad.USUARIO_REG = VariablesWeb.Usuario.SUsrId;
+                datos.entidad = entidad;
+                response = new OperacionesAplicacion(new OperacionesRepositorio()).Actualizar_Exportacion(datos);
+                return Json(new
+                {
+                    result = response.Success,
+                    errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                    status = response.status,
+                    url = Url.Action("Index"),
+                    msg = response.Success ? Utiles.MessageSaveSuccess() : response.mensaje,
+                }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    result = false,
+                    errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                    url = Url.Action("Index"),
+                    msg = Utiles.MessageServerError() + " - " + ex.Message.ToString(),
+                    id = 0
+                }, JsonRequestBehavior.AllowGet);
+            }
+        }
 
 
         [HttpPost]
@@ -504,11 +616,15 @@ namespace MVCBase.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public JsonResult ListarFilesI()
+        public JsonResult ListarFilesI(string anio)
         {
             var datos = new Request<Files>();
             //datos.entidad = entidad;
             datos.entidad = new Files();
+            if (anio != "")
+            {
+                datos.entidad.anio = Convert.ToInt32(anio);
+            }
             ////datos.entidad.IdSede = VariablesWeb.Usuario.IdSede;
             var lista = new FilesAplicacion(new FilesRepositorio()).ListarI(datos);
             //return Json(new { data = lista.response });
@@ -527,11 +643,15 @@ namespace MVCBase.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public JsonResult ListarFilesE()
+        public JsonResult ListarFilesE(string anio)
         {
             var datos = new Request<Files>();
             //datos.entidad = entidad;
             datos.entidad = new Files();
+            if (anio != "")
+            {
+                datos.entidad.anio = Convert.ToInt32(anio);
+            }
             ////datos.entidad.IdSede = VariablesWeb.Usuario.IdSede;
             var lista = new FilesAplicacion(new FilesRepositorio()).ListarE(datos);
             //return Json(new { data = lista.response });
@@ -789,17 +909,6 @@ namespace MVCBase.Controllers
             }
 
         }
-
-
-
-
-
-
-
-
-
-
-
 
 
         /*FIN LOTES*/

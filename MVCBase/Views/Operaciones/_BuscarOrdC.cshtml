@@ -42,7 +42,7 @@
                     <div class="col-md-2">
                         <label for="txtFecha">Fecha:</label>
                         <input type="text" id="txtFecha_@ViewBag.Id" class="form-control"
-                               value="@(Model.FechaCreacion?.ToString("yyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"))" readonly>
+                               value="@(Model.FechaCreacion?.ToString("dd/MM/yyyy") ?? DateTime.Now.ToString("dd/MM/yyyy"))" readonly>
                     </div>
                     <div class="col-md-2">
                         <label for="txtMoneda">Moneda:</label>
@@ -530,16 +530,16 @@
         columns: [
             { dataField: 'OrcCItem', caption: 'Item', alignment: 'left', allowEditing: false },
             { dataField: 'CodigoArticulo', caption: 'Codigo', alignment: 'left', allowEditing: false },
-            { dataField: 'Descripcion', caption: 'Descripcion', alignment: 'left', allowEditing: false },
+            { dataField: 'Descripcion', width: 450, caption: 'Descripcion', alignment: 'left', allowEditing: false },
             { dataField: 'Moneda', caption: 'Moneda', alignment: 'right', allowEditing: false },
             {
-                dataField: 'PU', caption: 'P.U.', alignment: 'left', allowEditing: false,
+                dataField: 'PU', caption: 'P.U.', alignment: 'right', allowEditing: false,
                 calculateCellValue(rowData) {
                     return rowData.PU ? rowData.PU.toFixed(2) : "0.00"; // Formatea a 2 decimales
                 }
             },
             {
-                dataField: 'Qty', caption: 'Qty.', alignment: 'left', allowEditing: false,
+                dataField: 'Qty', caption: 'Qty.', alignment: 'right', allowEditing: false,
                 format: {
                     type: "fixedPoint",
                     precision: 0 // Sin decimales
@@ -565,7 +565,7 @@
                 {
                     column: "Valor",
                     summaryType: "sum",
-                    valueFormat: "currency",
+                    valueFormat: ",##0.###",
                     displayFormat: "Total: {0}",
                     alignment: "right"
                 }
