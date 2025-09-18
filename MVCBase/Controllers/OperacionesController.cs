@@ -236,6 +236,9 @@ namespace MVCBase.Controllers
             orderData.IE_Nro = FacturaData.IE_Nro;
             var ListaOperacionAlmacen = new InstruccionEmbarqueAplicacion(new InstruccionEmbarqueRepositorio()).OperacionAlmacen_listar(orderData);
             FacturaData.ListaOpeAlmacen = ListaOperacionAlmacen.response;
+            var ListarFacTurasRelacionadas_IE = new OrdenesCompraAplicacion(new OrdenesCompraRepositorio()).ListarFacTurasRelacionadas_IE(orderData);
+            FacturaData.ListaFactura = ListarFacTurasRelacionadas_IE.response;
+
             var listaDatoImportacion = new OrdenesCompraAplicacion(new OrdenesCompraRepositorio()).DatoImportacion_listar(orderData);
             
             if (listaDatoImportacion.response != null && listaDatoImportacion.response.Count > 0)

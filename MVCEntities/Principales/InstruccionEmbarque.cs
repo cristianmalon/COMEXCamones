@@ -30,6 +30,7 @@ namespace CAMTEX.Entidades
         [DataMember] public List<Almacen> ListaAlmacen { get; set; }
         [DataMember] public List<Incoterm> ListaIncoterm { get; set; }
         [DataMember] public List<OperacionAlmacen> ListaOpeAlmacen { get; set; }
+        [DataMember] public List<Factura> ListaFactura { get; set; }
 
         [DataMember] public int IdDatoGeneral { get; set; }
         [DataMember] public string NumeroOperacion { get; set; }

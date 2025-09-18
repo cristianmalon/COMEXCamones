@@ -221,6 +221,7 @@
 <script>
     var dataProducto = [];
     var dataOpeAlmacen = [];
+    var dataFactura = [];
     var id = "@ViewBag.Id"; // Obtener ID dinámico si es necesario
 
     var idOrdenCompra = null;
@@ -230,6 +231,7 @@
     var lista = []
     dataProducto = @Html.Raw(Json.Encode(Model.ListaProducto));
     dataOpeAlmacen = @Html.Raw(Json.Encode(Model.ListaOpeAlmacen));
+    dataFactura = @Html.Raw(Json.Encode(Model.ListaFactura));
     console.log("dataOpeAlmacen",dataOpeAlmacen);
     lista.push(@Html.Raw(maeCCodJson));//  @Html.Raw(maeCCodJson); // Convertir JSON en objeto JavaScript
     var filecreado;
@@ -460,15 +462,15 @@
         },
         columns: [
             {
-                dataField: 'FechaGuia', caption: 'Fecha', width: 150, alignment: 'left', 
+                dataField: 'FechaGuia', caption: 'Fecha', width: 150, alignment: 'left',
             },
             { dataField: 'NroGuia', width: 150, caption: 'Nro Guia', alignment: 'left', allowEditing: false },
             { dataField: 'ArticuloGuia',  caption: 'Detalle', alignment: 'left', allowEditing: false },
             {
                 dataField: 'Cantidad', caption: 'Cantidad', width: 150, alignment: 'right', allowEditing: false, format: ",##0.###"
             },
-           
-            
+
+
         ],
         hoverStateEnabled: false,
         filterRow: { visible: true },
@@ -790,9 +792,47 @@
     });
 
     $("#gridContainerF_" + id).dxDataGrid({
-        dataSource: [], // Data real
-        columns: ["Factura","Cliente","Fecha","Concepto","Valor","Moneda"],
-        showBorders: true
+        dataSource: dataFactura,
+        allowExpandAll: true,
+        expandAll: true,
+        keyExpr: 'NumAtCard',
+        allowSorting: false,
+        allowFiltering: true,
+        allowColumnResizing: true,
+        height: 410,
+        fieldChooser: {
+            enabled: false,
+        },
+        selection: {
+            mode: "single" // Permite seleccionar una fila
+        },
+        columns: [
+            {
+                dataField: 'CardCode', caption: 'Cod Proveedor', width: 150,
+            }, {
+                dataField: 'CardName', caption: 'Proveedor', width: 350,
+            },
+            {
+                dataField: 'DocDate', caption: 'Fecha', width: 120, alignment: 'left',
+            },
+            { dataField: 'NumAtCard', width: 150, caption: 'Factura', alignment: 'left', allowEditing: false },
+            {
+                dataField: 'MONEDA', caption: 'Moneda',
+            }, {
+                dataField: 'NROEXPEDIENTE', caption: 'Nro Expediente',
+            },
+
+
+        ],
+        hoverStateEnabled: false,
+        filterRow: { visible: true },
+        showColumnLines: true,
+        showRowLines: true,
+        rowAlternationEnabled: true,
+        showBorders: true,
+        paging: {
+            pageSize: 10,
+        }
     });
 
     // Ocultar todos los tabs excepto el primero

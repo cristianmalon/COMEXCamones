@@ -116,6 +116,14 @@ namespace CAMTEX.Repositorio
             DataTable dt = oConn.ExecuteDataTable("[DBO].[USP_Almacen_listar]");
             return dt;
         }
+        public DataTable ListarFacTurasRelacionadas_IE(OrdenesCompra entidad)
+        {
+            oConn.AddParameter("@FileID", entidad.FileID);
+            oConn.AddParameter("@IE_Anio", entidad.IE_Anio);
+            oConn.AddParameter("@IE_Nro", entidad.IE_Nro);
+            DataTable dt = oConn.ExecuteDataTable("[DBO].[Usp_FacTurasRelacionadas_IE]");
+            return dt;
+        }
 
         public DataTable DatoImportacion_listar(OrdenesCompra entidad)
         {
