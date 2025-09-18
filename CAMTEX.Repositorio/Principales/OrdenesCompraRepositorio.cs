@@ -37,8 +37,18 @@ namespace CAMTEX.Repositorio
                 oConn.AddParameter("@IdLineaNaviera", entidad.IdLineaNaviera);
                 oConn.AddParameter("@IdAgente", entidad.IdAgente);
                 oConn.AddParameter("@IdAgenteCarga", entidad.IdAgenteCarga);
+                oConn.AddParameter("@EtaCallao", entidad.EtaCallao);
+                oConn.AddParameter("@VctSobreEst", entidad.VctSobreEst);
+                oConn.AddParameter("@IdArancel", entidad.IdArancel);
+                oConn.AddParameter("@IdPuerEm", entidad.IdPuerEm);
+                oConn.AddParameter("@IdAlmacen", entidad.IdAlmacen);
+                oConn.AddParameter("@FechaDeposito", entidad.FechaDeposito);
+                oConn.AddParameter("@IdIncoterm", entidad.IdIncoterm);
+                oConn.AddParameter("@NroDua", entidad.NroDua);
                 oConn.AddParameter("@Usuario", entidad.Usuario);
                 oConn.AddParameter("@Host", entidad.Host);
+                oConn.AddParameter("@IE_Anio", entidad.IE_Anio);
+                oConn.AddParameter("@IE_Nro", entidad.IE_Nro);
                 DataTable dt = oConn.ExecuteDataTable("USP_DatoImportacion");
                 retorno.Add("resultado", true);
                 retorno.Add("mensaje", "OK");
@@ -91,11 +101,36 @@ namespace CAMTEX.Repositorio
             DataTable dt = oConn.ExecuteDataTable("[DBO].[USP_Deposito_listar]");
             return dt;
         }
+        public DataTable ListarArancel()
+        {
+            DataTable dt = oConn.ExecuteDataTable("[DBO].[USP_Arancel_listar]");
+            return dt;
+        }
+        public DataTable ListarPuertoEmbarque()
+        {
+            DataTable dt = oConn.ExecuteDataTable("[DBO].[USP_PuertoEmbarque_listar]");
+            return dt;
+        }
+        public DataTable ListarAlmacen()
+        {
+            DataTable dt = oConn.ExecuteDataTable("[DBO].[USP_Almacen_listar]");
+            return dt;
+        }
+        public DataTable ListarFacTurasRelacionadas_IE(OrdenesCompra entidad)
+        {
+            oConn.AddParameter("@FileID", entidad.FileID);
+            oConn.AddParameter("@IE_Anio", entidad.IE_Anio);
+            oConn.AddParameter("@IE_Nro", entidad.IE_Nro);
+            DataTable dt = oConn.ExecuteDataTable("[DBO].[Usp_FacTurasRelacionadas_IE]");
+            return dt;
+        }
 
         public DataTable DatoImportacion_listar(OrdenesCompra entidad)
         {
             oConn.AddParameter("@FileID", entidad.FileID);
             oConn.AddParameter("@OrdenCompraSAP", entidad.NumeroOrden);
+            oConn.AddParameter("@IE_Anio", entidad.IE_Anio);
+            oConn.AddParameter("@IE_Nro", entidad.IE_Nro);
             DataTable dt = oConn.ExecuteDataTable("[DBO].[USP_DatoImportacion_listar]");
             return dt;
         }

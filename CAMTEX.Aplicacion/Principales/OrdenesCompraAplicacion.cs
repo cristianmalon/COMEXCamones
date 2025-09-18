@@ -231,9 +231,10 @@ namespace CAMTEX.Aplicacion
                         IdDatoGeneral = Util.CapturaInt0(row, "IdDatoGeneral"),
                         NumeroOperacion = Util.CapturaString(row, "NumeroOperacion"),
                         IdVia = Util.CapturaIntNull(row, "IdVia"),
-                        BL = Util.CapturaIntNull(row, "BL"),
+                        BL = Util.CapturaString(row, "BL"),
                         IdDeposito = Util.CapturaIntNull(row, "IdDeposito"),
-                        NumFactura = Util.CapturaString(row, "NumFactura"),
+                        NumFactura = Util.CapturaString(row, "LogNFactura"),
+                        FechaFactura = Util.CapturaDatetime(row, "LogFFactura"),
                         FechaIngreso = Util.CapturaDatetime(row, "FechaIngreso"),
                         FechaEmbarque = Util.CapturaDatetime(row, "FechaEmbarque"),
                         Garantia = Util.CapturaIntNull(row, "Garantia"),
@@ -241,6 +242,132 @@ namespace CAMTEX.Aplicacion
                         IdLineaNaviera = Util.CapturaIntNull(row, "IdLineaNaviera"),
                         IdAgente = Util.CapturaIntNull(row, "IdAgente"),
                         IdAgenteCarga = Util.CapturaIntNull(row, "IdAgenteCarga"),
+                        EtaCallao = Util.CapturaDatetime(row, "EtaCallao"),
+                        VctSobreEst = Util.CapturaDatetime(row, "VctSobreEst"),
+                        IdArancel = Util.CapturaIntNull(row, "IdArancel"),
+                        IdPuerEm = Util.CapturaIntNull(row, "IdPuerEm"),
+                        IdAlmacen = Util.CapturaIntNull(row, "IdAlmacen"),
+                        FechaDeposito = Util.CapturaDatetime(row, "FechaDeposito"),
+                        NroDua = Util.CapturaString(row, "NroDua"),
+                        IdIncoterm = Util.CapturaIntNull(row, "IdIncoterm"),
+                    });
+                }
+
+                retorno.error = false;
+                retorno.response = lista;
+            }
+            catch (Exception ex)
+            {
+                retorno.error = true;
+                retorno.mensaje = ex.Message;
+            }
+            return retorno;
+        }
+        public Response<List<Arancel>> ListarArancel()
+        {
+            Response<List<Arancel>> retorno = new Response<List<Arancel>>();
+
+            try
+            {
+                DataTable dt = OrdenesCompraRepositorio.ListarArancel();
+                List<Arancel> lista = new List<Arancel>();
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    lista.Add(new Arancel()
+                    {
+                        IdArancel = Util.CapturaInt0(row, "IdArancel"),
+                        AraDADV = Util.CapturaString(row, "AraDADV"),
+                        AraNADV = Util.CapturaString(row, "AraNADV"),
+                    });
+                }
+
+                retorno.error = false;
+                retorno.response = lista;
+            }
+            catch (Exception ex)
+            {
+                retorno.error = true;
+                retorno.mensaje = ex.Message;
+            }
+            return retorno;
+        }
+        public Response<List<PuertoEmbarque>> ListarPuertoEmbarque()
+        {
+            Response<List<PuertoEmbarque>> retorno = new Response<List<PuertoEmbarque>>();
+
+            try
+            {
+                DataTable dt = OrdenesCompraRepositorio.ListarPuertoEmbarque();
+                List<PuertoEmbarque> lista = new List<PuertoEmbarque>();
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    lista.Add(new PuertoEmbarque()
+                    {
+                        IdPuerEm = Util.CapturaInt0(row, "IdPuerEm"),
+                        DesPuertoEmbarque = Util.CapturaString(row, "PuertoEmbarque"),
+                        Pais = Util.CapturaString(row, "Pais"),
+                    });
+                }
+
+                retorno.error = false;
+                retorno.response = lista;
+            }
+            catch (Exception ex)
+            {
+                retorno.error = true;
+                retorno.mensaje = ex.Message;
+            }
+            return retorno;
+        }
+        public Response<List<Almacen>> ListarAlmacen()
+        {
+            Response<List<Almacen>> retorno = new Response<List<Almacen>>();
+
+            try
+            {
+                DataTable dt = OrdenesCompraRepositorio.ListarAlmacen();
+                List<Almacen> lista = new List<Almacen>();
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    lista.Add(new Almacen()
+                    {
+                        IdAlmacen = Util.CapturaInt0(row, "IdAlmacen"),
+                        DesAlmacen = Util.CapturaString(row, "DesAlmacen"),
+                    });
+                }
+
+                retorno.error = false;
+                retorno.response = lista;
+            }
+            catch (Exception ex)
+            {
+                retorno.error = true;
+                retorno.mensaje = ex.Message;
+            }
+            return retorno;
+        }
+        public Response<List<Factura>> ListarFacTurasRelacionadas_IE(OrdenesCompra entidad)
+        {
+            Response<List<Factura>> retorno = new Response<List<Factura>>();
+
+            try
+            {
+                DataTable dt = OrdenesCompraRepositorio.ListarFacTurasRelacionadas_IE(entidad);
+                List<Factura> lista = new List<Factura>();
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    lista.Add(new Factura()
+                    {
+                        CardCode = Util.CapturaString(row, "CardCode"),
+                        CardName = Util.CapturaString(row, "CardName"),
+                        NumAtCard = Util.CapturaString(row, "NumAtCard"),
+                        DocDate = Util.CapturaString(row, "DocDate"),
+                        MONEDA = Util.CapturaString(row, "MONEDA"),
+                        NROEXPEDIENTE = Util.CapturaString(row, "NROEXPEDIENTE"),
                     });
                 }
 

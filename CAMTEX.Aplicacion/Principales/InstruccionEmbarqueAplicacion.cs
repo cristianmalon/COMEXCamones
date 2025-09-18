@@ -78,5 +78,49 @@ namespace CAMTEX.Aplicacion
             }
             return retorno;
         }
+
+        public Response<List<OperacionAlmacen>> OperacionAlmacen_listar(OrdenesCompra entidad)
+        {
+            Response<List<OperacionAlmacen>> retorno = new Response<List<OperacionAlmacen>>();
+
+            try
+            {
+                DataTable dt = InstruccionEmbarqueRepositorio.OperacionAlmacen_listar(entidad);
+                List<OperacionAlmacen> lista = new List<OperacionAlmacen>();
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    lista.Add(new OperacionAlmacen()
+                    {
+                        id = Util.CapturaInt0(row, "id"),
+                        FechaGuia = Util.CapturaString(row, "FechaGuia"),
+                        NroGuia = Util.CapturaString(row, "NroGuia"),
+                        ArticuloGuia = Util.CapturaString(row, "ArticuloGuia"),
+                        Cantidad = Util.CapturaDecimal(row, "Cantidad"),
+
+                        //MaeCCod = Util.CapturaString(row, "MaeCCod"),
+                        //MaeDDes = Util.CapturaString(row, "MaeDDes"),
+
+
+                        //TarDNem = Util.CapturaString(row, "TarDNem"),
+                        //CNPDDes = Util.CapturaString(row, "CNPDDes"),
+                        //OrcDMon = Util.CapturaString(row, "OrcDMon"),
+                        //ItemOrdenCompra = Util.CapturaInt0(row, "ItemOrdenCompra"),
+                        //ItemNroEntregaOC = Util.CapturaInt0(row, "ItemNroEntregaOC"),
+                    });
+                }
+
+                retorno.error = false;
+                retorno.response = lista;
+            }
+            catch (Exception ex)
+            {
+                retorno.error = true;
+                retorno.mensaje = ex.Message;
+            }
+            return retorno;
+        }
     }
+    
+
 }
