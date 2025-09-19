@@ -641,6 +641,67 @@ namespace MVCBase.Controllers
             return rpta;
         }
 
+
+
+        [HttpPost]
+        [AllowAnonymous]
+        public JsonResult ActualizarEstadoFile(Files entidad)
+        {
+
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+
+                    Response response = new Response();
+                    var datos = new Request<Files>();
+                    datos.entidad = entidad;
+                    response = new FilesAplicacion(new FilesRepositorio()).ActualizarEstado(datos);
+
+                    return Json(new
+                    {
+                        rpta = response.Success,
+                        errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                        url = Url.Action("Index"),
+                        result = response.Success ? Utiles.MessageSaveSuccess() : response.mensaje,
+                        id = 0
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception ex)
+                {
+                    return Json(new
+                    {
+                        rpta = false,
+                        errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                        url = Url.Action("Index"),
+                        result = Utiles.MessageServerError() + " - " + ex.Message.ToString(),
+                        //combo = 0
+                        id = 0
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    rpta = false,
+                    errores = Utiles.GetErrorsFromModelState(this.ModelState),
+                    url = Url.Action("Index"),
+                    result = Utiles.MessageModelStateInvalid()
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+        }
+
+
+
+
+
+
+
+
+
         [HttpGet]
         [AllowAnonymous]
         public JsonResult ListarFilesE(string anio)

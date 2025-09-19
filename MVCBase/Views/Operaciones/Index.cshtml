@@ -93,38 +93,38 @@
             dataField: 'FileId', caption: 'Id File', alignment: 'left', visible: false,
         },
         {
-            dataField: 'NombreF', caption: 'Nombre File', alignment: 'left',
+            dataField: 'NombreF', caption: 'Nombre File', alignment: 'left', allowEditing: false,
         },
         {
-            dataField: 'FechaOp', caption: 'Fecha Operción', alignment: 'left', dataType: "date",
+            dataField: 'FechaOp', caption: 'Fecha Operción', alignment: 'left', dataType: "date", allowEditing: false,
             format: "dd/MM/yyyy"
 
         }, 
         {
-            dataField: 'UsuarioCreacion', caption: 'Creado', alignment: 'left',
+            dataField: 'UsuarioCreacion', caption: 'Creado', alignment: 'left', allowEditing: false,
         },
         {
-            dataField: 'NroOp', caption: 'Nro Operación', alignment: 'left', visible: false
+            dataField: 'NroOp', caption: 'Nro Operación', alignment: 'left', allowEditing: false, visible: false
         },
         {
-            dataField: 'NumeroOperacion', caption: 'Nro Operación', alignment: 'left',
+            dataField: 'NumeroOperacion', caption: 'Nro Operación', alignment: 'left', allowEditing: false,
         },
         {
-            dataField: 'CodProv', caption: 'Codigo Proveedor', alignment: 'left',
+            dataField: 'CodProv', caption: 'Codigo Proveedor', alignment: 'left', allowEditing: false,
         },
 
         {
-            dataField: 'Proveedor', caption: 'Proveedor', alignment: 'left', width: 280,
+            dataField: 'Proveedor', caption: 'Proveedor', alignment: 'left', width: 280, allowEditing: false,
         },
 
         {
             dataField: 'OrdenID', caption: 'Orden ID', alignment: 'left', visible:false,
         },
         {
-            dataField: 'OrdC', caption: 'Orden Compra', alignment: 'left',
+            dataField: 'OrdC', caption: 'Orden Compra', alignment: 'left', allowEditing: false,
         },
         {
-            dataField: 'DesArt', caption: 'Producto', alignment: 'left', width: 280,
+            dataField: 'DesArt', caption: 'Producto', alignment: 'left', width: 280, allowEditing: false,
         },
         //{
         //    dataField: 'Solicitado', caption: 'Solicitado', alignment: 'left',
@@ -136,14 +136,14 @@
         //    dataField: 'Deposito', caption: 'Deposito', alignment: 'left',
         //},
         {
-            dataField: 'Situacion', caption: 'Situacion', alignment: 'left',
+            dataField: 'Situacion', caption: 'Situacion', alignment: 'left', allowEditing: false,
         },
         //{
         //    dataField: 'FechaIngreso', caption: 'FechaIngreso', alignment: 'left', dataType: "date",
         //    format: "yyyy-MM-dd"
         //},
         {
-            dataField: 'FechaEmbarque', caption: 'FechaEmbarque', alignment: 'left', dataType: "date",
+            dataField: 'FechaEmbarque', caption: 'FechaEmbarque', alignment: 'left', dataType: "date", allowEditing: false,
             format: "dd/MM/yyyy"
         },
         {
@@ -177,7 +177,53 @@
         {
             dataField: 'OrcDMon', caption: 'OrcDMon', alignment: 'left', visible: false,
         },
-
+        {
+            dataField: "ESTADO",
+            caption: "Estado",
+            lookup: {
+                dataSource: [
+                    { value: "A", text: "ACTIVO" },
+                    { value: "I", text: "INACTIVO" }
+                ],
+                valueExpr: "value",
+                displayExpr: "text"
+            },
+            editCellTemplate: function (cellElement, cellInfo) {
+                $("<div>").appendTo(cellElement).dxSelectBox({
+                    dataSource: [
+                        { value: "A", text: "ACTIVO" },
+                        { value: "I", text: "INACTIVO" }
+                    ],
+                    valueExpr: "value",
+                    displayExpr: "text",
+                    value: cellInfo.value,
+                    onValueChanged: function (e) {
+                        cellInfo.setValue(e.value);
+                        console.log("FILEID", cellInfo.data.FileId);
+                        console.log("estado", e.value);
+                        $.ajax({
+                            url: '/Operaciones/ActualizarEstadoFile',
+                            type: 'POST',
+                            data: {
+                                FileId: cellInfo.data.FileId,
+                                Estado: e.value
+                            },
+                            success: function () {
+                                DevExpress.ui.dialog.alert("Estado actualizado correctamente.", "Éxito");
+                                $("#gridContainerFile").dxDataGrid("instance").refresh();
+                            },
+                            error: function () {
+                                DevExpress.ui.dialog.alert("Error al actualizar el estado.", "Error");
+                                $("#gridContainerFile").dxDataGrid("instance").refresh();
+                            }
+                        });
+                    },
+                    searchEnabled: false,   
+                    acceptCustomValue: false
+                });
+            },
+            allowEditing: true,
+        },
 
     ];
 
@@ -220,10 +266,11 @@
                     showRowGrandTotals: true,
                     showTotals: true,
                     editing: {
-                        mode: 'popup',
+                        mode: "cell", // edición por celda
                         //allowUpdating: true,
                         useIcons: true,
                         //allowDeleting: true,//sirve para confirmar tu eliminacion
+                        allowUpdating: true  ,
 
 
                         form: {
@@ -266,7 +313,29 @@
                     paging: {
                         pageSize: 15,  // Set the number of rows per page as per your requirement
                     },
+                    onCellValueChanged: function (e) {
+                        if (e.column.dataField === "ESTADO") {
+                            let nuevoEstado = e.value;
+                            let fileId = e.data.FileID; // asegúrate que tu grid tenga FileID como clave
 
+                            $.ajax({
+                                url: '/Operaciones/CambioEstado',
+                                type: 'POST',
+                                data: {
+                                    id: fileId,
+                                    estado: nuevoEstado
+                                },
+                                success: function (response) {
+                                    DevExpress.ui.dialog.alert("Estado actualizado correctamente.", "Éxito");
+                                    $("#gridContainerFile").dxDataGrid("instance").refresh(); // refrescar grid
+                                },
+                                error: function () {
+                                    DevExpress.ui.dialog.alert("Error al actualizar el estado.", "Error");
+                                    $("#gridContainerFile").dxDataGrid("instance").refresh(); // recargar para revertir
+                                }
+                            });
+                        }
+                    }
 
 
                 }).dxDataGrid('instance');

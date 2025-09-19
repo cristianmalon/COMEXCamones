@@ -14,21 +14,23 @@
 
                     </div>
                     <div class="form-group">
-                        <div class="col-md-2">
+                        <div class="col-md-4">
                             <label>Nombre File</label>
                             <input type="text" id="txtFile" class="form-control" placeholder="Ingrese el código">
                         </div>
-                        <div class="col-md-3">
+                        <!--
+                        <div >
                             <label>Observación</label>
                             <input type="text" id="txtObservacion" class="form-control" placeholder="Ingrese la observación">
 
                         </div>
+                            -->
                         <div class="col-md-2">
                             <label>fecha Registro</label>
                             <input type="text" id="txtFechaRegistro" class="form-control"
                                    value="@(Model.FechaCreacion?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"))" readonly>
                         </div>
-                        <div class="col-md-1">
+                        <div class="col-md-2">
                             <label>Hora</label>
                             <input type="text" id="txtHora" class="form-control"
                                    value="@(Model.FechaCreacion?.ToString("HH:mm:ss") ?? DateTime.Now.ToString("HH:mm:ss"))" readonly>
@@ -425,7 +427,7 @@
 
         $('#btnGuardarFile').click(function () {
             var file = $('#txtFile').val().trim();
-            var observacion = $('#txtObservacion').val().trim();
+           // var observacion = $('#txtObservacion').val().trim();
             if (!file) {
                 DevExpress.ui.dialog.alert("Debe ingresar un código de File antes de guardar.", "Error");
                 return;
@@ -444,6 +446,15 @@
                 },
                 success: function (response) {
                     console.log("response: ", response);
+
+
+                    // Aquí validamos si el SP devolvió -1
+                    if (response.nuevoFileID == -1) {
+                        DevExpress.ui.dialog.alert("El código de File ya existe. No se pudo registrar.", "Error");
+                        $('#btnGuardarFile').prop('disabled', false); // Rehabilitar botón
+                        return;
+                    }
+
                     nuevoFileID = response.nuevoFileID;
                     document.getElementById("FileIDv").value = nuevoFileID; // Asigna un nuevo ID
 
@@ -453,7 +464,7 @@
 
                             // Deshabilitar el botón de "Guardar File" y campos de entrada
                             $('#txtFile').prop('disabled', true);
-                            $('#txtObservacion').prop('disabled', true);
+                          //  $('#txtObservacion').prop('disabled', true);
                         });
 
                 },
