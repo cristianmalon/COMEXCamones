@@ -506,18 +506,7 @@
                 calculateCellValue(rowData) {
                     return rowData.PU ? rowData.PU.toFixed(2) : "0.00"; // Formatea a 2 decimales
                 }
-            },
-            {
-                dataField: 'Qty', caption: 'Qty.',  allowEditing: false,
-                format: {
-                    type: "fixedPoint",
-                    precision: 0 // Sin decimales
-                },
-                setCellValue(newData, value) {
-                    newData.Qty = Math.round(value); // Asegura que siempre sea entero
-                },
-
-            },
+            } ,
             {
                 dataField: 'Valor', caption: 'Valor', alignment: 'right', allowEditing: false,
                 format: {
@@ -525,14 +514,27 @@
                     //precision: 0 // Sin decimales
                 },
                 calculateCellValue(rowData) {
-                    return rowData.Valor ? rowData.Valor.toFixed(2) : "0.00"; // Formatea a 2 decimales
+                    return rowData.Valor ? rowData.Valor.toFixed(2) : "0.00";
+                }
+            },
+            {
+                dataField: 'Qty', caption: 'Qty.', allowEditing: false,
+                format: {
+                    type: "fixedPoint",
+                    precision: 0 // Sin decimales
+                },
+                setCellValue(newData, value) {
+                    newData.Qty = Math.round(value); // Asegura que siempre sea entero
+                },
+                calculateCellValue(rowData) {
+                    return rowData.Qty
                 }
             }
         ],
         summary: {
             totalItems: [
                 {
-                    column: "Valor",
+                    column: "Qty",
                     summaryType: "sum",
                     valueFormat: ",##0.###",
                     displayFormat: "Total: {0}",
