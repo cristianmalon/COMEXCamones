@@ -14,21 +14,23 @@
 
                     </div>
                     <div class="form-group">
-                        <div class="col-md-2">
+                        <div class="col-md-4">
                             <label>File</label>
                             <input type="text" id="txtFile" class="form-control" placeholder="Ingrese el código">
                         </div>
+                        <!--
                         <div class="col-md-3">
                             <label>Observación</label>
                             <input type="text" id="txtObservacion" class="form-control" placeholder="Ingrese la observación">
 
                         </div>
+                            -->
                         <div class="col-md-2">
                             <label>fecha Registro</label>
                             <input type="text" id="txtFechaRegistro" class="form-control"
                                    value="@(Model.FechaCreacion?.ToString("dd/MM/yyyy") ?? DateTime.Now.ToString("dd/MM/yyyy"))" readonly>
                         </div>
-                        <div class="col-md-1">
+                        <div class="col-md-2">
                             <label>Hora</label>
                             <input type="text" id="txtHora" class="form-control"
                                    value="@(Model.FechaCreacion?.ToString("HH:mm:ss") ?? DateTime.Now.ToString("HH:mm:ss"))" readonly>
@@ -330,12 +332,12 @@
 
             //$("#txtCFileE").val(filaSeleccionada.FileId); // o CodFile si prefieres
             $("#txtFile").val(filaSeleccionada.CodFile);
-            $("#txtObservacion").val(filaSeleccionada.Detalle);
+            //$("#txtObservacion").val(filaSeleccionada.Detalle);
             //$("#txtUsuarioE").val(filaSeleccionada.UsuarioCreacion);
             $("#divGuardarFile").hide();
             // Deshabilitar el botón de "Guardar File" y campos de entrada
             $('#txtFile').prop('disabled', true);
-            $('#txtObservacion').prop('disabled', true);
+            //$('#txtObservacion').prop('disabled', true);
             // Habilitar el botón de "Agregar O/C"
             $('#addButton').dxButton('instance').option('disabled', false);
             document.getElementById("FileIDv").value = $('#FileID').val();
@@ -372,7 +374,7 @@
 
         $('#btnGuardarFile').click(function () {
             var file = $('#txtFile').val().trim();
-            var observacion = $('#txtObservacion').val().trim();
+            //var observacion = $('#txtObservacion').val().trim();
 
             if (!file) {
                 DevExpress.ui.dialog.alert("Debe ingresar un código de File antes de guardar.", "Error");
@@ -387,10 +389,21 @@
                 type: 'POST',
                 data: {
                     fileName: file,
-                    observacion: observacion
+                    //observacion: observacion
                 },
                 success: function (response) {
                     console.log("response: ", response);
+
+
+
+                    // Aquí validamos si el SP devolvió -1
+                    if (response.nuevoFileID == -1) {
+                        DevExpress.ui.dialog.alert("El código de File ya existe. No se pudo registrar.", "Error");
+                        $('#btnGuardarFile').prop('disabled', false); // Rehabilitar botón
+                        return;
+                    }
+
+
                     nuevoFileID = response.nuevoFileID;
                     document.getElementById("FileIDv").value = nuevoFileID; // Asigna un nuevo ID
                     DevExpress.ui.dialog.alert("File guardado correctamente.", "Éxito").done(function () {
@@ -399,7 +412,7 @@
 
                         // Deshabilitar el botón de "Guardar File" y campos de entrada
                         $('#txtFile').prop('disabled', true);
-                        $('#txtObservacion').prop('disabled', true);
+                        //$('#txtObservacion').prop('disabled', true);
                     });
 
                 },
