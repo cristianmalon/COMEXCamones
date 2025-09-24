@@ -5591,6 +5591,7 @@
     <Content Include="img\colorblind-friendly\pt1.png" />
     <Content Include="img\colorblind-friendly\pt2.png" />
     <Content Include="img\colorblind-friendly\pt3.png" />
+    <Content Include="img\comex4.png" />
     <Content Include="img\contacto.jpg" />
     <Content Include="img\demo\64x64.png" />
     <Content Include="img\demo\basic.png" />
