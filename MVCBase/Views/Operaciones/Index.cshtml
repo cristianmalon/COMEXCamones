@@ -22,7 +22,11 @@
                                     <input id="txtanio" class="form-control txtano">
                                 </div>
                             </div>
-                            <div class="col-md-6 " style="padding-top: 20px;">
+                            <div class="col-md-6" style="padding-top: 20px; display:flex; align-items:center; justify-content:flex-end; gap:10px;">
+                                <div id="estadoFilter" style="width:150px;"></div>
+                                <!-- Botón Expandir/Colapsar -->
+                                
+
                                 <button type="button"
                                         class="btn btn-primary ClsRefresh  pull-right"
                                         style="margin-right: 15px;"
@@ -88,149 +92,207 @@
 
 
 
-    var columnsConfig = [
-        {
-            dataField: 'FileId', caption: 'Id File', alignment: 'left', visible: false,
-        },
-        {
-            dataField: 'NombreF', caption: 'Nombre File', alignment: 'left', allowEditing: false,
-        },
-        {
-            dataField: 'FechaOp', caption: 'Fecha Operción', alignment: 'left', dataType: "date", allowEditing: false,
-            format: "dd/MM/yyyy"
+        var columnsConfig = [
+            {
+                dataField: 'FileId', caption: 'Id File', alignment: 'left', visible: false,
+                
 
-        }, 
-        {
-            dataField: 'UsuarioCreacion', caption: 'Creado', alignment: 'left', allowEditing: false,
-        },
-        {
-            dataField: 'NroOp', caption: 'Nro Operación', alignment: 'left', allowEditing: false, visible: false
-        },
-        {
-            dataField: 'NumeroOperacion', caption: 'Nro Operación', alignment: 'left', allowEditing: false,
-        },
-        {
-            dataField: 'CodProv', caption: 'Codigo Proveedor', alignment: 'left', allowEditing: false,
-        },
 
-        {
-            dataField: 'Proveedor', caption: 'Proveedor', alignment: 'left', width: 280, allowEditing: false,
-        },
 
-        {
-            dataField: 'OrdenID', caption: 'Orden ID', alignment: 'left', visible:false,
-        },
-        {
-            dataField: 'OrdC', caption: 'Orden Compra', alignment: 'left', allowEditing: false,
-        },
-        {
-            dataField: 'DesArt', caption: 'Producto', alignment: 'left', width: 280, allowEditing: false,
-        },
-        //{
-        //    dataField: 'Solicitado', caption: 'Solicitado', alignment: 'left',
-        //},
-        //{
-        //    dataField: 'DUA', caption: 'DUA', alignment: 'left',
-        //},
-        //{
-        //    dataField: 'Deposito', caption: 'Deposito', alignment: 'left',
-        //},
-        {
-            dataField: 'Situacion', caption: 'Situacion', alignment: 'left', allowEditing: false,
-        },
-        //{
-        //    dataField: 'FechaIngreso', caption: 'FechaIngreso', alignment: 'left', dataType: "date",
-        //    format: "yyyy-MM-dd"
-        //},
-        {
-            dataField: 'FechaEmbarque', caption: 'FechaEmbarque', alignment: 'left', dataType: "date", allowEditing: false,
-            format: "dd/MM/yyyy"
-        },
-        {
-            dataField: 'LineaNaviera', caption: 'ViaTransporte', alignment: 'left', visible: false,
-        },
-        {
-            dataField: 'TarCCod', caption: 'Tipo', alignment: 'left', visible: false,
-        },
-        //{
-        //    dataField: 'EstadoCalidad', caption: 'EstadoCalidad', alignment: 'left',
-        //},
-        //{
-        //    dataField: 'NumFactura', caption: 'NumFactura', alignment: 'left',
-        //},
-        //{
-        //    dataField: 'LineaNaviera', caption: 'LineaNaviera', alignment: 'left',
-        //},
-        //{
-        //    dataField: 'Contenedor', caption: 'Contenedor', alignment: 'left',
-        //},
-        //{
-        //    dataField: 'AgenteAduana', caption: 'AgenteAduana', alignment: 'left',
-        //},
-
-        {
-            dataField: 'TarDNem', caption: 'TarDNem', alignment: 'left', visible: false,
-        },
-        {
-            dataField: 'CNPDDes', caption: 'CNPDDes', alignment: 'left', visible: false,
-        },
-        {
-            dataField: 'OrcDMon', caption: 'OrcDMon', alignment: 'left', visible: false,
-        },
-        {
-            dataField: "ESTADO",
-            caption: "Estado",
-            lookup: {
-                dataSource: [
-                    { value: "A", text: "ACTIVO" },
-                    { value: "I", text: "INACTIVO" }
-                ],
-                valueExpr: "value",
-                displayExpr: "text"
             },
-            editCellTemplate: function (cellElement, cellInfo) {
-                $("<div>").appendTo(cellElement).dxSelectBox({
+
+            {
+                dataField: 'NombreF', caption: 'Nombre File', alignment: 'left', allowEditing: false, 
+               /* groupIndex: 0,
+                groupCellTemplate: function (cellElement, cellInfo) {
+                    let items = cellInfo.data.collapsedItems || cellInfo.data.items;
+
+                    if (items && items.length > 0) {
+                        let estadoActual = items[0].ESTADO;
+                        let fileId = items[0].FileId;
+
+
+                        // Texto a la izquierda
+                        $("<span>")
+                            .text("FileId: " + cellInfo.key + " | ")
+                            .appendTo(cellElement);
+
+                        // Combo a la derecha, en la misma línea
+                        $("<div>")
+                            .css("display", "inline-block") // 👈 evitar salto de línea
+                            .appendTo(cellElement)
+                            .dxSelectBox({
+                                dataSource: [
+                                    { value: "A", text: "ACTIVO" },
+                                    { value: "I", text: "INACTIVO" }
+                                ],
+                                valueExpr: "value",
+                                displayExpr: "text",
+                                value: estadoActual,
+                                onValueChanged: function (e) {
+                                    var o = {
+                                        FileId: fileId,
+                                        Estado: e.value
+                                    };
+
+                                    $.ajax({
+                                        url: '/Operaciones/ActualizarEstadoFile',
+                                        type: 'POST',
+                                        data: JSON.stringify(o),
+                                        contentType: 'application/json; charset=utf-8',
+                                        dataType: 'json',
+                                        success: function () {
+                                            DevExpress.ui.dialog.alert("Estado actualizado correctamente.", "Éxito");
+                                            $("#gridContainerFile").dxDataGrid("instance").refresh();
+                                        },
+                                        error: function () {
+                                            DevExpress.ui.dialog.alert("Error al actualizar el estado.", "Error");
+                                            $("#gridContainerFile").dxDataGrid("instance").refresh();
+                                        }
+                                    });
+                                },
+                                width: 120
+                            });
+                    } else {
+                        cellElement.text("FileId: " + cellInfo.key);
+                    }
+                }*/
+            
+            },
+            {
+                dataField: 'OrdC', caption: 'Orden Compra', alignment: 'left', allowEditing: false, 
+            },
+            {
+                dataField: 'FechaOp', caption: 'Fecha Operción', alignment: 'left', dataType: "date", allowEditing: false,
+                format: "dd/MM/yyyy"
+
+            },
+            {
+                dataField: 'UsuarioCreacion', caption: 'Creado', alignment: 'left', allowEditing: false,
+            },
+            {
+                dataField: 'NroOp', caption: 'Nro Operación', alignment: 'left', allowEditing: false, visible: false
+            },
+            {
+                dataField: 'NumeroOperacion', caption: 'Nro Operación', alignment: 'left', allowEditing: false,
+            },
+            {
+                dataField: 'CodProv', caption: 'Codigo Proveedor', alignment: 'left', allowEditing: false,
+            },
+
+            {
+                dataField: 'Proveedor', caption: 'Proveedor', alignment: 'left', width: 280, allowEditing: false,
+            },
+
+            {
+                dataField: 'OrdenID', caption: 'Orden ID', alignment: 'left', visible:false,
+            },
+            
+            {
+                dataField: 'DesArt', caption: 'Producto', alignment: 'left', width: 280, allowEditing: false,
+            },
+       
+            {
+                dataField: 'Situacion', caption: 'Situacion', alignment: 'left', allowEditing: false,
+            },
+       
+            {
+                dataField: 'FechaEmbarque', caption: 'FechaEmbarque', alignment: 'left', dataType: "date", allowEditing: false,
+                format: "dd/MM/yyyy"
+            },
+            {
+                dataField: 'LineaNaviera', caption: 'ViaTransporte', alignment: 'left', visible: false,
+            },
+            {
+                dataField: 'TarCCod', caption: 'Tipo', alignment: 'left', visible: false,
+            },
+        
+
+            {
+                dataField: 'TarDNem', caption: 'TarDNem', alignment: 'left', visible: false,
+            },
+            {
+                dataField: 'CNPDDes', caption: 'CNPDDes', alignment: 'left', visible: false,
+            },
+            {
+                dataField: 'OrcDMon', caption: 'OrcDMon', alignment: 'left', visible: false,
+            },
+            {
+                dataField: "ESTADO",
+                caption: "Estado",
+                lookup: {
                     dataSource: [
                         { value: "A", text: "ACTIVO" },
                         { value: "I", text: "INACTIVO" }
                     ],
                     valueExpr: "value",
-                    displayExpr: "text",
-                    value: cellInfo.value,
-                    onValueChanged: function (e) {
-                        cellInfo.setValue(e.value);
-                        console.log("FILEID", cellInfo.data.FileId);
-                        console.log("estado", e.value);
-                        $.ajax({
-                            url: '/Operaciones/ActualizarEstadoFile',
-                            type: 'POST',
-                            data: {
+                    displayExpr: "text"
+                },
+               /* cellTemplate: function (cellElement, cellInfo) {
+                    $("<div>").appendTo(cellElement).dxSelectBox({
+                        dataSource: [
+                            { value: "A", text: "ACTIVO" },
+                            { value: "I", text: "INACTIVO" }
+                        ],
+                        valueExpr: "value",
+                        displayExpr: "text",
+                        value: cellInfo.value,
+                        onValueChanged: function (e) {
+                            var o = {
                                 FileId: cellInfo.data.FileId,
                                 Estado: e.value
-                            },
-                            success: function () {
-                                DevExpress.ui.dialog.alert("Estado actualizado correctamente.", "Éxito");
-                                $("#gridContainerFile").dxDataGrid("instance").refresh();
-                            },
-                            error: function () {
-                                DevExpress.ui.dialog.alert("Error al actualizar el estado.", "Error");
-                                $("#gridContainerFile").dxDataGrid("instance").refresh();
-                            }
-                        });
-                    },
-                    searchEnabled: false,   
-                    acceptCustomValue: false
-                });
+                            };
+
+                            $.ajax({
+                                url: '/Operaciones/ActualizarEstadoFile',
+                                type: 'POST',
+                                data: JSON.stringify(o),
+                                contentType: 'application/json; charset=utf-8',
+                                dataType: 'json',
+                                success: function () {
+                                    DevExpress.ui.dialog.alert("Estado actualizado correctamente.", "Éxito");
+                                    $("#gridContainerFile").dxDataGrid("instance").refresh();
+                                },
+                                error: function () {
+                                    DevExpress.ui.dialog.alert("Error al actualizar el estado.", "Error");
+                                    $("#gridContainerFile").dxDataGrid("instance").refresh();
+                                }
+                            });
+                        }
+                    });
+                },*/
+                allowEditing: false,
+            }
+
+
+        ];
+
+
+
+    $(function () {
+        $("#estadoFilter").dxSelectBox({
+            dataSource: [
+                { value: "ALL", text: "Todos" },
+                { value: "A", text: "Activos" },
+                { value: "I", text: "Inactivos" }
+            ],
+            valueExpr: "value",
+            displayExpr: "text",
+            value: "ALL", // valor por defecto
+            onValueChanged: function (e) {
+                let grid = $("#gridContainerFile").dxDataGrid("instance");
+
+                if (e.value === "ALL") {
+                    grid.clearFilter(); // sin filtro
+                } else {
+                    grid.filter(["ESTADO", "=", e.value]);
+                }
             },
-            allowEditing: true,
-        },
-
-    ];
-
-
-
-
-
+            width: 150,
+            placeholder: "Filtrar Estado"
+        });
+    });
+   
 
 
     function loadGridFile() {
@@ -257,6 +319,13 @@
 
                     noDataText: "No hay información para mostrar",
 
+                    grouping: {
+                        autoExpandAll: true 
+                    },
+                   
+
+
+
 
                     allowSorting: false,
                     allowFiltering: true,
@@ -277,6 +346,7 @@
 
                         }
                     },
+
 
 
                     showGrandTotals: false,
@@ -417,7 +487,11 @@
 
         if (selectedData.length > 0) {
 
-            console.log("selectedRowData para editar  no me trae tarccod: ", selectedData);
+            var file = selectedData[0]; // fila seleccionada completa
+            var estado = file.ESTADO;
+
+            var fileId = file.FileId; // ahora sí usas el id real
+
 
             $("#popupContainerEF").dxPopup({
                     width: 1300,
@@ -431,7 +505,7 @@
                         // Cargar el contenido mediante AJAX
                         $.ajax({
 
-                            url: '@Url.Content("~/Operaciones/Editar")',
+                            url: '@Url.Content("~/Operaciones/Editar")' + '?estado=' + estado,
                             type: "GET",
                             success: function (data) {
                                 contentElement.html(data);
@@ -481,7 +555,7 @@
                 /* Read more about isConfirmed, isDenied below */
                 if (result.isConfirmed) {
                     Swal.fire("Saved!", "", "success");
-                } 
+                }
             });
         } else {
             // Si no hay una fila seleccionada, muestra un mensaje o realiza otra acción

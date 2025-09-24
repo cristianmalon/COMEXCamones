@@ -22,9 +22,9 @@ namespace CAMTEX.Repositorio
 
             oConn.AddParameter("@opcion", 7);
 
-            oConn.AddParameter("@Estado", entidad.Estado);
+            oConn.AddParameter("@Estado", entidad.ESTADO);
             
-            oConn.AddParameter("@IdLoteA", entidad.FileId);
+            oConn.AddParameter("@FileID", entidad.FileId);
 
 
             DataTable dt = oConn.ExecuteDataTable("[DBO].[Usp_Files]");

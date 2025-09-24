@@ -21,7 +21,6 @@ namespace CAMTEX.Entidades
         [DataMember] public DateTime? FechaCreacion  { get; set; }
         [DataMember] public string UsuarioCreacion { get; set; }
         [DataMember] public string Estacion { get; set; }
-        [DataMember] public string Estado { get; set; }
         [DataMember] public string IE_Anio { get; set; }
         [DataMember] public string IE_Nro { get; set; }
 

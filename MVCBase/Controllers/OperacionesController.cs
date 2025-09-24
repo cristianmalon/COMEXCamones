@@ -39,13 +39,14 @@ namespace MVCBase.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult Editar()
+        public ActionResult Editar(string estado)
         {
             Files entidad = new Files()
             {
                 UsuarioCreacion = VariablesWeb.Usuario.SUsrId,
                 Estacion = VariablesWeb.HostName(),
-                FechaCreacion = DateTime.Now
+                FechaCreacion = DateTime.Now,
+                ESTADO = estado
             };
             return PartialView("_Editar", entidad);
 
@@ -277,8 +278,9 @@ namespace MVCBase.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult BuscarOcGrid()
+        public ActionResult BuscarOcGrid(string proveedor)
         {
+            ViewBag.Proveedor = proveedor;  // lo mandas a la vista parcial
             return PartialView("_OCGrid");
         }
 
@@ -295,7 +297,7 @@ namespace MVCBase.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public JsonResult InsertFiles(string fileName, string observacion)
+        public JsonResult InsertFiles(string fileName)
         {
 
             if (ModelState.IsValid)
@@ -305,7 +307,7 @@ namespace MVCBase.Controllers
                     Response response = new Response();
                     Files entidad = new Files();
                     entidad.CodFile = fileName ;
-                    entidad.Detalle = observacion;
+                    //entidad.Detalle = observacion;
                     //entidad.IdSede = VariablesWeb.ENUsuario.IdSede;
                     entidad.Estacion = VariablesWeb.HostName();
                     entidad.UsuarioCreacion = VariablesWeb.Usuario.SUsrId;
