@@ -71,6 +71,7 @@ namespace MVCBase.Controllers
         // GET: Account
         public ActionResult Index()
         {
+            
             return View();
         }
         /*
@@ -102,8 +103,8 @@ namespace MVCBase.Controllers
         [AllowAnonymous]
         public ActionResult Login(string returnUrl, string cod)
         {
-            var sam = FederatedAuthentication.SessionAuthenticationModule;
-            sam.DeleteSessionTokenCookie();
+           
+            
             LoginModel be = new LoginModel();
             ViewBag.ReturnUrl = returnUrl;
 
@@ -192,6 +193,22 @@ namespace MVCBase.Controllers
                         ModelState.AddModelError("", ex.Message);
                     }
                 }
+            }
+            else
+            {
+                //var sam = FederatedAuthentication.SessionAuthenticationModule;
+                //sam.DeleteSessionTokenCookie();
+                //// 🔹 Limpia cookie antiforgery vieja (si existe)
+                //if (Request.Cookies["__RequestVerificationToken"] != null)
+                //{
+                //    var c = new System.Web.HttpCookie("__RequestVerificationToken")
+                //    {
+                //        Expires = DateTime.Now.AddDays(-1),
+                //        HttpOnly = true
+                //    };
+                //    Response.Cookies.Add(c);
+                //}
+
             }
             /*else
              {
@@ -344,8 +361,8 @@ namespace MVCBase.Controllers
             //this.Response.Redirect("http://192.168.1.216:118/Home/Index");
 
             //return View();
-            return RedirectToAction("LogoutAndClose");
-
+            this.Response.Redirect("~/Account/Login");
+            return View();
             /*COMENTADO
             
            var httpContext = System.Web.HttpContext.Current;

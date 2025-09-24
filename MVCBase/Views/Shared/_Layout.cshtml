@@ -134,10 +134,44 @@
             font-weight: normal !important;
             font-size: 12px !important;
         }
+        .smart-style-3 #header {
+            background-color: #1b619f !important;
+            background-image: linear-gradient(to bottom,#1b619f,#1b619f) !important;
+        }
+
+        .smart-style-3 nav ul ul li > a {
+            font-size: 12px !important;
+        }
+
+        .smart-style-3 nav > ul > li > a {
+            padding: 10px 10px 10px 11px !important;
+            font-size: 12px !important;
+        }
+
+        .tituloSistema {
+            text-shadow: none !important;
+            font-size: 16px !important;
+        }
+
+        .smart-style-3 .btn-header > :first-child > a:hover {
+            box-shadow: inset 1px 1px 0 #9b9a9a,inset -1px -1px 0 #91908f !important;
+            background-color: #1b619f !important;
+            background-image: linear-gradient(to bottom,#9f9d9b,#939190) !important;
+        }
+
+        .smart-style-3 .btn-header > :first-child > a {
+            background-color: #1B619F !important;
+            background-image: linear-gradient(to bottom,#999795,#918f8e) !important;
+            border: 1px solid #1b619f !important;
+        }
+
+        .smart-style-3 .page-footer {
+            background: #1b619f !important;
+        }
     </style>
 </head>
 
-<body class="desktop-detected pace-done smart-style-7 mod-skin-dark">
+<body class="desktop-detected pace-done smart-style-3 mod-skin-dark">
     <script>
         DevExpress.localization.locale(navigator.language);
     </script>
@@ -152,12 +186,14 @@
 
             <!-- PLACE YOUR LOGO HERE -->
             <span id="logo">
-                <img src="~/img/logo.png" class="image" style="width: 110px;height: 39px;" />
+                <img src="~/img/logo.png" class="image" alt="Textiles Camones" style="padding-top:10px" />
             </span>
 
             <!-- END LOGO PLACEHOLDER -->
         </div>
-
+        <div class="project-context hidden-xs">
+            <h1 class="tituloSistema">Sistema Comex</h1>
+        </div>
         <!-- #TOGGLE LAYOUT BUTTONS -->
         <!-- pulled right: nav area -->
         <div class="pull-right">
@@ -226,7 +262,7 @@
     <!-- Note: This width of the aside area can be adjusted through LESS/SASS variables -->
 
     <aside id="left-panel">
-        <span class="minifyme" data-action="minifyMenu"> <i class="fa fa-arrow-circle-left hit"></i> </span>
+        
 
         <!-- User info -->
         <div class="login-info">
@@ -259,37 +295,38 @@
             <ul>
             </ul>
             @*@if (listaOpciones != null)
-            {
-                @Html.CustomMenu(listaOpciones, "Custom-menu")
-            }*@
+        {
+            @Html.CustomMenu(listaOpciones, "Custom-menu")
+        }*@
             <ul>
                 <li>
                     @*<a href="#"><i class="fa fa-lg fa-fw fa-users"></i> <span class="menu-item-parent">REPORTES</span><b class="collapse-sign"><em class="fa fa-minus-square-o"></em></b></a>*@
 
-                    <a href="../HOME/INDEX"><i class="fa fa-home fa-2x"></i> &nbsp;&nbsp; INICIO</a>
+                    @*<a href="../HOME/INDEX"><i class="fa fa-home fa-2x"></i> &nbsp;&nbsp; INICIO</a>*@
+                    <a href="@Url.Action("Index", "Home")" title="blank_"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Inicio</span></a>
                     @*</ul>*@
                 </li>
             </ul>
             <!--
-                <ul>
-                    <li>
-                        <a href="#"><i class="fa fa-lg fa-fw fa-gears"></i> <span class="menu-item-parent">Producción</span><b class="collapse-sign"><em class="fa fa-minus-square-o"></em></b></a>
-                        <ul style="display: block;">
-                            <li class="open">
-                                <ul style="display: block;">
-                                    <li>
-                                        <a href="../RegistroProduccion/Index"><i class="fa fa-pencil-square-o"></i> Registro Producción</a>
-                                    </li>
-                                    <li>
-                                        <a href="../Tablet/Index"><i class="fa fa-pencil-square-o"></i> Tablet</a>
-                                    </li>
+            <ul>
+                <li>
+                    <a href="#"><i class="fa fa-lg fa-fw fa-gears"></i> <span class="menu-item-parent">Producción</span><b class="collapse-sign"><em class="fa fa-minus-square-o"></em></b></a>
+                    <ul style="display: block;">
+                        <li class="open">
+                            <ul style="display: block;">
+                                <li>
+                                    <a href="../RegistroProduccion/Index"><i class="fa fa-pencil-square-o"></i> Registro Producción</a>
+                                </li>
+                                <li>
+                                    <a href="../Tablet/Index"><i class="fa fa-pencil-square-o"></i> Tablet</a>
+                                </li>
 
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-        -->
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+    -->
             <ul class="collapsible-menu">
                 <li class="open">
                     <a href="#">
@@ -299,8 +336,8 @@
                     <ul style="display: block;">
 
                         @*<li class="">
-                            <a href="../TipTransporte/Index" title="Dashboard"><span class="menu-item-parent">Tipo Transporte</span></a>
-                        </li>*@
+                        <a href="../TipTransporte/Index" title="Dashboard"><span class="menu-item-parent">Tipo Transporte</span></a>
+                    </li>*@
                         <li class="">
                             <a href="../Proveedor/Index" title="Dashboard"><span class="menu-item-parent">Proveedor</span></a>
                         </li>
@@ -320,8 +357,8 @@
                             <a href="../CondPago/Index" title="Dashboard"><span class="menu-item-parent">Condición de pago</span></a>
                         </li>
                         @*<li class="">
-                            <a href="../SituacionEstado/Index" title="Dashboard"><span class="menu-item-parent">Situacion - Estado</span></a>
-                        </li>*@
+                        <a href="../SituacionEstado/Index" title="Dashboard"><span class="menu-item-parent">Situacion - Estado</span></a>
+                    </li>*@
                         <li class="">
                             <a href="../AgenteCarga/Index" title="Dashboard"><span class="menu-item-parent">Agente Carga</span></a>
                         </li>
@@ -356,14 +393,14 @@
                 </li>
             </ul>
 
-
+            <span class="minifyme" data-action="minifyMenu"> <i class="fa fa-arrow-circle-left hit"></i> </span>
 
             <!--ESTO SE DEBE DE DESCOMENTAR DESPUES DE AGREGAR EN EL SISTEMA TODA LAS VISTAS-->
-           @* @if (listaOpciones != null)
-            {
-                @Html.CustomMenu(listaOpciones, "Custom-menu")
-            }
-               *@
+            @* @if (listaOpciones != null)
+        {
+            @Html.CustomMenu(listaOpciones, "Custom-menu")
+        }
+            *@
 
         </nav>
 
@@ -402,8 +439,8 @@
     <!-- #PAGE FOOTER -->
     <div class="page-footer">
         <div class="row">
-            <div class="col-xs-12 col-sm-6">
-                <span class="txt-color-white">COMEX-APP<span class="hidden-xs"> - Apliacion Web Camones</span> 2025 - creado por Area Sistemas </span>
+            <div class="col-xs-12 col-sm-12" style="text-align:center">
+                <span class="txt-color-white"> SISTEMA WEB CAMONES  <span class="hidden-xs">  | Modulo SIG- Version 1.0  </span> | Area Sistemas-2025 | © Derechos Reservados</span>
             </div>
         </div>
         <!-- end row -->
