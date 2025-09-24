@@ -32,17 +32,17 @@
 
     var columnsConfig = [
         {
-            dataField: 'PrvCCod', caption: 'Codigo', alignment: 'left',
+            dataField: 'PrvCCod', caption: 'Codigo', alignment: 'left', width: 100
         },
         {
-            dataField: 'PrvDDes', caption: 'Descripcion', alignment: 'left',
+            dataField: 'PrvDDes', caption: 'Descripcion', alignment: 'left', width: 350
 
         },
         {
-            dataField: 'PrvDRuc', caption: 'RUC', alignment: 'left',
+            dataField: 'PrvDRuc', caption: 'RUC', alignment: 'left', width: 150
         },
         {
-            dataField: 'PrvDDir', caption: 'Direccion', alignment: 'left',
+            dataField: 'PrvDDir', caption: 'Direccion', alignment: 'left', width: 350
         },
         {
             dataField: 'PrvDTel', caption: 'Telefono', alignment: 'left',
@@ -104,7 +104,7 @@
                 dataSource: {
 
                     store: DxSource,
-                    pageSize: 10, // Set the desired page size
+                    pageSize: 15, // Set the desired page size
                     pageIndex: 0 // Set the initial page index
                 },
 
@@ -124,10 +124,10 @@
                             template: function () {
                                 return $("<div>")
                                     .addClass("toolbar-item")
-                                    .append($("<img>")
-                                        .attr("src", "/img/logo.png") // Ruta de la imagen
-                                        .addClass("toolbar-icon") // Clase de estilo para la imagen
-                                    )
+                                    //.append($("<img>")
+                                    //    .attr("src", "/img/logo.png") // Ruta de la imagen
+                                    //    .addClass("toolbar-icon") // Clase de estilo para la imagen
+                                    //)
                                     .append($("<span>")
                                         .text("Proveedor") // Texto del título
                                         .addClass("toolbar-title") // Clase de estilo personalizada
@@ -186,7 +186,7 @@
                     mode: 'single',
                 },
                 paging: {
-                    pageSize: 10,  // Set the number of rows per page as per your requirement
+                    pageSize: 15,  // Set the number of rows per page as per your requirement
                 },
 
 
@@ -389,9 +389,7 @@
 
 
     #gridContainer .dx-datagrid-headers .dx-header-row {
-        -webkit-text-stroke-width: 0.5px;
         -webkit-text-stroke-color: white;
-        text-shadow: 0px 2px 4px black;
     }
 
 
@@ -403,18 +401,19 @@
     }
 
     .dx-datagrid-headers.dx-datagrid-nowrap.dx-header-multi-row .dx-datagrid-table.dx-datagrid-table-fixed {
-        -webkit-text-stroke-width: 0.5px;
+        -webkit-text-stroke-width: 0.2px;
         -webkit-text-stroke-color: white;
         text-shadow: 0px 2px 4px black;
     }
 
     #gridContainer .dx-datagrid-table.dx-datagrid-table-fixed tr.dx-row.dx-data-row.dx-column-lines {
-        font-size: 23px;
-        border: 2px solid #58a6d33b;
+        font-size: 12px;
+        border: 1px solid #58a6d33b;
     }
-
     .dx-row.dx-column-lines.dx-header-row {
-        font-weight: bolder;
-        font-size: 25px;
+        font-size: 12px;
+    }
+    #gridContainer .dx-datagrid-header-panel .dx-toolbar-before .dx-toolbar-item:not(:first-child), #gridContainerFile .dx-datagrid-header-panel .dx-toolbar-before .dx-toolbar-item:not(:first-child) {
+        background-color: rgb(0 39 98) !important;
     }
 </style>
