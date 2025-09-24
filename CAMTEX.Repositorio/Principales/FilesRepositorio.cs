@@ -16,7 +16,23 @@ namespace CAMTEX.Repositorio
         {
             throw new NotImplementedException();
         }
+        public IDictionary<string, object> ActualizarDatos(Files entidad)
+        {
+            Dictionary<string, object> retorno = new Dictionary<string, object>();
 
+            oConn.AddParameter("@opcion", 7);
+
+            oConn.AddParameter("@Estado", entidad.ESTADO);
+            
+            oConn.AddParameter("@FileID", entidad.FileId);
+
+
+            DataTable dt = oConn.ExecuteDataTable("[DBO].[Usp_Files]");
+
+            retorno.Add("resultado", true);
+            retorno.Add("mensaje", "OK");
+            return retorno;
+        }
         public IDictionary<string, object> Eliminar(Files entidad)
         {
             throw new NotImplementedException();

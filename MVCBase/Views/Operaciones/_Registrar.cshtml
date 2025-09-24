@@ -16,34 +16,44 @@
                     <div class="form-group">
                         <div class="col-md-2">
                             <label>Nombre File</label>
-                            <input type="text" id="txtFile" class="form-control" placeholder="Ingrese el código">
+                            <input type="text" id="txtFile" class="form-control" placeholder="AUTOGENERADO" readonly>
                         </div>
+
                         <div class="col-md-3">
-                            <label>Observación</label>
-                            <input type="text" id="txtObservacion" class="form-control" placeholder="Ingrese la observación">
+                            <label>Proveedor</label>
+                            <div class="input-group">
+                                <input type="text" id="txtProveedor" class="form-control" style="width:80%" placeholder="Seleccione el Proveedor" readonly>
+                                <button type="button" id="btnBuscarProveedor" class="btn btn-custom">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </div>
+
 
                         </div>
-                        <div class="col-md-2">
+
+
+
+                        <div class="col-md-1" style="visibility:hidden">
                             <label>fecha Registro</label>
                             <input type="text" id="txtFechaRegistro" class="form-control"
                                    value="@(Model.FechaCreacion?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"))" readonly>
                         </div>
-                        <div class="col-md-1">
+                        <div class="col-md-2" style="visibility: hidden">
                             <label>Hora</label>
                             <input type="text" id="txtHora" class="form-control"
                                    value="@(Model.FechaCreacion?.ToString("HH:mm:ss") ?? DateTime.Now.ToString("HH:mm:ss"))" readonly>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-1" style="visibility: hidden">
                             <label>Usuario</label>
                             <input type="text" id="txtUsuario" class="form-control" value="@Model.UsuarioCreacion" readonly>
 
                         </div>
-                        <div class="col-md-1">
+                        <div class="col-md-1" style="visibility: hidden">
                             <label>Estación</label>
                             <input type="text" id="txtEstacion" class="form-control" value="@Model.Estacion" readonly>
 
                         </div>
-                        <div class="col-md-1">
+                        <div class="col-md-2">
                             <label>Estado</label>
                             <input type="text" id="txtEstado" class="form-control" value="Activo" readonly>
 
@@ -52,7 +62,7 @@
                     </div>
                     <div class="form-group">
                         <div class="col-md-6">
-                            <button type="button" id="btnGuardarFile" class="btn btn-primary">Guardar File</button>
+                            <button type="button" id="btnGuardarFile" class="btn btn-primary" disabled>Guardar File</button>
 
                         </div>
                     </div>
@@ -68,6 +78,8 @@
                     <div id="tabPanel"></div>
 
                     <div id="popupContainerR"></div>
+
+                    <div id="popupProveedores"></div>
 
 
                     @*<hr style="border-top: 2px solid #33333347;" />*@
@@ -173,6 +185,114 @@
             });
         }
 
+        var popupProv = $("#popupProveedores").dxPopup({
+            title: "Seleccionar Proveedor",
+            width: 600,
+            height: 550,
+            visible: false,
+            contentTemplate: function () {
+                return $("<div>").attr("id", "gridProveedores");
+            },
+            toolbarItems: [
+                {
+                    widget: "dxButton",
+                    toolbar: "bottom",
+                    location: "after",
+                    options: {
+                        text: "Seleccionar",
+                        type: "success",
+                        onClick: function () {
+                            var grid = $("#gridProveedores").dxDataGrid("instance");
+                            var selected = grid.getSelectedRowsData();
+
+                            if (selected.length > 0) {
+                                $("#txtProveedor").val(selected[0].PrvCCod);
+                                $("#btnGuardarFile").prop("disabled", false); // habilitar botón
+                                popupProv.hide();
+                            } else {
+                                DevExpress.ui.dialog.alert("Seleccione un proveedor.", "Atención");
+                            }
+                        }
+                    }
+                },
+                {
+                    widget: "dxButton",
+                    toolbar: "bottom",
+                    location: "after",
+                    options: {
+                        text: "Cancelar",
+                        onClick: function () {
+                            popupProv.hide();
+                        }
+                    }
+                }
+            ]
+        }).dxPopup("instance");
+
+        const DxSourceProv = new DevExpress.data.CustomStore({
+            key: 'PrvCCod',  
+            load() {
+                return sendRequest(`/Operaciones/ListarOcGrid`).then(data => {
+                    // Eliminar duplicados de PrvCCod
+                    const unique = [];
+                    const seen = new Set();
+
+                    data.forEach(item => {
+                        if (!seen.has(item.PrvCCod)) {
+                            seen.add(item.PrvCCod);
+                            unique.push(item);
+                        }
+                    });
+
+                    return unique;
+                });
+            },
+        });
+
+
+
+        // Evento abrir popup
+        $("#btnBuscarProveedor").on("click", function () {
+            popupProv.show();
+
+            $("#gridProveedores").dxDataGrid({
+                dataSource: {
+                    store: DxSourceProv,
+                    pageSize: 10,
+                    pageIndex: 0
+                },
+                keyExpr: "id",
+                selection: { mode: "single" },
+                width: "100%",         
+                height: 400,           
+                filterRow: {
+                    visible: true,     
+                    applyFilter: "auto"
+                },
+                headerFilter: {
+                    visible: true      
+                },                
+                paging: {
+                    pageSize: 10
+                },
+                
+                columns: [
+                    { dataField: "id", caption: "ID", width: 80, visible:false },
+                    { dataField: "PrvCCod", caption: "Código Proveedor", width: 140, },
+                    { dataField: "PrvDDes", caption: "Descripción Proveedor",}
+                ]
+            });
+
+
+        });
+
+
+
+
+
+
+
+
 
         function closeButtonHandler(itemData) {
             DevExpress.ui.dialog.confirm("¿Estás seguro de que deseas quitar esta O/C?", "Confirmación")
@@ -248,6 +368,7 @@
                 $.ajax({
                     url: '/Operaciones/BuscarOcGrid',
                     method: 'GET',
+                    data: { proveedor: $("#txtProveedor").val() }, // se envía al backend
                     success: function (result) {
                         
 
@@ -425,12 +546,12 @@
 
         $('#btnGuardarFile').click(function () {
             var file = $('#txtFile').val().trim();
-            var observacion = $('#txtObservacion').val().trim();
-            if (!file) {
+           // var observacion = $('#txtObservacion').val().trim();
+           /* if (!file) {
                 DevExpress.ui.dialog.alert("Debe ingresar un código de File antes de guardar.", "Error");
                 return;
             }
-
+            */
             // Deshabilitar el botón para evitar múltiples envíos
             $('#btnGuardarFile').prop('disabled', true);
 
@@ -440,12 +561,26 @@
                 type: 'POST',
                 data: {
                     fileName: file,
-                    observacion: observacion
+                    //observacion: observacion
                 },
                 success: function (response) {
                     console.log("response: ", response);
+
+
+                    // Aquí validamos si el SP devolvió -1
+                    if (response.nuevoFileID == -1) {
+                        DevExpress.ui.dialog.alert("El código de File ya existe. No se pudo registrar.", "Error");
+                        $('#btnGuardarFile').prop('disabled', false); // Rehabilitar botón
+                        return;
+                    }
+
                     nuevoFileID = response.nuevoFileID;
                     document.getElementById("FileIDv").value = nuevoFileID; // Asigna un nuevo ID
+
+
+
+                    // Mostrar el valor en el input txtFile
+                    $("#txtFile").val(nuevoFileID);
 
                         DevExpress.ui.dialog.alert("File guardado correctamente.", "Éxito").done(function () {
                             // Habilitar el botón de "Agregar O/C"
@@ -453,7 +588,12 @@
 
                             // Deshabilitar el botón de "Guardar File" y campos de entrada
                             $('#txtFile').prop('disabled', true);
-                            $('#txtObservacion').prop('disabled', true);
+                          //  $('#txtObservacion').prop('disabled', true);
+
+
+                            //Deshabilitar también el botón Buscar Proveedor
+                            $('#btnBuscarProveedor').prop('disabled', true);
+
                         });
 
                 },
@@ -767,5 +907,27 @@
     .dx-theme-material .employeeNotes {
         margin: 0;
     }
+
+
+
+
+
+
+    /*BOTON BUSCARPROVEEDOR*/
+    .btn-custom {
+        background-color: #3276b1 !important; /* color de fondo */
+        color: white !important; /* color del texto y del ícono */
+        border: none; /* quita el borde gris */
+    }
+
+        .btn-custom:hover {
+            background-color: #285e8e !important; /* un tono más oscuro al pasar el mouse */
+            color: white !important;
+        }
+
+        .btn-custom i {
+            color: white !important; /* asegura que el ícono sea blanco */
+        }
+
 
 </style>

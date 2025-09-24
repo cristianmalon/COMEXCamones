@@ -18,35 +18,40 @@
                             <label>Nombre File</label>
                             <input type="text" id="txtFileE" class="form-control" placeholder="Ingrese el código" readonly>
                         </div>
-                        <div class="col-md-3">
-                            <label>Observación</label>
-                            <input type="text" id="txtObservacionE" class="form-control" placeholder="Ingrese la observación" readonly>
-
-                        </div>
-                       @*<div class="col-md-2">
-                            <label>fecha Registro</label>
-                            <input type="text" id="txtFechaRegistroE" class="form-control"
-                                   value="@(Model.FechaCreacion?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"))" readonly>
-                        </div>
-                        <div class="col-md-1">
-                            <label>Hora</label>
-                            <input type="text" id="txtHoraE" class="form-control"
-                                   value="@(Model.FechaCreacion?.ToString("HH:mm:ss") ?? DateTime.Now.ToString("HH:mm:ss"))" readonly>
-                        </div>*@
                         <div class="col-md-2">
-                            <label>Usuario</label>
-                            <input type="text" id="txtUsuarioE" class="form-control"  readonly>
+                            <label>Proveedor</label>
+                            <input type="text" id="txtProvE" class="form-control" placeholder="Ingrese el Proveedor" readonly>
 
                         </div>
-                        <div class="col-md-1">
+                        <div class="col-md-1" style="visibility:hidden">
+
+                        </div>
+                        @*<div class="col-md-2">
+            <label>fecha Registro</label>
+            <input type="text" id="txtFechaRegistroE" class="form-control"
+                   value="@(Model.FechaCreacion?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"))" readonly>
+        </div>
+        <div class="col-md-1">
+            <label>Hora</label>
+            <input type="text" id="txtHoraE" class="form-control"
+                   value="@(Model.FechaCreacion?.ToString("HH:mm:ss") ?? DateTime.Now.ToString("HH:mm:ss"))" readonly>
+        </div>*@
+                        <div class="col-md-2" style="visibility:hidden">
+                            <label>Usuario</label>
+                            <input type="text" id="txtUsuarioE" class="form-control" readonly>
+
+                        </div>
+                        <div class="col-md-3" style="visibility:hidden">
                             <label>Estación</label>
                             <input type="text" id="txtEstacionE" class="form-control" value="@Model.Estacion" readonly>
 
                         </div>
-                        <div class="col-md-1">
+                        <div class="col-md-2">
                             <label>Estado</label>
-                            <input type="text" id="txtEstadoE" class="form-control" value="Activo" readonly>
-
+                            <select id="txtEstadoE" name="ESTADO" class="form-control">
+                                <option value="A" @(Model.ESTADO == "A" ? "selected" : "")>ACTIVO</option>
+                                <option value="I" @(Model.ESTADO == "I" ? "selected" : "")>INACTIVO</option>
+                            </select>
                         </div>
 
                     </div>
@@ -100,7 +105,16 @@
     var IdordenesAbiertas = [];
     var IdordenesAbiertasTAR = [];
 
-   
+
+
+
+
+
+
+
+
+
+
 
     $(() => {
         var nuevoFileID;
@@ -116,7 +130,42 @@
 
         $("#txtCFileE").val(filaSeleccionada.FileId); // o CodFile si prefieres
         $("#txtFileE").val(filaSeleccionada.NombreF);
+        $("#txtProvE").val(filaSeleccionada.CodProv);
         $("#txtUsuarioE").val(filaSeleccionada.UsuarioCreacion);
+
+
+        $("#txtEstadoE").off("change").on("change", function () {
+            var nuevoEstado = $(this).val();
+
+            var o = {
+                FileId: filaSeleccionada.FileId,
+                Estado: nuevoEstado
+            };
+
+            if (confirm("¿Seguro que deseas cambiar el estado a " + (nuevoEstado === "A" ? "ACTIVO" : "INACTIVO") + "?")) {
+                $.ajax({
+                    url: '/Operaciones/ActualizarEstadoFile',
+                    type: 'POST',
+                    data: JSON.stringify(o),
+                    contentType: "application/json; charset=utf-8",
+                    success: function () {
+                        alert("Estado actualizado correctamente.");
+                    },
+                    error: function () {
+                        alert("Ocurrió un error al actualizar el estado.");
+                    }
+                });
+            } else {
+                // Volver al valor original
+                $(this).val('@Model.ESTADO');
+            }
+        });
+
+
+
+
+
+
 
         document.getElementById("FileIDE").value = filaSeleccionada.FileId; // Asigna un nuevo ID
 
@@ -365,7 +414,7 @@
                                     return;
                                 }
 
-                                
+
 
                                 // Guardamos en Base los productos seleccionados
                                 var BEOperaciones = {
@@ -481,7 +530,7 @@
         });
 
 
-       
+
 
 
 

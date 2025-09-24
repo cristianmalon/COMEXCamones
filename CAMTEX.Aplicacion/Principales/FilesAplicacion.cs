@@ -22,11 +22,27 @@ namespace CAMTEX.Aplicacion
             FilesRepositorio = filesRepositorio;
         }
 
+        public Response  ActualizarEstado(Request<Files> entidad)
+        {
+            Response retorno = new Response();
+            try
+            {
+                var resultado = FilesRepositorio.ActualizarDatos(entidad.entidad);
+                retorno.Success = true;
+                retorno.error = false;
+
+            }
+            catch (Exception ex)
+            {
+                retorno.error = true;
+                retorno.mensaje = ex.Message;
+            }
+            return retorno;
+        }
         public Response Actualizar(Request<Files> entidad)
         {
             throw new NotImplementedException();
         }
-
         public Response Eliminar(Request<Files> entidad)
         {
             throw new NotImplementedException();
@@ -102,7 +118,7 @@ namespace CAMTEX.Aplicacion
                         UsuarioCreacion = Util.CapturaString(row, "OperacionUsuarioLogCrea"),
                         TarCCod = Util.CapturaString(row, "TarCCod"),
 
-
+                        ESTADO = Util.CapturaString(row,"Estado"), 
 
                         TarDNem = Util.CapturaString(row, "TarDNem"),
                         CNPDDes = Util.CapturaString(row, "CNPDDes"),

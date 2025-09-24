@@ -44,7 +44,13 @@
 
         const DxSource = new DevExpress.data.CustomStore({
             load() {
-                return sendRequest(`/Operaciones/ListarOcGrid`);
+                return sendRequest(`/Operaciones/ListarOcGrid`).then(data => {
+                            const proveedor = '@ViewBag.Proveedor';
+                            if (proveedor) {
+                                return data.filter(item => item.PrvCCod === proveedor);
+                            }
+                            return data;
+                });
             },
         });
 
@@ -198,7 +204,7 @@
                     gridInstance.refresh();
                 },
 
-               
+
                 hoverStateEnabled: true,
                 filterRow: { visible: true },
                 showColumnLines: true,
@@ -214,7 +220,7 @@
                 paging: {
                     pageSize: 15,  // Set the number of rows per page as per your requirement
                 },
-               
+
 
             }).dxDataGrid('instance');
     }
