@@ -53,14 +53,15 @@ namespace MVCBase.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult EditarExp(int FileId)
+        public ActionResult EditarExp(int FileId, string estado)
         {
             Files entidad = new Files()
             {
                 UsuarioCreacion = VariablesWeb.Usuario.SUsrId,
                 Estacion = VariablesWeb.HostName(),
                 FechaCreacion = DateTime.Now,
-                FileId= FileId
+                FileId= FileId,
+                ESTADO = estado
             };
             return PartialView("_RegistrarE", entidad);
 

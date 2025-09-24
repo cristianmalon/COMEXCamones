@@ -142,24 +142,31 @@
                 Estado: nuevoEstado
             };
 
-            if (confirm("¿Seguro que deseas cambiar el estado a " + (nuevoEstado === "A" ? "ACTIVO" : "INACTIVO") + "?")) {
-                $.ajax({
-                    url: '/Operaciones/ActualizarEstadoFile',
-                    type: 'POST',
-                    data: JSON.stringify(o),
-                    contentType: "application/json; charset=utf-8",
-                    success: function () {
-                        alert("Estado actualizado correctamente.");
-                    },
-                    error: function () {
-                        alert("Ocurrió un error al actualizar el estado.");
-                    }
-                });
-            } else {
-                // Volver al valor original
-                $(this).val('@Model.ESTADO');
-            }
+            // Usamos DevExpress confirm
+            DevExpress.ui.dialog.confirm(
+                "¿Seguro que deseas cambiar el estado a " + (nuevoEstado === "A" ? "ACTIVO" : "INACTIVO") + "?",
+                "Confirmación"
+            ).done(function (result) {
+                if (result) {
+                    $.ajax({
+                        url: '/Operaciones/ActualizarEstadoFile',
+                        type: 'POST',
+                        data: JSON.stringify(o),
+                        contentType: "application/json; charset=utf-8",
+                        success: function () {
+                            DevExpress.ui.dialog.alert("Estado actualizado correctamente.", "Éxito");
+                        },
+                        error: function () {
+                            DevExpress.ui.dialog.alert("Ocurrió un error al actualizar el estado.", "Error");
+                        }
+                    });
+                } else {
+                    // Cancelado → regresar al valor original
+                    $("#txtEstadoE").val('@Model.ESTADO');
+                }
+            });
         });
+
 
 
 

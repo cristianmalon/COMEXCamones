@@ -154,6 +154,8 @@ namespace CAMTEX.Aplicacion
                     lista.Add(new Files()
                     {
                         FileId = Util.CapturaInt0(row, "CodFile"),
+                        ESTADO = Util.CapturaString(row, "Estado"),
+
                         CodFile = Util.CapturaString(row, "FileName"),
                         Detalle = Util.CapturaString(row, "Detalle"),
                         FechaOp = Util.CapturaDatetime(row, "FechaOp"),

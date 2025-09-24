@@ -14,12 +14,14 @@
                         <div class="form-group" style="margin-bottom: 0px !important;padding-bottom:5px">
                             <div class="col-md-6" style="padding-top: 5px;">
                                 <div class="toolbar-item">
-                                @*<img src="/img/logo.png" class="toolbar-icon">*@
+                                    @*<img src="/img/logo.png" class="toolbar-icon">*@
                                     <span class="toolbar-title">Files (Exportaciones)</span>
                                     <input id="txtanio" class="form-control txtano">
                                 </div>
                             </div>
-                            <div class="col-md-6 " style="padding-top: 20px;">
+                            <div class="col-md-6" style="padding-top: 20px; display:flex; align-items:center; justify-content:flex-end; gap:10px;">
+                                <div id="estadoFilter" style="width:150px;"></div>
+
                                 <button type="button"
                                         class="btn btn-primary ClsRefresh  pull-right"
                                         style="margin-right: 15px;"
@@ -76,7 +78,7 @@
 
     var columnsConfig = [
         {
-            dataField: 'FileId', caption: 'Id File', alignment: 'left', visible: false, 
+            dataField: 'FileId', caption: 'Id File', alignment: 'left', visible: false,
         },
         {
             dataField: 'CodFile', caption: 'Nombre File', alignment: 'left',
@@ -111,13 +113,49 @@
         },
          {
             dataField: 'Detalle', alignment: 'left', visible: false
+        },
+        {
+            dataField: "ESTADO",
+            caption: "Estado",
+            lookup: {
+                dataSource: [
+                    { value: "A", text: "ACTIVO" },
+                    { value: "I", text: "INACTIVO" }
+                ],
+                valueExpr: "value",
+                displayExpr: "text"
+            },
+            allowEditing: false,
         }
 
+            
 
     ];
 
 
+    $(function () {
+        $("#estadoFilter").dxSelectBox({
+            dataSource: [
+                { value: "ALL", text: "Todos" },
+                { value: "A", text: "Activos" },
+                { value: "I", text: "Inactivos" }
+            ],
+            valueExpr: "value",
+            displayExpr: "text",
+            value: "ALL", // valor por defecto
+            onValueChanged: function (e) {
+                let grid = $("#gridContainer").dxDataGrid("instance");
 
+                if (e.value === "ALL") {
+                    grid.clearFilter(); // sin filtro
+                } else {
+                    grid.filter(["ESTADO", "=", e.value]);
+                }
+            },
+            width: 150,
+            placeholder: "Filtrar Estado"
+        });
+    });
 
 
 
@@ -284,6 +322,8 @@
 
             console.log("selectedRowData para editar : ", selectedData);
 
+            var file = selectedData[0];
+
             $("#popupContainerEP").dxPopup({
                     width: 1300,
                     height: 900,
@@ -296,7 +336,7 @@
                         // Cargar el contenido mediante AJAX
                         $.ajax({
 
-                            url: '@Url.Content("~/Operaciones/EditarExp?FileId=")' + selectedData[0].FileId,
+                            url: '@Url.Content("~/Operaciones/EditarExp?FileId=")' + file.FileId + "&estado=" + file.ESTADO,
                             type: "GET",
                             success: function (data) {
                                 contentElement.html(data);

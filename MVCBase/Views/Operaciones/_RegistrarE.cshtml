@@ -19,12 +19,12 @@
                             <input type="text" id="txtFile" class="form-control" placeholder="Ingrese el código">
                         </div>
                         <!--
-                        <div class="col-md-3">
-                            <label>Observación</label>
-                            <input type="text" id="txtObservacion" class="form-control" placeholder="Ingrese la observación">
+    <div class="col-md-3">
+        <label>Observación</label>
+        <input type="text" id="txtObservacion" class="form-control" placeholder="Ingrese la observación">
 
-                        </div>
-                            -->
+    </div>
+        -->
                         <div class="col-md-2">
                             <label>fecha Registro</label>
                             <input type="text" id="txtFechaRegistro" class="form-control"
@@ -40,17 +40,33 @@
                             <input type="text" id="txtUsuario" class="form-control" value="@Model.UsuarioCreacion" readonly>
 
                         </div>
-                        <div class="col-md-1">
-                            <label>Estación</label>
-                            <input type="text" id="txtEstacion" class="form-control" value="@Model.Estacion" readonly>
+                        <!--<div class="col-md-1">
+        <label>Estación</label>
+        <input type="text" id="txtEstacion" class="form-control" value="@Model.Estacion" readonly>
 
-                        </div>
-                        <div class="col-md-1">
+    </div>-->
+
+                        <div class="col-md-2">
                             <label>Estado</label>
-                            <input type="text" id="txtEstado" class="form-control" value="Activo" readonly>
-
+                            @if (string.IsNullOrEmpty(Model.ESTADO))
+                            {
+                                <select id="txtEstadoE" name="ESTADO" class="form-control" disabled>
+                                    <option value="A" selected>ACTIVO</option>
+                                </select>
+                                <input type="hidden" name="ESTADO" value="A" />
+                            }
+                            else  // Caso: Editar (sí existe un estado en el modelo)
+                            {
+                                <select id="txtEstadoE" name="ESTADO" class="form-control">
+                                    <option value="A" @(Model.ESTADO == "A" ? "selected" : "")>ACTIVO</option>
+                                    <option value="I" @(Model.ESTADO == "I" ? "selected" : "")>INACTIVO</option>
+                                </select>
+                            }
                         </div>
 
+
+
+                       
                     </div>
                     <div class="form-group" id="divGuardarFile">
                         <div class="col-md-6">
@@ -89,11 +105,61 @@
 
 <script>
 
-   
+
 
     $(() => {
-       
-       
+
+
+
+        let gridE = $("#gridContainer").dxDataGrid("instance");
+        let filaSeleccionada = gridE.getSelectedRowsData()[0]; // la fila seleccionada
+
+
+         $("#txtEstadoE").off("change").on("change", function () {
+            var nuevoEstado = $(this).val();
+
+            var o = {
+                FileId: filaSeleccionada.FileId,
+                Estado: nuevoEstado
+            };
+
+            // Usamos DevExpress confirm
+            DevExpress.ui.dialog.confirm(
+                "¿Seguro que deseas cambiar el estado a " + (nuevoEstado === "A" ? "ACTIVO" : "INACTIVO") + "?",
+                "Confirmación"
+            ).done(function (result) {
+                if (result) {
+                    $.ajax({
+                        url: '/Operaciones/ActualizarEstadoFile',
+                        type: 'POST',
+                        data: JSON.stringify(o),
+                        contentType: "application/json; charset=utf-8",
+                        success: function () {
+                            DevExpress.ui.dialog.alert("Estado actualizado correctamente.", "Éxito");
+                        },
+                        error: function () {
+                            DevExpress.ui.dialog.alert("Ocurrió un error al actualizar el estado.", "Error");
+                        }
+                    });
+                } else {
+                    // Cancelado → regresar al valor original
+                    $("#txtEstadoE").val('@Model.ESTADO');
+                }
+            });
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         let facturasAbiertas = [];
 
@@ -210,7 +276,7 @@
                                     DevExpress.ui.dialog.alert("Esta Instruccion de embarque ya esta seleccionada.", "Aviso");
                                     return;
                                 }
-                                // Guardamos la IE en la base Datos 
+                                // Guardamos la IE en la base Datos
 
                                 var tabPanelItems = tabPanel.option('dataSource');
                                 var BEOperaciones = {
@@ -311,7 +377,7 @@
                             facturasAbiertas = facturasAbiertas.filter(codigo =>
                                 !(codigo.NumeroOrden === itemData.data.U_DIN_NFACT)
                             );
-                            
+
                             tabPanelItems.splice(index, 1);
                             tabPanel.option('dataSource', tabPanelItems);
 
@@ -363,13 +429,13 @@
                     });
 
                     tabPanel.option('dataSource', tabPanelItems);
-                    
+
                 });
             } else {
                 console.log("No se ha seleccionado una fila o la fila seleccionada no tiene la columna 'FileId'.");
             }
         }
-        
+
 
 
         $('#btnGuardarFile').click(function () {
@@ -425,7 +491,7 @@
 
 
 
-       
+
 
     });
 
