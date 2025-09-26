@@ -49,17 +49,21 @@ namespace CAMTEX.Repositorio
 
             // Agregar parámetro de salida para obtener el NuevoFileID
             oConn.agregarParametroSalida("@NuevoFileID", SqlDbType.Int,int.MaxValue );
+            oConn.agregarParametroSalida("@NuevoCorrelativo", SqlDbType.VarChar, 50);
 
 
             DataTable dt = oConn.ExecuteDataTable("[DBO].[Usp_Files]");
 
 
             int nuevoFileID = Convert.ToInt32(oConn.obtenerParametroSalida("@NuevoFileID"));
+            string nuevoCorrelativo = oConn.obtenerParametroSalida("@NuevoCorrelativo").ToString();
 
 
             retorno.Add("resultado", true);
             retorno.Add("mensaje", "OK");
             retorno.Add("NuevoFileID", nuevoFileID); // Devolver el nuevo ID generado
+            retorno.Add("FileName", nuevoCorrelativo); // Devolver el FileName generado
+
             return retorno;
 
         }
@@ -71,13 +75,18 @@ namespace CAMTEX.Repositorio
             oConn.AddParameter("@Obs", entidad.Detalle);
             oConn.AddParameter("@Usuario", entidad.UsuarioCreacion);
             oConn.AddParameter("@Host", entidad.Estacion);
+
             oConn.agregarParametroSalida("@NuevoFileID", SqlDbType.Int, int.MaxValue);
+            oConn.agregarParametroSalida("@NuevoCorrelativo", SqlDbType.VarChar, 50);
+
             DataTable dt = oConn.ExecuteDataTable("[DBO].[Usp_Files]");
 
             int nuevoFileID = Convert.ToInt32(oConn.obtenerParametroSalida("@NuevoFileID"));
+            string nuevoCorrelativo = oConn.obtenerParametroSalida("@NuevoCorrelativo").ToString();
             retorno.Add("resultado", true);
             retorno.Add("mensaje", "OK");
             retorno.Add("NuevoFileID", nuevoFileID); // Devolver el nuevo ID generado
+            retorno.Add("FileName", nuevoCorrelativo); // Devolver el FileName generado
             return retorno;
 
         }

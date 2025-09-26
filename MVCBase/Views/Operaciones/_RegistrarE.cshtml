@@ -15,8 +15,8 @@
                     </div>
                     <div class="form-group">
                         <div class="col-md-4">
-                            <label>File</label>
-                            <input type="text" id="txtFile" class="form-control" placeholder="Ingrese el código">
+                            <label>Nombre File</label>
+                            <input type="text" id="txtFile" class="form-control" placeholder="AUTOGENERADO" readonly>
                         </div>
                         <!--
     <div class="col-md-3">
@@ -442,10 +442,10 @@
             var file = $('#txtFile').val().trim();
             //var observacion = $('#txtObservacion').val().trim();
 
-            if (!file) {
+            /*if (!file) {
                 DevExpress.ui.dialog.alert("Debe ingresar un código de File antes de guardar.", "Error");
                 return;
-            }
+            }*/
 
             // Deshabilitar el botón para evitar múltiples envíos
             $('#btnGuardarFile').prop('disabled', true);
@@ -469,6 +469,7 @@
                         return;
                     }
 
+                    $("#txtFile").val(response.FileName);
 
                     nuevoFileID = response.nuevoFileID;
                     document.getElementById("FileIDv").value = nuevoFileID; // Asigna un nuevo ID

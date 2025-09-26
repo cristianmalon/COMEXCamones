@@ -57,6 +57,7 @@ namespace CAMTEX.Aplicacion
                 retorno.Success = true;
                 retorno.error = false;
                 retorno.output = resultado["NuevoFileID"].ToString();
+                retorno.output2 = resultado["FileName"].ToString();
 
 
             }
@@ -76,6 +77,7 @@ namespace CAMTEX.Aplicacion
                 retorno.Success = true;
                 retorno.error = false;
                 retorno.output = resultado["NuevoFileID"].ToString();
+                retorno.output2 = resultado["FileName"].ToString();
 
             }
             catch (Exception ex)
