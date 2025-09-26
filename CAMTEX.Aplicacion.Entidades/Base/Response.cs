@@ -25,6 +25,7 @@ namespace CAMTEX.Aplicacion.Entidades
         public bool error { get; set; }
         public string mensaje { get; set; }
         public string output { get; set; }
+        public string output2 { get; set; }
         public string[] outputarray { get; set; }
         public bool Success { get; set; }
         public DataTable tabla { get; set; }

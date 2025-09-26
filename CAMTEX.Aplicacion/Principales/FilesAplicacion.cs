@@ -57,6 +57,7 @@ namespace CAMTEX.Aplicacion
                 retorno.Success = true;
                 retorno.error = false;
                 retorno.output = resultado["NuevoFileID"].ToString();
+                retorno.output2 = resultado["FileName"].ToString();
 
 
             }
@@ -76,6 +77,7 @@ namespace CAMTEX.Aplicacion
                 retorno.Success = true;
                 retorno.error = false;
                 retorno.output = resultado["NuevoFileID"].ToString();
+                retorno.output2 = resultado["FileName"].ToString();
 
             }
             catch (Exception ex)
@@ -154,6 +156,8 @@ namespace CAMTEX.Aplicacion
                     lista.Add(new Files()
                     {
                         FileId = Util.CapturaInt0(row, "CodFile"),
+                        ESTADO = Util.CapturaString(row, "Estado"),
+
                         CodFile = Util.CapturaString(row, "FileName"),
                         Detalle = Util.CapturaString(row, "Detalle"),
                         FechaOp = Util.CapturaDatetime(row, "FechaOp"),

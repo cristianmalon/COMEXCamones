@@ -53,14 +53,15 @@ namespace MVCBase.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult EditarExp(int FileId)
+        public ActionResult EditarExp(int FileId, string estado)
         {
             Files entidad = new Files()
             {
                 UsuarioCreacion = VariablesWeb.Usuario.SUsrId,
                 Estacion = VariablesWeb.HostName(),
                 FechaCreacion = DateTime.Now,
-                FileId= FileId
+                FileId= FileId,
+                ESTADO = estado
             };
             return PartialView("_RegistrarE", entidad);
 
@@ -322,6 +323,7 @@ namespace MVCBase.Controllers
                         rpta = response.Success,
                         errores = Utiles.GetErrorsFromModelState(this.ModelState),
                         NuevoFileID = response.output,
+                        FileName = response.output2,
                         url = Url.Action("Index"),
                         result = response.Success ? Utiles.MessageSaveSuccess() : response.mensaje,
                         id = 0,
@@ -384,6 +386,8 @@ namespace MVCBase.Controllers
                         rpta = response.Success,
                         errores = Utiles.GetErrorsFromModelState(this.ModelState),
                         url = Url.Action("Index"),
+                        NuevoFileID = response.output,
+                        FileName = response.output2,
                         result = response.Success ? Utiles.MessageSaveSuccess() : response.mensaje,
                         id = 0,
                         nuevoFileID = response.Success ? Convert.ToInt32(response.output) : 0 // Nuevo campo con el ID generado
