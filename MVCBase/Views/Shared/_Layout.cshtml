@@ -470,6 +470,27 @@
 
 
 
+        $(document).ready(function () {
+            var currentUrl = "../.." + window.location.pathname.toLowerCase();
+            console.log("currentUrl: ", currentUrl);
+
+            // Ocultar todos los submenús inicialmente
+            $("nav ul ul").css("display", "none");
+
+            $("nav ul li a").each(function () {
+                var link = $(this).attr("href").toLowerCase();
+                console.log("link: ", link);
+                if (currentUrl.endsWith(link)) {
+                    var listItem = $(this).closest("li");
+                    listItem.addClass("activo");
+                    listItem.closest("ul").css("display", "block");
+                }
+            });
+        });
+
+
+
+
         window.addEventListener('message', function (event) {
             console.log('Mensaje recibido:', event.data);
             if (event.data === 'session_terminada') {
@@ -570,6 +591,14 @@
 
 
 <style>
+
+
+    .activo {
+        background-color: rgba(0,0,0,.2) !important;
+        color: white !important;
+    }
+
+
     #left-panel {
         height: 50vh; /* Hace que el aside ocupe el 100% de la altura de la ventana */
         overflow-y: auto; /* Activa el scroll vertical si el contenido es demasiado grande */
