@@ -159,7 +159,7 @@
             
             },
             {
-                dataField: 'OrdC', caption: 'Orden Compra', alignment: 'left', allowEditing: false, 
+                dataField: 'OrdC', caption: 'Orden Compra', alignment: 'left', allowEditing: false, width:400
             },
             {
                 dataField: 'FechaOp', caption: 'Fecha Operción', alignment: 'left', dataType: "date", allowEditing: false,
@@ -301,13 +301,25 @@
                 key: 'NroOp',
                 load() {
                     return sendRequest(`/Operaciones/ListarFilesI?anio=` + $("#txtanio").val()).then(data => {
-                        // Filtrar para que solo quede un registro por FileId
-                        const distinctByFileId = data.filter((item, index, self) =>
-                            index === self.findIndex(t => t.FileId === item.FileId)
-                        );
-                        return distinctByFileId;
+                        // Agrupar por FileId
+                        const grouped = data.reduce((acc, item) => {
+                            let existing = acc.find(x => x.FileId === item.FileId);
+                            if (existing) {
+                                // Concatenar Orden de Compra
+                                if (!existing.OrdC.includes(item.OrdC)) {
+                                    existing.OrdC += " / " + item.OrdC;
+                                }
+                            } else {
+                                // Clonar objeto para no mutar el original
+                                acc.push({ ...item });
+                            }
+                            return acc;
+                        }, []);
+
+                        return grouped;
                     });
                 },
+
             });
 
 
