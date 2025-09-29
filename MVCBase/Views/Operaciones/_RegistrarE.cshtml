@@ -68,7 +68,7 @@
 
                        
                     </div>
-                    <div class="form-group" id="divGuardarFile">
+                    <div class="form-group" id="divGuardarFile" style="display:none">
                         <div class="col-md-6">
                             <button type="button" id="btnGuardarFile" class="btn btn-primary">Guardar File</button>
 
@@ -260,88 +260,103 @@
                             onClick: function () {
                                 var grid = $("#gridIE").dxDataGrid("instance");
                                 var selectedRow = grid.getSelectedRowsData()[0];
+                                var btnAddWidget = $("#btnAdd").dxButton("instance");
+
                                 if (!selectedRow) {
-                                    alert("Por favor, selecciona una instruccion de embarque.");
+                                    DevExpress.ui.dialog.alert("Por favor, selecciona una instrucción de embarque.", "Aviso");
                                     return;
                                 }
-                                debugger;
-                                //var numeroOrden = selectedRow.U_DIN_NFACT;
+
                                 var IE_Anio = selectedRow.IE_Anio;
                                 var IE_Nro = selectedRow.IE_Nro;
 
                                 var existeOrden = facturasAbiertas.some(oc => oc.IE_Anio === IE_Anio && oc.IE_Nro === IE_Nro);
-                                console.log("facturasAbiertas:", facturasAbiertas);
-                                //console.log("numeroOrden:", numeroOrden);
                                 if (existeOrden) {
-                                    DevExpress.ui.dialog.alert("Esta Instruccion de embarque ya esta seleccionada.", "Aviso");
+                                    DevExpress.ui.dialog.alert("Esta Instrucción de embarque ya está seleccionada.", "Aviso");
                                     return;
                                 }
-                                // Guardamos la IE en la base Datos
 
-                                var tabPanelItems = tabPanel.option('dataSource');
-                                var BEOperaciones = {
-                                    FileID: $('#FileIDv').val(),
-                                    IE_Anio: IE_Anio,
-                                    IE_Nro: IE_Nro
-                                }
+                                // Deshabilitamos para evitar doble click
+                                btnAddWidget.option('disabled', true);
 
-                                $.ajax({
-                                    url: `/Operaciones/ActualizarOperacionesExpo`,
-                                    type: 'POST',
-                                    async: false,
-                                    data: JSON.stringify({ entidad: BEOperaciones }),
-                                    dataType: 'json',
-                                    headers: {
-                                        "Content-Type": "application/json"
-                                    },
-                                    success: function (res) {
-                                        //debugger;
+                                // función auxiliar: guardar la IE en base
+                                function guardarIE(fileIdFinal) {
+                                    var BEOperaciones = {
+                                        FileID: fileIdFinal,
+                                        IE_Anio: IE_Anio,
+                                        IE_Nro: IE_Nro
+                                    };
+
+                                    $.ajax({
+                                        url: `/Operaciones/ActualizarOperacionesExpo`,
+                                        type: 'POST',
+                                        data: JSON.stringify({ entidad: BEOperaciones }),
+                                        dataType: 'json',
+                                        headers: { "Content-Type": "application/json" }
+                                    }).done(function (res) {
                                         if (!res.result) {
                                             DevExpress.ui.dialog.alert("Hubo un error al guardar.", "Error");
-
                                         } else {
-                                            //var uniqueId = `tab_${Date.now()}`;
-                                            //var newTab = {
-                                            //    id: uniqueId,
-                                            //    title: IE_Anio + '-' + IE_Nro,
-                                            //    data: selectedRow // Pasamos todo el objeto seleccionado
-                                            //};
-                                            //tabPanelItems.push(newTab);
-                                            //tabPanel.option('dataSource', tabPanelItems);
-                                            //tabPanel.option('selectedIndex', tabPanelItems.length - 1);
-                                            //// Agregar al array de órdenes abiertas para evitar duplicados
-                                            //facturasAbiertas.push({ IE_Anio: IE_Anio, IE_Nro: IE_Nro });
-                                            //popup.hide();
-
                                             var tabPanelItems = tabPanel.option('dataSource');
-
                                             var uniqueId = `tab_${Date.now()}`;
                                             var newTab = {
                                                 id: uniqueId,
                                                 title: IE_Anio + '-' + IE_Nro,
                                                 idop: res.status,
-                                                data: selectedRow // Pasamos todo el objeto seleccionado
+                                                data: selectedRow
                                             };
-
                                             tabPanelItems.push(newTab);
                                             tabPanel.option('dataSource', tabPanelItems);
                                             tabPanel.option('selectedIndex', tabPanelItems.length - 1);
 
-                                            // Agregar al array de órdenes abiertas para evitar duplicados
                                             facturasAbiertas.push({ IE_Anio: IE_Anio, IE_Nro: IE_Nro });
                                             popup.hide();
-
                                         }
-                                        console.log(res);
+                                    }).fail(function () {
+                                        DevExpress.ui.dialog.alert("Error al guardar la IE.", "Error");
+                                    }).always(function () {
+                                        btnAddWidget.option('disabled', false);
+                                    });
+                                }
 
-                                    }, complete: function (data) {
-                                        //desbloqObject()
-                                    }
-                                });
+                                // si no hay FileID => crear primero
+                                var fileId = $('#FileIDv').val();
+                                if (!fileId || fileId === '0' || fileId === '') {
+                                    var file = $('#txtFile').val().trim();
 
+                                    $.ajax({
+                                        url: '/Operaciones/InsertFilesE',
+                                        type: 'POST',
+                                        data: { fileName: file }
+                                    }).done(function (response) {
+                                        if (response.nuevoFileID == -1) {
+                                            DevExpress.ui.dialog.alert("El código de File ya existe. No se pudo registrar.", "Error").done(function () {
+                                                btnAddWidget.option('disabled', false);
+                                            });
+                                            return;
+                                        }
 
+                                        // asignar valores en UI
+                                        var nuevoFileID = response.nuevoFileID;
+                                        $('#FileIDv').val(nuevoFileID);
+                                        $('#txtFile').val(response.FileName).prop('disabled', true);
+                                        $('#btnGuardarFile').css('display', 'none');
+                                        $('#addButton').dxButton('instance').option('disabled', false);
 
+                                        // ahora sí, guardar IE
+                                        guardarIE(nuevoFileID);
+
+                                    }).fail(function () {
+                                        DevExpress.ui.dialog.alert("Hubo un error al guardar el File.", "Error").done(function () {
+                                            btnAddWidget.option('disabled', false);
+                                        });
+                                    });
+                                } else {
+                                    // ya existe fileId → guardamos IE directo
+                                    guardarIE(fileId);
+                                }
                             }
+
                         });
 
                     },
@@ -359,7 +374,7 @@
             icon: 'add',
             text: 'Agregar Instrucción de Embarque',
             type: 'default',
-            disabled: true,
+            disabled: false,
             onClick: function () {
                 popup.show();
             }

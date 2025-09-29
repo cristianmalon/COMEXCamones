@@ -46,7 +46,7 @@
                         </div>
 
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="display:none">
                         <div class="col-md-6">
                             <button type="button" id="btnGuardarFile" class="btn btn-primary" disabled>Guardar File</button>
 
@@ -195,6 +195,8 @@
                                 $("#txtProveedor").val(selected[0].PrvCCod);
                                 $("#txtNomProveedor").val(selected[0].PrvDDes);
                                 $("#btnGuardarFile").prop("disabled", false); // habilitar botón
+                                $("#addButton").dxButton("instance").option("disabled", false);
+
                                 popupProv.hide();
                             } else {
                                 DevExpress.ui.dialog.alert("Seleccione un proveedor.", "Atención");
@@ -368,115 +370,149 @@
                         var buttonContainer = $('<div>').addClass('dx-popup-bottom-buttons').appendTo(contentElement);
 
                         // Botón "Seleccionar"
+                        // dentro del contentTemplate, la parte del botón "Seleccionar"
                         $('<div>').attr('id', 'btnAdd').appendTo(buttonContainer).dxButton({
                             text: 'Seleccionar',
                             onClick: function () {
                                 var grid = $("#gridBOC").dxDataGrid("instance");
                                 var selectedRow = grid.getSelectedRowsData();
-                                console.log("selectedRow para denegar oc diferente : ", selectedRow);
+                                var btnAddWidget = $("#btnAdd").dxButton("instance");
+
                                 if (selectedRow.length === 0) {
                                     DevExpress.ui.dialog.alert("Por favor, selecciona una orden.", "Aviso");
                                     return;
                                 }
-                                console.log("selectedRow: ", selectedRow);
+
+                                // --- Validaciones existentes ---
                                 var numeroOrden = selectedRow[0].NumeroOrden;
                                 var numeroOrdenId = selectedRow[0].id;
-                                //var codProv = selectedRow.PrvCCod;
-                                var item = selectedRow.Item; // Asegúrate de que la columna `Item` existe en el dataset
-                                var tarDNem = selectedRow[0].TarDNem; // Nuevo campo para la validación
+                                var tarDNem = selectedRow[0].TarDNem;
 
-
-                                // Verificar si ya existe una pestaña con la misma combinación de NumeroOrden + Item
                                 var existeOrden = IdordenesAbiertas.some(oc => oc.OrdenID === numeroOrdenId);
-
-                                // Si es el primer registro, guardamos el TarDNem y permitimos continuar
                                 if (IdordenesAbiertasTAR.length === 0) {
                                     IdordenesAbiertasTAR.push({ OrdenID: numeroOrdenId, TarDNem: tarDNem });
                                 } else {
-                                    // Obtener el primer TarDNem guardado
                                     var primerTarDNem = IdordenesAbiertasTAR[0].TarDNem;
-
-                                    // Validar si el TarDNem actual es diferente al primero
                                     if (tarDNem !== primerTarDNem) {
                                         DevExpress.ui.dialog.alert("Tipo de O/C diferente.", "Aviso");
                                         return;
                                     }
                                 }
-
                                 if (existeOrden) {
-                                    DevExpress.ui.dialog.alert("Esta  O/C ya está abierta.", "Aviso");
+                                    DevExpress.ui.dialog.alert("Esta O/C ya está abierta.", "Aviso");
                                     return;
                                 }
 
-                                // Guardamos en Base los productos seleccionados
-                                var BEOperaciones = {
-                                    FileID: $('#FileIDv').val(),
-                                    OrdenID: selectedRow[0].id,
-                                }
-                                var root = "<ROOT>";
-                                $.each(selectedRow, function (i, e) {
-                                    root += "<FileOperacionesProductos>";
-                                    root += "<ItemOrdenCompra>" + e.ItemOrdenCompra + "</ItemOrdenCompra>";
-                                    root += "<ItemNroEntregaOC>" + e.ItemNroEntregaOC + "</ItemNroEntregaOC>";
-                                    root += "</FileOperacionesProductos>";
-                                })
-                                root += "</ROOT>";
-                                BEOperaciones.XML_Productos = root;
+                                // Evitamos dobles clicks
+                                btnAddWidget.option('disabled', true);
 
-                                $.ajax({
-                                    url: `/Operaciones/ActualizarOperaciones`,
-                                    type: 'POST',
-                                    async: false,
-                                    data: JSON.stringify({ entidad: BEOperaciones }),
-                                    dataType: 'json',
-                                    headers: {
-                                        "Content-Type": "application/json"
-                                    },
-                                    success: function (res) {
-                                        //debugger;
+                                // Función que hace el guardado de la O/C (usar tras tener fileId)
+                                function guardarOC(fileIdFinal) {
+                                    var BEOperaciones = {
+                                        FileID: fileIdFinal,
+                                        OrdenID: numeroOrdenId
+                                    };
+
+                                    var root = "<ROOT>";
+                                    $.each(selectedRow, function (i, e) {
+                                        root += "<FileOperacionesProductos>";
+                                        root += "<ItemOrdenCompra>" + e.ItemOrdenCompra + "</ItemOrdenCompra>";
+                                        root += "<ItemNroEntregaOC>" + e.ItemNroEntregaOC + "</ItemNroEntregaOC>";
+                                        root += "</FileOperacionesProductos>";
+                                    });
+                                    root += "</ROOT>";
+                                    BEOperaciones.XML_Productos = root;
+
+                                    $.ajax({
+                                        url: '/Operaciones/ActualizarOperaciones',
+                                        type: 'POST',
+                                        data: JSON.stringify({ entidad: BEOperaciones }),
+                                        contentType: 'application/json; charset=utf-8',
+                                        dataType: 'json'
+                                    }).done(function (res) {
                                         if (!res.result) {
                                             DevExpress.ui.dialog.alert("Hubo un error al guardar los items seleccionados.", "Error");
-
                                         } else {
                                             var tabPanelItems = tabPanel.option('dataSource');
-
                                             var uniqueId = `tab_${Date.now()}`;
                                             var newTab = {
                                                 id: uniqueId,
-                                                title: `${numeroOrden}`, // Mostrar ambos valores en el título
+                                                title: `${numeroOrden}`,
                                                 idoc: numeroOrdenId,
                                                 idop: res.status,
-                                                data: selectedRow // Pasamos todo el objeto seleccionado
+                                                data: selectedRow
                                             };
-
                                             tabPanelItems.push(newTab);
                                             tabPanel.option('dataSource', tabPanelItems);
                                             tabPanel.option('selectedIndex', tabPanelItems.length - 1);
 
-                                            // Agregar al array de órdenes abiertas para evitar duplicados
                                             ordenesAbiertas.push({ NumeroOrdenC: numeroOrden });
                                             IdordenesAbiertas.push({ OrdenID: numeroOrdenId });
 
-                                            console.log("IdordenesAbiertas: ", IdordenesAbiertas);
-
                                             popup.hide();
-
                                         }
-                                        console.log(res);
+                                    }).fail(function () {
+                                        DevExpress.ui.dialog.alert("Error al guardar la O/C.", "Error");
+                                    }).always(function () {
+                                        // siempre re-habilitamos el btnAdd al final
+                                        btnAddWidget.option('disabled', false);
+                                    });
+                                }
 
-                                    }, complete: function (data) {
-                                        //desbloqObject()
-                                    }
-                                });
+                                // Si no hay FileID => crear primero (usando tu InsertFiles)
+                                var fileId = $('#FileIDv').val();
+                                if (!fileId || fileId === '0' || fileId === '') {
+                                    var file = $('#txtFile').val().trim();
+                                    var Prov = $('#txtProveedor').val().trim();
 
+                                    // Deshabilitar el botón Guardar temporalmente (si existe) para evitar race
+                                    $('#btnGuardarFile').prop('disabled', true);
 
-                                //if (existeProv) {
-                                //    DevExpress.ui.dialog.alert("Este proveedor ya esta seleccionado.", "Aviso");
-                                //    return;
-                                //}
+                                    $.ajax({
+                                        url: '/Operaciones/InsertFiles',
+                                        type: 'POST',
+                                        data: {
+                                            fileName: file,
+                                            Proveedor: Prov
+                                        }
+                                    }).done(function (response) {
+                                        console.log("response InsertFiles: ", response);
 
+                                        if (response.nuevoFileID == -1) {
+                                            DevExpress.ui.dialog.alert("El código de File ya existe. No se pudo registrar.", "Error").done(function () {
+                                                $('#btnGuardarFile').prop('disabled', false);
+                                                btnAddWidget.option('disabled', false);
+                                            });
+                                            return;
+                                        }
+
+                                        // asignar ID y actualizar UI (igual que en tu función original)
+                                        var nuevoFileID = response.nuevoFileID;
+                                        $('#FileIDv').val(nuevoFileID);
+                                        $('#txtFile').val(response.FileName);
+                                        $('#txtFile').prop('disabled', true);
+                                        $('#btnBuscarProveedor').prop('disabled', true);
+                                        $('#btnGuardarFile').css('display', 'none');
+
+                                        // Opcional: habilitar #addButton si lo tenías deshabilitado en otro lado
+                                        // $('#addButton').dxButton('instance').option('disabled', false);
+
+                                        // ahora sí, continuar guardando la O/C con el file recién creado
+                                        guardarOC(nuevoFileID);
+
+                                    }).fail(function () {
+                                        DevExpress.ui.dialog.alert("Hubo un error al guardar el File.", "Error").done(function () {
+                                            $('#btnGuardarFile').prop('disabled', false);
+                                            btnAddWidget.option('disabled', false);
+                                        });
+                                    });
+                                } else {
+                                    // Ya existe FileID -> proceder directamente
+                                    guardarOC(fileId);
+                                }
                             }
                         });
+
 
                         // Botón "Cerrar"
                         $('<div>').attr('id', 'btnClose').appendTo(buttonContainer).dxButton({
