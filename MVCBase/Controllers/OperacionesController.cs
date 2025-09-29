@@ -298,7 +298,7 @@ namespace MVCBase.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public JsonResult InsertFiles(string fileName)
+        public JsonResult InsertFiles(string fileName, string Proveedor)
         {
 
             if (ModelState.IsValid)
@@ -308,6 +308,7 @@ namespace MVCBase.Controllers
                     Response response = new Response();
                     Files entidad = new Files();
                     entidad.CodFile = fileName ;
+                    entidad.CodProv = Proveedor;
                     //entidad.Detalle = observacion;
                     //entidad.IdSede = VariablesWeb.ENUsuario.IdSede;
                     entidad.Estacion = VariablesWeb.HostName();

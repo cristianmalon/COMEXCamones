@@ -168,13 +168,30 @@
 
                 load() {
                     return sendRequest(`/Operaciones/ListarFilesE?anio=` + $("#txtanio").val()).then(data => {
-                        return data;
+                        const distinctByFileId = data.filter((item, index, self) =>
+                            index === self.findIndex(t => t.FileId === item.FileId)
+                        );
+                        return distinctByFileId;
                     });
                 },
             });
 
 
+            /*
+             *
+             * 
+             * 
+             * const DxSource = new DevExpress.data.CustomStore({
+                key: 'FileId',
 
+                load() {
+                    return sendRequest(`/Operaciones/ListarFilesE?anio=` + $("#txtanio").val()).then(data => {
+                        return data;
+                    });
+                },
+            });
+
+             * */
 
             const dataGrid =
                 $('#gridContainer').dxDataGrid({
