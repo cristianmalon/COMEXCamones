@@ -17,7 +17,6 @@
                         <div class="form-group" style="margin-bottom: 0px !important;padding-bottom:5px">
                             <div class="col-md-6" style="padding-top: 5px;">
                                 <div class="toolbar-item">
-                                    <img src="/img/logo.png" class="toolbar-icon">
                                     <span class="toolbar-title">Files (Importaciones)</span>
                                     <input id="txtanio" class="form-control txtano">
                                 </div>
@@ -160,7 +159,7 @@
             
             },
             {
-                dataField: 'OrdC', caption: 'Orden Compra', alignment: 'left', allowEditing: false, 
+                dataField: 'OrdC', caption: 'Orden Compra', alignment: 'left', allowEditing: false, width:400
             },
             {
                 dataField: 'FechaOp', caption: 'Fecha Operción', alignment: 'left', dataType: "date", allowEditing: false,
@@ -300,115 +299,97 @@
         $(() => {
             const DxSource = new DevExpress.data.CustomStore({
                 key: 'NroOp',
-
                 load() {
                     return sendRequest(`/Operaciones/ListarFilesI?anio=` + $("#txtanio").val()).then(data => {
-                        return data;
+                        // Agrupar por FileId
+                        const grouped = data.reduce((acc, item) => {
+                            let existing = acc.find(x => x.FileId === item.FileId);
+                            if (existing) {
+                                // Concatenar Orden de Compra
+                                if (!existing.OrdC.includes(item.OrdC)) {
+                                    existing.OrdC += " / " + item.OrdC;
+                                }
+                            } else {
+                                // Clonar objeto para no mutar el original
+                                acc.push({ ...item });
+                            }
+                            return acc;
+                        }, []);
+
+                        return grouped;
                     });
                 },
+
             });
 
 
 
 
-            const dataGrid =
-                $('#gridContainerFile').dxDataGrid({
-                    allowExpandAll: true,
-                    expandAll: true,
-                    keyExpr: 'FileId',
+            const dataGrid = $('#gridContainerFile').dxDataGrid({
+                allowExpandAll: true,
+                expandAll: true,
+                keyExpr: 'FileId', // asegúrate de que coincida con tu clave
+                noDataText: "No hay información para mostrar",
 
-                    noDataText: "No hay información para mostrar",
+                grouping: { autoExpandAll: true },
 
-                    grouping: {
-                        autoExpandAll: true 
-                    },
-                   
+                allowSorting: false,
+                allowFiltering: true,
+                allowColumnResizing: true,
 
+                showRowTotals: true,
+                showColumnTotals: true,
+                showRowGrandTotals: true,
+                showTotals: true,
+                editing: {
+                    mode: "cell",
+                    useIcons: true,
+                    allowUpdating: true,
+                },
 
+                showGrandTotals: false,
+                showColumnGrandTotals: false,
+                height: 700,
+                fieldChooser: { enabled: false },
 
+                dataSource: { store: DxSource, pageSize: 20, pageIndex: 0 },
 
-                    allowSorting: false,
-                    allowFiltering: true,
-                    allowColumnResizing: true,
-                    showRowTotals: true,
-                    showColumnTotals: true,
-                    showRowGrandTotals: true,
-                    showTotals: true,
-                    editing: {
-                        mode: "cell", // edición por celda
-                        //allowUpdating: true,
-                        useIcons: true,
-                        //allowDeleting: true,//sirve para confirmar tu eliminacion
-                        allowUpdating: true  ,
+                columns: columnsConfig,
 
+                hoverStateEnabled: false,
+                filterRow: { visible: true },
+                showColumnLines: true,
+                showRowLines: true,
+                rowAlternationEnabled: true,
+                showBorders: true,
 
-                        form: {
+                selection: { mode: 'single' },
+                paging: { pageSize: 15 },
 
-                        }
-                    },
+                onCellValueChanged: function (e) {
+                    if (e.column.dataField === "ESTADO") {
+                        let nuevoEstado = e.value;
+                        let fileId = e.data.FileID;
 
-
-
-                    showGrandTotals: false,
-                    showColumnGrandTotals: false,
-                    height: 700,
-                    fieldChooser: {
-                        enabled: false,
-                    },
-
-                    dataSource: {
-
-                        store: DxSource,
-                        pageSize: 20, // Set the desired page size
-                        pageIndex: 0 // Set the initial page index
-                    },
-
-
-                    onEditorPreparing: {},
-                    onrRowInserted(e) {
-                        e.component.navigateToRow(e.key);
-                    },
-                    columns: columnsConfig,
-
-
-                    hoverStateEnabled: false,
-                    filterRow: { visible: true },
-                    showColumnLines: true,
-                    showRowLines: true,
-                    rowAlternationEnabled: true,
-                    showBorders: true,
-                    selection: {
-                        mode: 'single',
-                    },
-                    paging: {
-                        pageSize: 15,  // Set the number of rows per page as per your requirement
-                    },
-                    onCellValueChanged: function (e) {
-                        if (e.column.dataField === "ESTADO") {
-                            let nuevoEstado = e.value;
-                            let fileId = e.data.FileID; // asegúrate que tu grid tenga FileID como clave
-
-                            $.ajax({
-                                url: '/Operaciones/CambioEstado',
-                                type: 'POST',
-                                data: {
-                                    id: fileId,
-                                    estado: nuevoEstado
-                                },
-                                success: function (response) {
-                                    DevExpress.ui.dialog.alert("Estado actualizado correctamente.", "Éxito");
-                                    $("#gridContainerFile").dxDataGrid("instance").refresh(); // refrescar grid
-                                },
-                                error: function () {
-                                    DevExpress.ui.dialog.alert("Error al actualizar el estado.", "Error");
-                                    $("#gridContainerFile").dxDataGrid("instance").refresh(); // recargar para revertir
-                                }
-                            });
-                        }
+                        $.ajax({
+                            url: '/Operaciones/CambioEstado',
+                            type: 'POST',
+                            data: { id: fileId, estado: nuevoEstado },
+                            success: function () {
+                                DevExpress.ui.dialog.alert("Estado actualizado correctamente.", "Éxito");
+                                $("#gridContainerFile").dxDataGrid("instance").refresh();
+                            },
+                            error: function () {
+                                DevExpress.ui.dialog.alert("Error al actualizar el estado.", "Error");
+                                $("#gridContainerFile").dxDataGrid("instance").refresh();
+                            }
+                        });
                     }
+                },
 
 
-                }).dxDataGrid('instance');
+
+            }).dxDataGrid('instance');
 
 
         })

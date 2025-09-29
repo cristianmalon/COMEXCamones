@@ -411,26 +411,28 @@
             if (filaSeleccionada && filaSeleccionada.FileId) {
                 let valorFileSeleccionado = filaSeleccionada.FileId;
 
-                gridE.getDataSource().store().load().then(datosGrid => {
+                // Traemos todos los registros del mismo FileId para el tab panel
+                sendRequest(`/Operaciones/ListarFilesE?anio=` + $("#txtanio").val()).then(datosGrid => {
                     let filasConMismoFile = datosGrid.filter(fila => fila.FileId === valorFileSeleccionado);
 
                     console.log("Filas con el mismo valor en FileId:", filasConMismoFile);
 
-                    const tabPanelItems = [];
-                    filasConMismoFile.forEach(fila => {
-                        let uniqueId = `tab_${Date.now()}_${fila.IE_Anio}_${fila.IE_Nro}`; // UniqueId por fila
-                        console.log(fila);
-                        tabPanelItems.push({
-                            title: `${fila.IE_Anio}-${fila.IE_Nro}`,
-                            id: uniqueId,
-                            idop: fila.NroOp,
-                            data: { "Control_Comex": fila.Control_Comex,"CantPrendas": fila.CantPrendas, "IE_Anio": (fila.IE_Anio * 1), "IE_Nro": (fila.IE_Nro * 1), "Cliente": fila.Proveedor}
-                        });
-                    });
+                    const tabPanelItems = filasConMismoFile.map(fila => ({
+                        title: `${fila.IE_Anio}-${fila.IE_Nro}`,
+                        id: `tab_${fila.IE_Anio}_${fila.IE_Nro}_${Date.now()}`, // UniqueId
+                        idop: fila.NroOp,
+                        data: {
+                            "Control_Comex": fila.Control_Comex,
+                            "CantPrendas": fila.CantPrendas,
+                            "IE_Anio": Number(fila.IE_Anio),
+                            "IE_Nro": Number(fila.IE_Nro),
+                            "Cliente": fila.Proveedor
+                        }
+                    }));
 
                     tabPanel.option('dataSource', tabPanelItems);
-
                 });
+
             } else {
                 console.log("No se ha seleccionado una fila o la fila seleccionada no tiene la columna 'FileId'.");
             }
@@ -480,6 +482,9 @@
                         // Deshabilitar el botón de "Guardar File" y campos de entrada
                         $('#txtFile').prop('disabled', true);
                         //$('#txtObservacion').prop('disabled', true);
+                        $('#btnGuardarFile').css('display', 'none');
+
+
                     });
 
                 },
