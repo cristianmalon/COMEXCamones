@@ -99,11 +99,14 @@
         {
             dataField: 'Control_Comex', caption: 'Control Comex', alignment: 'left',
         },
-        {
+        /*{
             dataField: 'IE_Anio', caption: 'Instrucción Embarque Año', alignment: 'left',
         },
         {
             dataField: 'IE_Nro', caption: 'Instrucción Embarque Nro', alignment: 'left',
+        },*/
+        {
+            dataField: 'IEConcat', caption: 'Instrucción Embarque', alignment: 'left',
         },
         {
             dataField: 'Proveedor', caption: 'Cliente', alignment: 'left',
@@ -165,6 +168,49 @@
         $(() => {
             const DxSource = new DevExpress.data.CustomStore({
                 key: 'FileId',
+                /*
+                load() {
+                    return sendRequest(`/Operaciones/ListarFilesE?anio=` + $("#txtanio").val()).then(data => {
+                        const distinctByFileId = data.filter((item, index, self) =>
+                            index === self.findIndex(t => t.FileId === item.FileId)
+                        );
+                        return distinctByFileId;
+                    });
+                },
+                */
+                load() {
+                    return sendRequest(`/Operaciones/ListarFilesE?anio=` + $("#txtanio").val()).then(data => {
+                        const grouped = data.reduce((acc, item) => {
+                            let existing = acc.find(x => x.FileId === item.FileId);
+                            let ieConcat = `${item.IE_Anio}-${item.IE_Nro}`;
+
+                            if (existing) {
+                                if (!existing.IEConcat.includes(ieConcat)) {
+                                    existing.IEConcat += " / " + ieConcat;
+                                }
+                            } else {
+                                acc.push({
+                                    ...item,
+                                    IEConcat: ieConcat // crear nueva propiedad para la columna unificada
+                                });
+                            }
+                            return acc;
+                        }, []);
+
+                        return grouped;
+                    });
+                },
+
+
+            });
+
+
+            /*
+             *
+             * 
+             * 
+             * const DxSource = new DevExpress.data.CustomStore({
+                key: 'FileId',
 
                 load() {
                     return sendRequest(`/Operaciones/ListarFilesE?anio=` + $("#txtanio").val()).then(data => {
@@ -173,8 +219,7 @@
                 },
             });
 
-
-
+             * */
 
             const dataGrid =
                 $('#gridContainer').dxDataGrid({

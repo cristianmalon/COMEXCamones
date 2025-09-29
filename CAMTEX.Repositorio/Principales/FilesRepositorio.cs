@@ -43,6 +43,7 @@ namespace CAMTEX.Repositorio
             Dictionary<string, object> retorno = new Dictionary<string, object>();
             oConn.AddParameter("@opcion", 2);
             oConn.AddParameter("@CodFile", entidad.CodFile);
+            oConn.AddParameter("@CodProv", entidad.CodProv);
             oConn.AddParameter("@Obs", entidad.Detalle);
             oConn.AddParameter("@Usuario", entidad.UsuarioCreacion);
             oConn.AddParameter("@Host", entidad.Estacion);

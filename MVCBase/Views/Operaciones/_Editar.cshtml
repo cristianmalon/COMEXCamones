@@ -19,7 +19,7 @@
                             <input type="text" id="txtFileE" class="form-control" placeholder="Ingrese el código" readonly>
                         </div>
                         <div class="col-md-2">
-                            <label>Proveedor</label>
+                            <label>Codigo Proveedor</label>
                             <input type="text" id="txtProvE" class="form-control" placeholder="Ingrese el Proveedor" readonly>
 
                         </div>
@@ -36,16 +36,12 @@
             <input type="text" id="txtHoraE" class="form-control"
                    value="@(Model.FechaCreacion?.ToString("HH:mm:ss") ?? DateTime.Now.ToString("HH:mm:ss"))" readonly>
         </div>*@
-                        <div class="col-md-2" style="visibility:hidden">
-                            <label>Usuario</label>
-                            <input type="text" id="txtUsuarioE" class="form-control" readonly>
+                    <div class="col-md-4">
+                        <label>Nombre Proveedor</label>
+                        <input type="text" id="txtNomProvE" class="form-control"  readonly>
 
-                        </div>
-                        <div class="col-md-3" style="visibility:hidden">
-                            <label>Estación</label>
-                            <input type="text" id="txtEstacionE" class="form-control" value="@Model.Estacion" readonly>
-
-                        </div>
+                    </div>
+                       
                         <div class="col-md-2">
                             <label>Estado</label>
                             <select id="txtEstadoE" name="ESTADO" class="form-control">
@@ -131,6 +127,7 @@
         $("#txtCFileE").val(filaSeleccionada.FileId); // o CodFile si prefieres
         $("#txtFileE").val(filaSeleccionada.NombreF);
         $("#txtProvE").val(filaSeleccionada.CodProv);
+        $("#txtNomProvE").val(filaSeleccionada.Proveedor);
         $("#txtUsuarioE").val(filaSeleccionada.UsuarioCreacion);
 
 
@@ -342,25 +339,26 @@
         }
 
         // Lógica de selección de fila y llenado del dxTabPanel
+
+        // 2️⃣ Lógica para llenar el tab panel con todas las órdenes
         if (filaSeleccionada && filaSeleccionada.FileId) {
             let valorFileSeleccionado = filaSeleccionada.FileId;
 
-            gridE.getDataSource().store().load().then(datosGrid => {
+            // Usamos el mismo endpoint para jalar TODO, no solo los distintos
+            sendRequest(`/Operaciones/ListarFilesI?anio=` + $("#txtanio").val()).then(datosGrid => {
+                // Filtramos todas las filas con el mismo FileID
                 let filasConMismoFile = datosGrid.filter(fila => fila.FileId === valorFileSeleccionado);
 
                 console.log("Filas con el mismo valor en FileId:", filasConMismoFile);
 
-                const tabPanelItems = [];
-                filasConMismoFile.forEach(fila => {
-                    let uniqueId = `tab_${Date.now()}_${fila.OrdenID}`; // UniqueId por fila
-                    tabPanelItems.push({
-                        title: `${fila.OrdC}`,
-                        id: uniqueId,
-                        idop: fila.NroOp,
-                        idoc: fila.OrdenID,
-                        data: [fila]
-                    });
-                });
+                // Creamos los ítems para el tab panel
+                const tabPanelItems = filasConMismoFile.map(fila => ({
+                    title: `${fila.OrdC}`,
+                    id: `tab_${fila.OrdenID}_${Date.now()}`, // UniqueId
+                    idop: fila.NroOp,
+                    idoc: fila.OrdenID,
+                    data: [fila]
+                }));
 
                 tabPanelE.option('dataSource', tabPanelItems);
             });
@@ -377,6 +375,7 @@
                 $.ajax({
                     url: '/Operaciones/BuscarOcGrid',
                     method: 'GET',
+                    data: { proveedor: $("#txtProvE").val() }, // se envía al backend
                     success: function (result) {
                         contentElement.append(result);
 

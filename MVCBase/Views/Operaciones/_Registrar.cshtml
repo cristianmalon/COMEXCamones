@@ -20,7 +20,7 @@
                         </div>
 
                         <div class="col-md-3">
-                            <label>Proveedor</label>
+                            <label>Codigo Proveedor</label>
                             <div class="input-group">
                                 <input type="text" id="txtProveedor" class="form-control" style="width:80%" placeholder="Seleccione el Proveedor" readonly>
                                 <button type="button" id="btnBuscarProveedor" class="btn btn-custom">
@@ -33,26 +33,12 @@
 
 
 
-                        <div class="col-md-1" style="visibility:hidden">
-                            <label>fecha Registro</label>
-                            <input type="text" id="txtFechaRegistro" class="form-control"
-                                   value="@(Model.FechaCreacion?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"))" readonly>
-                        </div>
-                        <div class="col-md-2" style="visibility: hidden">
-                            <label>Hora</label>
-                            <input type="text" id="txtHora" class="form-control"
-                                   value="@(Model.FechaCreacion?.ToString("HH:mm:ss") ?? DateTime.Now.ToString("HH:mm:ss"))" readonly>
-                        </div>
-                        <div class="col-md-1" style="visibility: hidden">
-                            <label>Usuario</label>
-                            <input type="text" id="txtUsuario" class="form-control" value="@Model.UsuarioCreacion" readonly>
+                        <div class="col-md-5">
+                            <label>Nombre Proveedor</label>
+                            <input type="text" id="txtNomProveedor" class="form-control" style="width:80%" placeholder="Nombre Proveedor" readonly>
 
                         </div>
-                        <div class="col-md-1" style="visibility: hidden">
-                            <label>Estación</label>
-                            <input type="text" id="txtEstacion" class="form-control" value="@Model.Estacion" readonly>
-
-                        </div>
+                        
                         <div class="col-md-2">
                             <label>Estado</label>
                             <input type="text" id="txtEstado" class="form-control" value="Activo" readonly>
@@ -204,9 +190,10 @@
                         onClick: function () {
                             var grid = $("#gridProveedores").dxDataGrid("instance");
                             var selected = grid.getSelectedRowsData();
-
+                            //txtProveedor
                             if (selected.length > 0) {
                                 $("#txtProveedor").val(selected[0].PrvCCod);
+                                $("#txtNomProveedor").val(selected[0].PrvDDes);
                                 $("#btnGuardarFile").prop("disabled", false); // habilitar botón
                                 popupProv.hide();
                             } else {
@@ -546,6 +533,8 @@
 
         $('#btnGuardarFile').click(function () {
             var file = $('#txtFile').val().trim();
+            var Prov = $('#txtProveedor').val().trim();
+            console.log("prov:", $('#txtProveedor').val());
            // var observacion = $('#txtObservacion').val().trim();
            /* if (!file) {
                 DevExpress.ui.dialog.alert("Debe ingresar un código de File antes de guardar.", "Error");
@@ -561,7 +550,7 @@
                 type: 'POST',
                 data: {
                     fileName: file,
-                    //observacion: observacion
+                    Proveedor: Prov
                 },
                 success: function (response) {
                     console.log("response: ", response);
@@ -594,6 +583,8 @@
                             //Deshabilitar también el botón Buscar Proveedor
                             $('#btnBuscarProveedor').prop('disabled', true);
 
+                            // 👇 Aquí lo ocultas para ganar espacio
+                            $('#btnGuardarFile').css('display', 'none');
                         });
 
                 },
