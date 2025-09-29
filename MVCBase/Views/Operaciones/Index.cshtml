@@ -298,7 +298,7 @@
 
         $(() => {
             const DxSource = new DevExpress.data.CustomStore({
-                key: 'NroOp',
+                key: 'FileId',
                 load() {
                     return sendRequest(`/Operaciones/ListarFilesI?anio=` + $("#txtanio").val()).then(data => {
                         // Agrupar por FileId
