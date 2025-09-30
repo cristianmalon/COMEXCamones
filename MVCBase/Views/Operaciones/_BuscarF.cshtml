@@ -25,7 +25,9 @@
                         <div class="col-md-3">
                             <label for="txtMoneda">Cant Prendas:</label>
                             <input type="text" id="txtMoneda_@ViewBag.Id" class="form-control"
-                                   value="@Model.CantPrendas" readonly>
+                                   value="@(Model.CantPrendas.HasValue ? Model.CantPrendas.Value.ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("en-US")) : "")"
+ readonly>
+
                         </div>
                     </div>
                     <div id="popupContainer"></div>
@@ -467,8 +469,20 @@
             { dataField: 'NroGuia', width: 150, caption: 'Nro Guia', alignment: 'left', allowEditing: false },
             { dataField: 'ArticuloGuia',  caption: 'Detalle', alignment: 'left', allowEditing: false },
             {
-                dataField: 'Cantidad', caption: 'Cantidad', width: 150, alignment: 'right', allowEditing: false, format: ",##0.###"
-            },
+                dataField: 'Cantidad',
+                caption: 'Cantidad',
+                width: 150,
+                alignment: 'right',
+                allowEditing: false,
+                format: {
+                    type: "fixedPoint",
+                    precision: 0 // sin decimales
+                },
+                customizeText: function (e) {
+                    if (e.value === null || e.value === undefined) return "";
+                    return new Intl.NumberFormat("en-US").format(e.value);
+                }
+            }
 
 
         ],
@@ -508,38 +522,55 @@
                 }
             } ,
             {
-                dataField: 'Valor', caption: 'Valor', alignment: 'right', allowEditing: false,
+                dataField: 'Valor',
+                caption: 'Valor',
+                alignment: 'right',
+                allowEditing: false,
                 format: {
                     type: "fixedPoint",
-                    //precision: 0 // Sin decimales
+                    precision: 2
                 },
                 calculateCellValue(rowData) {
                     return rowData.Valor ? rowData.Valor.toFixed(2) : "0.00";
+                },
+                customizeText: function (e) {
+                    if (e.value === null || e.value === undefined) return "";
+                    return new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(e.value);
                 }
             },
             {
-                dataField: 'Qty', caption: 'Qty.', allowEditing: false,
+                dataField: 'Qty',
+                caption: 'Qty.',
+                allowEditing: false,
                 format: {
                     type: "fixedPoint",
-                    precision: 0 // Sin decimales
+                    precision: 0
                 },
                 setCellValue(newData, value) {
-                    newData.Qty = Math.round(value); // Asegura que siempre sea entero
+                    newData.Qty = Math.round(value);
                 },
                 calculateCellValue(rowData) {
-                    return rowData.Qty
+                    return rowData.Qty;
+                },
+                customizeText: function (e) {
+                    if (e.value === null || e.value === undefined) return "";
+                    return new Intl.NumberFormat("en-US").format(e.value);
                 }
             }
+
         ],
         summary: {
             totalItems: [
                 {
                     column: "Qty",
                     summaryType: "sum",
-                    valueFormat: ",##0.###",
                     displayFormat: "Total: {0}",
-                    alignment: "right"
-                }
+                    alignment: "right",
+                    customizeText: function (e) {
+                        if (e.value === null || e.value === undefined) return "";
+                        return "Total: " + new Intl.NumberFormat("en-US").format(e.value);
+                    }
+                },
             ]
         },
         hoverStateEnabled: false,
