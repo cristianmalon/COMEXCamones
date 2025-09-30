@@ -291,13 +291,6 @@
 
         <nav>
 
-
-            <ul>
-            </ul>
-            @*@if (listaOpciones != null)
-        {
-            @Html.CustomMenu(listaOpciones, "Custom-menu")
-        }*@
             <ul>
                 <li>
                     @*<a href="#"><i class="fa fa-lg fa-fw fa-users"></i> <span class="menu-item-parent">REPORTES</span><b class="collapse-sign"><em class="fa fa-minus-square-o"></em></b></a>*@
@@ -328,17 +321,17 @@
             </ul>
     -->
             <ul class="collapsible-menu">
-                <li class="open">
+                <!--<li class="open">
                     <a href="#">
                         <i class="fa fa-lg fa-fw fa-cube txt-color-blue"></i>
                         <span class="menu-item-parent">Tablas Principales</span><b class="collapse-sign"><em class="fa fa-minus-square-o"></em></b>
                     </a>
-                    <ul style="display: block;">
+                    <ul style="display: block;">-->
 
                         @*<li class="">
                         <a href="../TipTransporte/Index" title="Dashboard"><span class="menu-item-parent">Tipo Transporte</span></a>
                     </li>*@
-                        <li class="">
+                        <!--<li class="">
                             <a href="../Proveedor/Index" title="Dashboard"><span class="menu-item-parent">Proveedor</span></a>
                         </li>
                         <li class="">
@@ -355,11 +348,11 @@
                         </li>
                         <li class="">
                             <a href="../CondPago/Index" title="Dashboard"><span class="menu-item-parent">Condición de pago</span></a>
-                        </li>
+                        </li>-->
                         @*<li class="">
                         <a href="../SituacionEstado/Index" title="Dashboard"><span class="menu-item-parent">Situacion - Estado</span></a>
                     </li>*@
-                        <li class="">
+                        <!--<li class="">
                             <a href="../AgenteCarga/Index" title="Dashboard"><span class="menu-item-parent">Agente Carga</span></a>
                         </li>
                         <li class="">
@@ -372,7 +365,7 @@
                             <a href="../Pais/Index" title="Dashboard"><span class="menu-item-parent">Pais</span></a>
                         </li>
                     </ul>
-                </li>
+                </li>-->
                 <li class="open">
                     <a href="#">
                         <i class="fa fa-lg fa-fw fa-cube txt-color-blue"></i>
@@ -396,11 +389,11 @@
             <span class="minifyme" data-action="minifyMenu"> <i class="fa fa-arrow-circle-left hit"></i> </span>
 
             <!--ESTO SE DEBE DE DESCOMENTAR DESPUES DE AGREGAR EN EL SISTEMA TODA LAS VISTAS-->
-            @* @if (listaOpciones != null)
+             @if (listaOpciones != null)
         {
             @Html.CustomMenu(listaOpciones, "Custom-menu")
         }
-            *@
+            
 
         </nav>
 
