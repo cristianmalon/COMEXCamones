@@ -97,8 +97,8 @@ namespace CAMTEX.Aplicacion
 
                         EstadoLote = Util.CapturaString(row, "EstadoCad"),
                         Resultado = Util.CapturaString(row, "ResultadoCad"),
-                        Destino = Util.CapturaString(row, "DepositoCad"),
-                        DepositoCad = Util.CapturaString(row, "DestinoCad"),
+                        Destino = Util.CapturaString(row, "DestinoCad"),
+                        DepositoCad = Util.CapturaString(row, "DepositoCad"),
 
                         ESTADO = Util.CapturaString(row, "Estado")
 

@@ -112,8 +112,19 @@
             dataField: 'Proveedor', caption: 'Cliente', alignment: 'left',
         },
         {
-            dataField: 'CantPrendas', caption: 'Cant Prendas', alignment: 'right',  format: ",##0.###"
+            dataField: 'CantPrendas',
+            caption: 'Cant Prendas',
+            alignment: 'right',
+            format: {
+                type: "fixedPoint",
+                precision: 0 // sin decimales
+            },
+            customizeText: function (e) {
+                if (e.value === null || e.value === undefined) return "";
+                return new Intl.NumberFormat("en-US").format(e.value);
+            }
         },
+
          {
             dataField: 'Detalle', alignment: 'left', visible: false
         },

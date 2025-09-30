@@ -89,6 +89,8 @@
 
     <!-- Contenedores de paneles -->
     <div id="tab1_@ViewBag.Id" class="tab-contentss active">
+        <div class="form-group form-inline"><div class="col-md-3"><label>PRODUCTOS</label></div></div>
+
         <div id="gridContainerP_@ViewBag.Id"></div>
     </div>
 
@@ -539,38 +541,45 @@
                 }
             },
             {
-                dataField: 'Qty', caption: 'Qty.', alignment: 'right', allowEditing: false,
-                format: {
-                    type: "fixedPoint",
-                    precision: 0 // Sin decimales
+                dataField: 'Qty',
+                caption: 'Qty.',
+                alignment: 'right',
+                allowEditing: false,
+                customizeText: function (e) {
+                    if (e.value === null || e.value === undefined) return "";
+                    return new Intl.NumberFormat("en-US").format(e.value); // 👉 siempre coma como separador
                 },
                 setCellValue(newData, value) {
-                    newData.Qty = Math.round(value); // Asegura que siempre sea entero
-                },
-                
+                    newData.Qty = Math.round(value);
+                }
             },
             {
-                dataField: 'Valor', caption: 'Valor', alignment: 'right', allowEditing: false,
-                format: {
-                    type: "fixedPoint",
-                    precision: 0 // Sin decimales
-                },
-                //calculateCellValue(rowData) {
-                //    return rowData.Valor ? rowData.Valor.toFixed(2) : "0.00"; // Formatea a 2 decimales
-                //}
+                dataField: 'Valor',
+                caption: 'Valor',
+                alignment: 'right',
+                allowEditing: false,
+                customizeText: function (e) {
+                    if (e.value === null || e.value === undefined) return "";
+                    return new Intl.NumberFormat("en-US").format(e.value); // 👉 también forzado
+                }
             }
+
         ],
         summary: {
             totalItems: [
                 {
                     column: "Valor",
                     summaryType: "sum",
-                    valueFormat: ",##0.###",
                     displayFormat: "Total: {0}",
-                    alignment: "right"
+                    alignment: "right",
+                    customizeText: function (e) {
+                        if (e.value === null || e.value === undefined) return "Total: 0";
+                        return "Total: " + new Intl.NumberFormat("en-US").format(e.value);
+                    }
                 }
             ]
         },
+
         onRowUpdated(e) {
             let rowData = e.data; // Obtiene los datos de la fila editada
             if (rowData.Qty !== undefined && rowData.PU !== undefined) {
@@ -583,7 +592,7 @@
         toolbar: {
             items: [
                 // Botón "Agregar fila"
-               {
+               @*{
                     location: "before",
                     widget: "dxButton",
                     options: {
@@ -612,7 +621,7 @@
 
                         }
                     }
-                },
+                },*@
 
                 // Botón "Eliminar fila seleccionada"
 
@@ -1473,12 +1482,20 @@
 
             },
             {
-                dataField: 'Cantidad', caption: 'Qty', alignment: 'left', allowEditing: true,
+                dataField: 'Cantidad',
+                caption: 'Qty',
+                alignment: 'left',
+                allowEditing: true,
                 format: {
                     type: "fixedPoint",
                     precision: 0 // Sin decimales
                 },
-            },
+                customizeText: function (e) {
+                    if (e.value === null || e.value === undefined) return "";
+                    return new Intl.NumberFormat("en-US").format(e.value);
+                }
+            }
+
 
         ],
         toolbar: {
