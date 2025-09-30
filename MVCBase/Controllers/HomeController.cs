@@ -42,7 +42,10 @@ namespace MVCBase.Controllers
         {
             return View();
         }
-
+        public ActionResult PRUEBA()
+        {
+            return View();
+        }
         // POST: Home/Create
         [HttpPost]
         public ActionResult Create(FormCollection collection)

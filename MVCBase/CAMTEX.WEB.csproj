@@ -8174,6 +8174,7 @@
     <Content Include="Views\Operaciones\_Editar.cshtml" />
     <Content Include="Views\Operaciones\_EditarExp.cshtml" />
     <Content Include="Views\Reporte\Index.cshtml" />
+    <Content Include="Views\Home\PRUEBA.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CAMTEX.Aplicacion.Entidades\CAMTEX.Aplicacion.Entidades.csproj">
