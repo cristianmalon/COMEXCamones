@@ -168,6 +168,10 @@
         .smart-style-3 .page-footer {
             background: #1b619f !important;
         }
+        .carga-superior {
+            /* Un valor muy alto para garantizar que esté encima del modal */
+            z-index: 100000 !important;
+        }
     </style>
 </head>
 
@@ -320,84 +324,83 @@
                 </li>
             </ul>
     -->
-            <ul class="collapsible-menu">
-                <!--<li class="open">
-                    <a href="#">
-                        <i class="fa fa-lg fa-fw fa-cube txt-color-blue"></i>
-                        <span class="menu-item-parent">Tablas Principales</span><b class="collapse-sign"><em class="fa fa-minus-square-o"></em></b>
-                    </a>
-                    <ul style="display: block;">-->
+            <!-- <ul class="collapsible-menu">
+            <li class="open">
+    <a href="#">
+        <i class="fa fa-lg fa-fw fa-cube txt-color-blue"></i>
+        <span class="menu-item-parent">Tablas Principales</span><b class="collapse-sign"><em class="fa fa-minus-square-o"></em></b>
+    </a>
+    <ul style="display: block;">-->
+            @*<li class="">
+            <a href="../TipTransporte/Index" title="Dashboard"><span class="menu-item-parent">Tipo Transporte</span></a>
+        </li>*@
+            <!--<li class="">
+        <a href="../Proveedor/Index" title="Dashboard"><span class="menu-item-parent">Proveedor</span></a>
+    </li>
+    <li class="">
+        <a href="../TipArticulo/Index" title="Dashboard"><span class="menu-item-parent">Tipo Articulo</span></a>
+    </li>
+    <li class="">
+        <a href="../Almacen/Index" title="Dashboard"><span class="menu-item-parent">Almacen</span></a>
+    </li>
+    <li class="">
+        <a href="../Articulo/Index" title="Dashboard"><span class="menu-item-parent">Articulo</span></a>
+    </li>
+    <li class="">
+        <a href="../UndMedida/Index" title="Dashboard"><span class="menu-item-parent">Unidad de medida</span></a>
+    </li>
+    <li class="">
+        <a href="../CondPago/Index" title="Dashboard"><span class="menu-item-parent">Condición de pago</span></a>
+    </li>-->
+            @*<li class="">
+            <a href="../SituacionEstado/Index" title="Dashboard"><span class="menu-item-parent">Situacion - Estado</span></a>
+        </li>*@
+            <!--<li class="">
+                <a href="../AgenteCarga/Index" title="Dashboard"><span class="menu-item-parent">Agente Carga</span></a>
+            </li>
+            <li class="">
+                <a href="../Incoterm/Index" title="Dashboard"><span class="menu-item-parent">Incoterm</span></a>
+            </li>
+            <li class="">
+                <a href="../TipoImportacion/Index" title="Dashboard"><span class="menu-item-parent">Tipo Importacion</span></a>
+            </li>
+            <li class="">
+                <a href="../Pais/Index" title="Dashboard"><span class="menu-item-parent">Pais</span></a>
+            </li>
+        </ul>
+    </li>-->
+            @*<li class="open">
+            <a href="#">
+                <i class="fa fa-lg fa-fw fa-cube txt-color-blue"></i>
+                <span class="menu-item-parent">Operaciones</span>
+            </a>
+            <ul style="display: block;">
 
-                        @*<li class="">
-                        <a href="../TipTransporte/Index" title="Dashboard"><span class="menu-item-parent">Tipo Transporte</span></a>
-                    </li>*@
-                        <!--<li class="">
-                            <a href="../Proveedor/Index" title="Dashboard"><span class="menu-item-parent">Proveedor</span></a>
-                        </li>
-                        <li class="">
-                            <a href="../TipArticulo/Index" title="Dashboard"><span class="menu-item-parent">Tipo Articulo</span></a>
-                        </li>
-                        <li class="">
-                            <a href="../Almacen/Index" title="Dashboard"><span class="menu-item-parent">Almacen</span></a>
-                        </li>
-                        <li class="">
-                            <a href="../Articulo/Index" title="Dashboard"><span class="menu-item-parent">Articulo</span></a>
-                        </li>
-                        <li class="">
-                            <a href="../UndMedida/Index" title="Dashboard"><span class="menu-item-parent">Unidad de medida</span></a>
-                        </li>
-                        <li class="">
-                            <a href="../CondPago/Index" title="Dashboard"><span class="menu-item-parent">Condición de pago</span></a>
-                        </li>-->
-                        @*<li class="">
-                        <a href="../SituacionEstado/Index" title="Dashboard"><span class="menu-item-parent">Situacion - Estado</span></a>
-                    </li>*@
-                        <!--<li class="">
-                            <a href="../AgenteCarga/Index" title="Dashboard"><span class="menu-item-parent">Agente Carga</span></a>
-                        </li>
-                        <li class="">
-                            <a href="../Incoterm/Index" title="Dashboard"><span class="menu-item-parent">Incoterm</span></a>
-                        </li>
-                        <li class="">
-                            <a href="../TipoImportacion/Index" title="Dashboard"><span class="menu-item-parent">Tipo Importacion</span></a>
-                        </li>
-                        <li class="">
-                            <a href="../Pais/Index" title="Dashboard"><span class="menu-item-parent">Pais</span></a>
-                        </li>
-                    </ul>
-                </li>-->
-                <li class="open">
-                    <a href="#">
-                        <i class="fa fa-lg fa-fw fa-cube txt-color-blue"></i>
-                        <span class="menu-item-parent">Operaciones</span>
-                    </a>
-                    <ul style="display: block;">
-
-                        <li class="">
-                            <a href="../Operaciones/Index" title="Dashboard"><span class="menu-item-parent">Importación</span></a>
-                        </li>
-                        <li class="">
-                            <a href="../Operaciones/IndexE" title="Dashboard"><span class="menu-item-parent">Exportación</span></a>
-                        </li>
-                        <li class="">
-                            <a href="../Reporte/Index" title="Dashboard"><span class="menu-item-parent">Reporte</span></a>
-                        </li>
-                    </ul>
+                <li class="">
+                    <a href="../Operaciones/Index" title="Dashboard"><span class="menu-item-parent">Importación</span></a>
+                </li>
+                <li class="">
+                    <a href="../Operaciones/IndexE" title="Dashboard"><span class="menu-item-parent">Exportación</span></a>
+                </li>
+                <li class="">
+                    <a href="../Reporte/Index" title="Dashboard"><span class="menu-item-parent">Reporte</span></a>
                 </li>
             </ul>
+        </li>
+        </ul>  *@
 
-            <span class="minifyme" data-action="minifyMenu"> <i class="fa fa-arrow-circle-left hit"></i> </span>
+            @*<span class="minifyme" data-action="minifyMenu"> <i class="fa fa-arrow-circle-left hit"></i> </span>*@
 
             <!--ESTO SE DEBE DE DESCOMENTAR DESPUES DE AGREGAR EN EL SISTEMA TODA LAS VISTAS-->
-             @if (listaOpciones != null)
-        {
-            @Html.CustomMenu(listaOpciones, "Custom-menu")
-        }
-            
+            @if (listaOpciones != null)
+            {
+                @Html.CustomMenu(listaOpciones, "Custom-menu")
+            }
+
 
         </nav>
 
-       <!-- <span class="minifyme" data-action="minifyMenu"> <i class="fa fa-arrow-circle-left hit"></i> </span>-->
+        <span class="minifyme" data-action="minifyMenu"> <i class="fa fa-arrow-circle-left hit"></i> </span>
 
     </aside>
 
