@@ -77,6 +77,23 @@ namespace CAMTEX.Aplicacion
             return retorno;
         }
 
+        public Response EliminarE(Request<Operaciones> entidad)
+        {
+            Response retorno = new Response();
+            try
+            {
+                var resultado = OperacionesRepositorio.EliminarE(entidad.entidad);
+                retorno.Success = true;
+                retorno.error = false;
+
+            }
+            catch (Exception ex)
+            {
+                retorno.error = true;
+                retorno.mensaje = ex.Message;
+            }
+            return retorno;
+        }
         public Response Insertar(Request<Operaciones> entidad)
         {
             Response retorno = new Response();
