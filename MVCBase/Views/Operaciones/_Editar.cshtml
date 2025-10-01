@@ -117,6 +117,7 @@
 
         let ordenesAbiertas = [];
 
+        var estadoInicial = '@Model.ESTADO';
 
 
 
@@ -152,6 +153,10 @@
                         contentType: "application/json; charset=utf-8",
                         success: function () {
                             DevExpress.ui.dialog.alert("Estado actualizado correctamente.", "Éxito");
+
+                            //Cerrar popup al terminar
+                            $("#popupContainerEF").dxPopup("instance").hide();
+
                         },
                         error: function () {
                             DevExpress.ui.dialog.alert("Ocurrió un error al actualizar el estado.", "Error");
@@ -210,14 +215,33 @@
         }).dxTabPanel('instance');
 
         // Función titleTemplate, loadPartialView, closeButtonHandler (como antes)
-        function titleTemplate(itemData, itemIndex, itemElement) {
+        /*function titleTemplate(itemData, itemIndex, itemElement) {
             itemElement.append($('<span>').text(itemData.title));
             itemElement.append(
                 $('<i>')
                     .addClass('dx-icon dx-icon-close')
                     .click(() => { closeButtonHandler(itemData); })
             );
+        }*/
+
+
+        // --- Template del título ---
+        function titleTemplate(itemData, itemIndex, itemElement) {
+            itemElement.append($('<span>').text(itemData.title));
+
+            // Solo permitir cerrar si está ACTIVO
+            if (estadoInicial === "A") {
+                itemElement.append(
+                    $('<i>')
+                        .addClass('dx-icon dx-icon-close')
+                        .css("cursor", "pointer")
+                        .click(() => { closeButtonHandler(itemData); })
+                );
+            }
         }
+
+
+
 
         function loadPartialView(itemData, itemIndex, itemElement) {
             var uniqueId = itemData.id;
@@ -525,11 +549,14 @@
             }
         }).dxPopup('instance');
 
+
+
+
         $('#addButtonE').dxButton({
             icon: 'add',
             text: 'Agregar O/C',
             type: 'default',
-            disabled: false,
+            disabled: estadoInicial !== "A",
             onClick: function () {
                 popupE.show();
             }
