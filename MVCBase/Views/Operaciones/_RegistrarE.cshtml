@@ -19,12 +19,12 @@
                             <input type="text" id="txtFile" class="form-control" placeholder="AUTOGENERADO" readonly>
                         </div>
                         <!--
-    <div class="col-md-3">
-        <label>Observación</label>
-        <input type="text" id="txtObservacion" class="form-control" placeholder="Ingrese la observación">
+        <div class="col-md-3">
+            <label>Observación</label>
+            <input type="text" id="txtObservacion" class="form-control" placeholder="Ingrese la observación">
 
-    </div>
-        -->
+        </div>
+            -->
                         <div class="col-md-2">
                             <label>fecha Registro</label>
                             <input type="text" id="txtFechaRegistro" class="form-control"
@@ -41,10 +41,10 @@
 
                         </div>
                         <!--<div class="col-md-1">
-        <label>Estación</label>
-        <input type="text" id="txtEstacion" class="form-control" value="@Model.Estacion" readonly>
+            <label>Estación</label>
+            <input type="text" id="txtEstacion" class="form-control" value="@Model.Estacion" readonly>
 
-    </div>-->
+        </div>-->
 
                         <div class="col-md-2">
                             <label>Estado</label>
@@ -66,7 +66,7 @@
 
 
 
-                       
+
                     </div>
                     <div class="form-group" id="divGuardarFile">
                         <div class="col-md-6">
@@ -83,6 +83,7 @@
                     <div id="container">
                         <div id="addButton"></div>
                     </div>
+                   
                     <div id="tabPanel"></div>
 
                     <div id="popupContainer"></div>
@@ -92,8 +93,8 @@
 
 
                     @*<div class="text-right">
-                        <div id="btnGuardarTodasF"></div>
-                    </div>*@
+            <div id="btnGuardarTodasF"></div>
+        </div>*@
                     <!-- Campo oculto para guardar nuevoFileID -->
                     <input type="hidden" id="FileIDv" value="" />
                     <input type="hidden" id="FileID" value="@Model.FileId" />
@@ -108,6 +109,7 @@
 
 
     $(() => {
+
 
 
 
@@ -148,7 +150,16 @@
             });
         });
 
-
+        loadPanel = $('#loadingPanel').dxLoadPanel({
+            shadingColor: 'rgba(0,0,0,0.4)', // Color semi-transparente del fondo
+            position: { of: '#tabPanel' }, // Se posiciona sobre el dxTabPanel
+            visible: false, // Inicialmente oculto
+            showIndicator: true,
+            showPane: true,
+            message: 'Cargando contenido...', // Mensaje opcional
+            shading: true, // Muestra la sombra para bloquear interacciones
+            container: '#tabPanel' // Opcional, pero ayuda a asegurar la jerarquía
+        }).dxLoadPanel('instance');
 
 
 
@@ -163,6 +174,8 @@
 
         let facturasAbiertas = [];
 
+       
+         
         const tabPanel = $('#tabPanel').dxTabPanel({
             dataSource: [],
             itemTitleTemplate: titleTemplate,
@@ -193,13 +206,13 @@
         }
 
         function loadPartialView(itemData, itemIndex, itemElement) {
-
+            
             var uniqueId = itemData.id;
             var FacturaData = itemData.data;
             debugger;
 
             $('<div>').addClass('tab-content').attr("data-id", uniqueId).appendTo(itemElement);
-
+            loadPanel.show();
             // Cargar la misma vista parcial en cada tab
             $.ajax({
                 url: '/Operaciones/VRFactura',
@@ -213,6 +226,7 @@
                 }),
                 success: function (response) {
                     itemElement.find('.tab-content').html(response);
+                    loadPanel.hide(); 
                 },
                 error: function () {
                     itemElement.find('.tab-content').html('<p>Error al cargar la vista.</p>');
