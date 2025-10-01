@@ -48,20 +48,10 @@
 
                         <div class="col-md-2">
                             <label>Estado</label>
-                            @if (string.IsNullOrEmpty(Model.ESTADO))
-                            {
-                                <select id="txtEstadoE" name="ESTADO" class="form-control" disabled>
-                                    <option value="A" selected>ACTIVO</option>
-                                </select>
-                                <input type="hidden" name="ESTADO" value="A" />
-                            }
-                            else  // Caso: Editar (sí existe un estado en el modelo)
-                            {
-                                <select id="txtEstadoE" name="ESTADO" class="form-control">
-                                    <option value="A" @(Model.ESTADO == "A" ? "selected" : "")>ACTIVO</option>
-                                    <option value="I" @(Model.ESTADO == "I" ? "selected" : "")>INACTIVO</option>
-                                </select>
-                            }
+                            <select id="txtEstadoE" name="ESTADO" class="form-control">
+                                <option value="A" @(Model.ESTADO == "A" ? "selected" : "")>ACTIVO</option>
+                                <option value="I" @(Model.ESTADO == "I" ? "selected" : "")>INACTIVO</option>
+                            </select>
                         </div>
 
 
@@ -117,6 +107,8 @@
         let filaSeleccionada = gridE.getSelectedRowsData()[0]; // la fila seleccionada
 
 
+        var estadoInicial = '@Model.ESTADO';
+
          $("#txtEstadoE").off("change").on("change", function () {
             var nuevoEstado = $(this).val();
 
@@ -138,6 +130,11 @@
                         contentType: "application/json; charset=utf-8",
                         success: function () {
                             DevExpress.ui.dialog.alert("Estado actualizado correctamente.", "Éxito");
+
+
+                            $("#popupContainerEP").dxPopup("instance").hide();
+
+
                         },
                         error: function () {
                             DevExpress.ui.dialog.alert("Ocurrió un error al actualizar el estado.", "Error");
@@ -198,18 +195,21 @@
 
         function titleTemplate(itemData, itemIndex, itemElement) {
             itemElement.append($('<span>').text(itemData.title));
-            itemElement.append(
-                $('<i>')
-                    .addClass('dx-icon dx-icon-close')
-                    .click(() => { closeButtonHandler(itemData); })
-            );
+            if (estadoInicial === "A") {
+                itemElement.append(
+                    $('<i>')
+                        .addClass('dx-icon dx-icon-close')
+                        .css("cursor", "pointer")
+                        .click(() => { closeButtonHandler(itemData); })
+                );
+            }
         }
 
         function loadPartialView(itemData, itemIndex, itemElement) {
             
             var uniqueId = itemData.id;
             var FacturaData = itemData.data;
-            debugger;
+            //debugger;
 
             $('<div>').addClass('tab-content').attr("data-id", uniqueId).appendTo(itemElement);
             loadPanel.show();
@@ -278,7 +278,7 @@
                                     alert("Por favor, selecciona una instruccion de embarque.");
                                     return;
                                 }
-                                debugger;
+                                //debugger;
                                 //var numeroOrden = selectedRow.U_DIN_NFACT;
                                 var IE_Anio = selectedRow.IE_Anio;
                                 var IE_Nro = selectedRow.IE_Nro;
@@ -373,7 +373,7 @@
             icon: 'add',
             text: 'Agregar Instrucción de Embarque',
             type: 'default',
-            disabled: true,
+            disabled: estadoInicial !== "A",
             onClick: function () {
                 popup.show();
             }
@@ -385,20 +385,63 @@
                         const tabPanelItems = tabPanel.option('dataSource');
                         const index = tabPanelItems.findIndex(tab => tab.id === itemData.id);
 
-                        if (index !== -1) {
 
-                            //facturasAbiertas = facturasAbiertas.filter(codigo => codigo !== itemData.data.U_DIN_FCSOL);
-                            facturasAbiertas = facturasAbiertas.filter(codigo =>
-                                !(codigo.NumeroOrden === itemData.data.U_DIN_NFACT)
-                            );
 
-                            tabPanelItems.splice(index, 1);
-                            tabPanel.option('dataSource', tabPanelItems);
+                        const fileId = $('#FileIDv').val();
+                        const ordenId = itemData.idop;
+                        console.log("fileId", fileId);
+                        console.log("ordenId", ordenId);
 
-                            if (index >= tabPanelItems.length && index > 0) {
-                                tabPanel.option('selectedIndex', index - 1);
+
+
+                        $.ajax({
+                            url: '/Operaciones/ActualizarEstadoOrdenxFileE',
+                            type: 'POST',
+                            data: {
+                                fileId: fileId,
+                                ordenId: ordenId,
+                                nuevoEstado: 'I'
+                            },
+                            success: function (response) {
+                                console.log('response: ', response);
+
+                                if (response.rpta) {
+                                    console.log('Estado actualizado correctamente.');
+
+
+
+                                    if (index !== -1) {
+
+                                        //facturasAbiertas = facturasAbiertas.filter(codigo => codigo !== itemData.data.U_DIN_FCSOL);
+                                        facturasAbiertas = facturasAbiertas.filter(codigo =>
+                                            !(codigo.NumeroOrden === itemData.data.U_DIN_NFACT)
+                                        );
+
+                                        tabPanelItems.splice(index, 1);
+                                        tabPanel.option('dataSource', tabPanelItems);
+
+                                        if (index >= tabPanelItems.length && index > 0) {
+                                            tabPanel.option('selectedIndex', index - 1);
+                                        }
+                                    }
+                                } else {
+                                    DevExpress.ui.dialog.alert('No se pudo actualizar el estado.', 'Error');
+                                }
+                            },
+                            error: function () {
+                                DevExpress.ui.dialog.alert('Ocurrió un error al actualizar el estado.', 'Error');
                             }
-                        }
+                        });
+
+
+
+
+
+
+
+
+
+
                     }
                 });
         }
@@ -419,7 +462,7 @@
             $('#txtFile').prop('disabled', true);
             //$('#txtObservacion').prop('disabled', true);
             // Habilitar el botón de "Agregar O/C"
-            $('#addButton').dxButton('instance').option('disabled', false);
+            //$('#addButton').dxButton('instance').option('disabled', false);
             document.getElementById("FileIDv").value = $('#FileID').val();
 
             if (filaSeleccionada && filaSeleccionada.FileId) {
