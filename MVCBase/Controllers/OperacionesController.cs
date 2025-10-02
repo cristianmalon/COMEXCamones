@@ -631,7 +631,7 @@ namespace MVCBase.Controllers
 
                     var datos = new Request<Operaciones>();
                     datos.entidad = entidad;
-                    response = new OperacionesAplicacion(new OperacionesRepositorio()).EliminarE(datos);
+                    response = new OperacionesAplicacion(new OperacionesRepositorio()).Eliminar(datos);
 
                     return Json(new
                     {
