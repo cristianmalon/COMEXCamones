@@ -268,7 +268,6 @@
                                 //var numeroOrden = selectedRow.U_DIN_NFACT;
                                 var IE_Anio = selectedRow.IE_Anio;
                                 var IE_Nro = selectedRow.IE_Nro;
-
                                 var existeOrden = facturasAbiertas.some(oc => oc.IE_Anio === IE_Anio && oc.IE_Nro === IE_Nro);
                                 console.log("facturasAbiertas:", facturasAbiertas);
                                 //console.log("numeroOrden:", numeroOrden);
@@ -279,6 +278,20 @@
                                 // Guardamos la IE en la base Datos
 
                                 var tabPanelItems = tabPanel.option('dataSource');
+
+                                console.log("tabPanelItems: ", tabPanelItems);
+                                console.log("selectedRow: ", selectedRow);
+
+                                if (tabPanelItems.some(item =>
+                                    item.data &&
+                                    String(item.data.IE_Anio) === String(selectedRow.IE_Anio) &&
+                                    String(item.data.IE_Nro) === String(selectedRow.IE_Nro)
+                                )) {
+                                    DevExpress.ui.dialog.alert("Esta Instrucción de Embarque ya está abierta.", "Aviso");
+                                    return;
+                                }
+
+
                                 var BEOperaciones = {
                                     FileID: $('#FileIDv').val(),
                                     IE_Anio: IE_Anio,
@@ -329,6 +342,10 @@
 
                                             // Agregar al array de órdenes abiertas para evitar duplicados
                                             facturasAbiertas.push({ IE_Anio: IE_Anio, IE_Nro: IE_Nro });
+
+
+                                            console.log("facturasAbiertas", facturasAbiertas);
+
                                             popup.hide();
 
                                         }
@@ -399,9 +416,16 @@
                                     if (index !== -1) {
 
                                         //facturasAbiertas = facturasAbiertas.filter(codigo => codigo !== itemData.data.U_DIN_FCSOL);
-                                        facturasAbiertas = facturasAbiertas.filter(codigo =>
-                                            !(codigo.NumeroOrden === itemData.data.U_DIN_NFACT)
-                                        );
+                                        // Reemplaza la línea equivocada por esto:
+                                        //facturasAbiertas = facturasAbiertas.filter(codigo =>
+                                        //    !(String(codigo.IE_Anio) === String(itemData.data.IE_Anio) &&
+                                        //        String(codigo.IE_Nro).trim() === String(itemData.data.IE_Nro).trim())
+                                        //);
+                                        //facturasAbiertas = facturasAbiertas.filter(codigo => codigo !== itemData.data.U_DIN_FCSOL);
+                                        facturasAbiertas = facturasAbiertas.filter(codigo => !(codigo.NumeroOrden === itemData.data.U_DIN_NFACT));
+
+
+                                        console.log('itemData: ', itemData);
 
                                         tabPanelItems.splice(index, 1);
                                         tabPanel.option('dataSource', tabPanelItems);
