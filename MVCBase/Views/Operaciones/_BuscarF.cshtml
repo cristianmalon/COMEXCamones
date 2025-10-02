@@ -227,14 +227,14 @@
     var id = "@ViewBag.Id"; // Obtener ID dinámico si es necesario
 
     var idOrdenCompra = null;
-    console.log("id: ", id);
+    //console.log("id: ", id);
     // Crear todos los dxDataGrid en sus respectivos contenedores
 
     var lista = []
     dataProducto = @Html.Raw(Json.Encode(Model.ListaProducto));
     dataOpeAlmacen = @Html.Raw(Json.Encode(Model.ListaOpeAlmacen));
     dataFactura = @Html.Raw(Json.Encode(Model.ListaFactura));
-    console.log("dataOpeAlmacen",dataOpeAlmacen);
+    //console.log("dataOpeAlmacen",dataOpeAlmacen);
     lista.push(@Html.Raw(maeCCodJson));//  @Html.Raw(maeCCodJson); // Convertir JSON en objeto JavaScript
     var filecreado;
 
@@ -254,10 +254,10 @@
 
         var OrdenCompraSAP = lista[0].NumeroOrden;
         CargarCombo();
-        console.log("lista usada en dato imp", lista);
-        console.log("dataProducto", dataProducto);
+        //console.log("lista usada en dato imp", lista);
+        //console.log("dataProducto", dataProducto);
 
-        console.log("FileIDv", filecreado);
+        //console.log("FileIDv", filecreado);
 
 
 
@@ -284,10 +284,10 @@
                 DevExpress.ui.dialog.alert("No se pudo obtener la pestaña activa.", "Error");
                 return;
             }
-            console.log(" activeTab: ", activeTab);
+            //console.log(" activeTab: ", activeTab);
 
             let currentId = activeTab.id;
-            console.log("id actual: ", currentId);
+            //console.log("id actual: ", currentId);
 
             $("#txtNOp_" + currentId).val(lista[0].NumeroOperacion);
             $("#cboVia_" + currentId).val(lista[0].IdVia);
@@ -870,7 +870,7 @@
 
     // Ocultar todos los tabs excepto el primero
     //$(".tab-contentss").hide();
-    $("#tab1_" + id).show();
+    //$("#tab1_" + id).show();
 
     // Manejar clic en las pestañas
     $("#tabMenu_" + id + " .nav-link").click(function (e) {

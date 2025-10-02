@@ -7,6 +7,11 @@
                         <div class="col-md-12">
                             <div id="gridIE"></div>
                         </div>
+                        <div class="col-md-12">
+                            <div class="dx-popup-bottom-buttons">
+                                <div id="btnAdd"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -16,12 +21,25 @@
 <script>
 
 
-    $(() => {
+    $(document).ready(function () {
+        
+        loadPanelcontainer = $('#loadingPanelContainer').dxLoadPanel({
+            shadingColor: 'rgba(0,0,0,0.4)', // Color semi-transparente del fondo
+            position: { of: '#frmBF' }, // Se posiciona sobre el dxTabPanel
+            visible: false, // Inicialmente oculto
+            showIndicator: true,
+            showPane: true,
+            message: 'Cargando contenido...', // Mensaje opcional
+            shading: true, // Muestra la sombra para bloquear interacciones
+            container: '#frmBF' // Opcional, pero ayuda a asegurar la jerarquía
+        }).dxLoadPanel('instance');
+
         const DxSource = new DevExpress.data.CustomStore({
             load() {
                 return sendRequest(`/Operaciones/ListarIE`);
             },
         });
+       
 
         //se cambio IdMaquina por CodigoFibra del value de update y remove y el keyExpr
         const dataGrid2 =
@@ -99,7 +117,7 @@
                 },
             }).dxDataGrid('instance');
 
-
+        
 
     })
 

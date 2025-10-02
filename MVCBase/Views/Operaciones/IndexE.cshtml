@@ -56,9 +56,9 @@
         <div id="popupContainerEP"></div>
     </div>
 </div>
-
+<div id="loadingPanel"></div>
 <script>
-
+    var loadPanel;
     var today = new Date();
     var year = today.getFullYear();
     $(document).ready(function () {
@@ -70,6 +70,7 @@
                 Actualizar();
             }
         });
+       
 
     })
 
@@ -142,7 +143,7 @@
             allowEditing: false,
         }
 
-            
+
 
     ];
 
@@ -218,8 +219,8 @@
 
             /*
              *
-             * 
-             * 
+             *
+             *
              * const DxSource = new DevExpress.data.CustomStore({
                 key: 'FileId',
 
@@ -333,10 +334,11 @@
 
         /*POPUP DE LA VISTA REGISTRAR*/
 
+       
 
         $("#popupContainerEP").dxPopup({
-                width: 1200,
-                height: 900,
+                width: '80%',
+                height: '90%',
                 showTitle: true,
                 title: "Registrar File (Exportación)",
                 visible: false, // Mantén el popup oculto hasta que sea necesario
@@ -375,14 +377,14 @@
         var selectedData = grid.getSelectedRowsData();
 
         if (selectedData.length > 0) {
-
+           
             console.log("selectedRowData para editar : ", selectedData);
 
             var file = selectedData[0];
 
             $("#popupContainerEP").dxPopup({
-                    width: 1300,
-                    height: 900,
+                    width: '80%',
+                    height: '90%',
                     showTitle: true,
                     title: "Editar File (Exportación)",
                     visible: false, // Mantén el popup oculto hasta que sea necesario
@@ -626,7 +628,6 @@
 
 
     #gridContainer .dx-datagrid-headers .dx-header-row {
-        
         -webkit-text-stroke-color: white;
     }
 
@@ -652,6 +653,7 @@
     .dx-row.dx-column-lines.dx-header-row {
         font-size: 12px;
     }
+
     .txtano {
         width: 120px !important
     }
