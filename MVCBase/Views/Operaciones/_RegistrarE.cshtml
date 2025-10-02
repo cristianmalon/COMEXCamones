@@ -73,11 +73,11 @@
                     <div id="container">
                         <div id="addButton"></div>
                     </div>
-                   
+
                     <div id="tabPanel"></div>
 
                     <div id="popupContainer"></div>
-
+                    <div id="loadingPanelContainer"></div>
 
                     <hr style="border-top: 2px solid #33333347;" />
 
@@ -97,7 +97,7 @@
 <script>
 
 
-
+    var loadPanelcontainer;
     $(() => {
 
 
@@ -147,21 +147,21 @@
             });
         });
 
-        loadPanel = $('#loadingPanel').dxLoadPanel({
-            shadingColor: 'rgba(0,0,0,0.4)', // Color semi-transparente del fondo
-            position: { of: '#tabPanel' }, // Se posiciona sobre el dxTabPanel
-            visible: false, // Inicialmente oculto
-            showIndicator: true,
-            showPane: true,
-            message: 'Cargando contenido...', // Mensaje opcional
-            shading: true, // Muestra la sombra para bloquear interacciones
-            container: '#tabPanel' // Opcional, pero ayuda a asegurar la jerarquía
-        }).dxLoadPanel('instance');
+        //loadPanel = $('#loadingPanel').dxLoadPanel({
+        //    shadingColor: 'rgba(0,0,0,0.4)', // Color semi-transparente del fondo
+        //    position: { of: '#tabPanel' }, // Se posiciona sobre el dxTabPanel
+        //    visible: false, // Inicialmente oculto
+        //    showIndicator: true,
+        //    showPane: true,
+        //    message: 'Cargando contenido...', // Mensaje opcional
+        //    shading: true, // Muestra la sombra para bloquear interacciones
+        //    container: '#tabPanel' // Opcional, pero ayuda a asegurar la jerarquía
+        //}).dxLoadPanel('instance');
+
+         
 
 
-
-
-
+         
 
 
 
@@ -209,10 +209,13 @@
             
             var uniqueId = itemData.id;
             var FacturaData = itemData.data;
+            
+            facturasAbiertas.push({ IE_Anio: itemData.data.IE_Anio, IE_Nro: itemData.data.IE_Nro });
+            console.log("Data F",facturasAbiertas)
             //debugger;
 
             $('<div>').addClass('tab-content').attr("data-id", uniqueId).appendTo(itemElement);
-            loadPanel.show();
+            bloquoteObject();
             // Cargar la misma vista parcial en cada tab
             $.ajax({
                 url: '/Operaciones/VRFactura',
@@ -226,7 +229,7 @@
                 }),
                 success: function (response) {
                     itemElement.find('.tab-content').html(response);
-                    loadPanel.hide(); 
+                    desbloqObject(); 
                 },
                 error: function () {
                     itemElement.find('.tab-content').html('<p>Error al cargar la vista.</p>');
@@ -265,20 +268,25 @@
                     method: 'GET',
                     success: function (result) {
                         contentElement.append(result);
-                        contentElement.append('<div class="dx-popup-bottom-buttons">' +
-                            '<div id="btnAdd"></div>' +
-                            '</div>');
-
+                           
+                        //loadPanelcontainer.show();
                         $('#btnAdd').dxButton({
                             text: 'Seleccionar',
                             onClick: function () {
+                                 //alert("entra");
+                                 //return;
+                                //let timerId = setTimeout(() => {
+                                //  loadPanelcontainer.show();
+                                //}, 5000);
+                                 
+                                  
                                 var grid = $("#gridIE").dxDataGrid("instance");
                                 var selectedRow = grid.getSelectedRowsData()[0];
                                 if (!selectedRow) {
                                     alert("Por favor, selecciona una instruccion de embarque.");
                                     return;
                                 }
-                                //debugger;
+                                debugger;
                                 //var numeroOrden = selectedRow.U_DIN_NFACT;
                                 var IE_Anio = selectedRow.IE_Anio;
                                 var IE_Nro = selectedRow.IE_Nro;
@@ -291,7 +299,7 @@
                                     return;
                                 }
                                 // Guardamos la IE en la base Datos
-
+                                
                                 var tabPanelItems = tabPanel.option('dataSource');
                                 var BEOperaciones = {
                                     FileID: $('#FileIDv').val(),
@@ -299,10 +307,11 @@
                                     IE_Nro: IE_Nro
                                 }
 
+                                bloquoteObject();
+                                
                                 $.ajax({
                                     url: `/Operaciones/ActualizarOperacionesExpo`,
                                     type: 'POST',
-                                    async: false,
                                     data: JSON.stringify({ entidad: BEOperaciones }),
                                     dataType: 'json',
                                     headers: {
@@ -326,7 +335,7 @@
                                             //// Agregar al array de órdenes abiertas para evitar duplicados
                                             //facturasAbiertas.push({ IE_Anio: IE_Anio, IE_Nro: IE_Nro });
                                             //popup.hide();
-
+                                            
                                             var tabPanelItems = tabPanel.option('dataSource');
 
                                             var uniqueId = `tab_${Date.now()}`;
@@ -343,6 +352,7 @@
 
                                             // Agregar al array de órdenes abiertas para evitar duplicados
                                             facturasAbiertas.push({ IE_Anio: IE_Anio, IE_Nro: IE_Nro });
+                                            desbloqObject();
                                             popup.hide();
 
                                         }

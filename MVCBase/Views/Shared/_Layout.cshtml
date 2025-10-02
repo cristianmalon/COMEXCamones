@@ -725,3 +725,25 @@
         max-height: 100% !important
     }
 </style>
+<script>
+    function bloquoteObject() {
+        $.blockUI({
+            baseZ: 2000,
+            message: `
+            <div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+                <img src="/Content/images/loading.gif" alt="Cargando..." style="margin-bottom: 10px;">
+                <span style="color: white; font-size: 16px;">Cargando proceso...</span>
+            </div>`,
+            css: {
+                border: 'none',
+                background: 'transparent'
+            }
+        });
+    }
+
+
+
+    function desbloqObject() {
+        $.unblockUI();
+    }
+</script>
