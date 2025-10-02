@@ -8,9 +8,9 @@
 
 <div id="frmFibra">
     <div class="form-horizontal">
-        
+
         <div class="panel panel-default">
-            
+
             <div class="panel-body">
                 <div style="background: #1b619f;">
                     <div class="form-horizontal">
@@ -24,7 +24,7 @@
                             <div class="col-md-6" style="padding-top: 20px; display:flex; align-items:center; justify-content:flex-end; gap:10px;">
                                 <div id="estadoFilter" style="width:150px;"></div>
                                 <!-- Botón Expandir/Colapsar -->
-                                
+
 
                                 <button type="button"
                                         class="btn btn-primary ClsRefresh  pull-right"
@@ -52,7 +52,7 @@
                                 </button>
                             </div>
                         </div>
-                    </div>          
+                    </div>
                 </div>
                 <div id="gridContainerFile">
 
@@ -66,6 +66,7 @@
         <div id="popupContainerEP"></div>
         <!-- Contenedor para el dxPopup Editar. -->
         <div id="popupContainerEF"></div>
+        <div id="loadingPanel"></div>
     </div>
 </div>
 
@@ -75,7 +76,7 @@
 
 
 <script>
-
+    var loadPanel;
     var today = new Date();
     var year = today.getFullYear();
     $(document).ready(function () {
@@ -427,8 +428,8 @@
 
 
         $("#popupContainerEP").dxPopup({
-                width: 1300,
-                height: 900,
+                width: '80%',
+                height: '90%',
                 showTitle: true,
                 title: "Registrar File (Importación)",
                 visible: false, // Mantén el popup oculto hasta que sea necesario
@@ -475,8 +476,8 @@
 
 
             $("#popupContainerEF").dxPopup({
-                    width: 1300,
-                    height: 900,
+                    width: '80%',
+                    height: '90%',
                     showTitle: true,
                     title: "Editar File (Importación)",
                     visible: false, // Mantén el popup oculto hasta que sea necesario

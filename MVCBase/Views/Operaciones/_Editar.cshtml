@@ -170,12 +170,6 @@
         });
 
 
-
-
-
-
-
-
         document.getElementById("FileIDE").value = filaSeleccionada.FileId; // Asigna un nuevo ID
 
         console.log("filaSeleccionada Editar: ", filaSeleccionada);
@@ -257,7 +251,7 @@
             console.log("tabPanelItems2: ", tabPanelItems2[0]?.idoc);
 
             $('<div>').addClass('tab-content').attr("data-id", uniqueId).appendTo(itemElement);
-
+            bloquoteObject();
             // Determinar si es una vista nueva o ya cargada
             var isNewView = !orderData[0].OrdenID; // Si no tiene OrdenID, es una nueva vista
 
@@ -287,6 +281,8 @@
                 }),
                 success: function (response) {
                     itemElement.find('.tab-content').html(response);
+                    desbloqObject();
+                    
                 },
                 error: function () {
                     itemElement.find('.tab-content').html('<p>Error al cargar la vista.</p>');
