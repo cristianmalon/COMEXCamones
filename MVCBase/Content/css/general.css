@@ -520,3 +520,71 @@ img.ui-datepicker-trigger {
     height: 60px;
     padding: 10px;
 }
+
+.logo {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    top: 37px;
+}
+
+.diamond {
+    position: absolute;
+    width: 10px;
+    height: 20px;
+    background-color: #004080; /* Azul oscuro por defecto */
+    animation: cubeScale 2.0s infinite;
+}
+
+.d1 {
+    background-color: #f5f7f9;
+    top: 8px;
+    left: 30px;
+    transform: rotate(-45deg);
+}
+
+.d2 {
+    background-color: #f5f7f9;
+    top: 21px;
+    right: 73px;
+    transform: rotate(45deg);
+}
+
+.d3 {
+    background-color: #f5f7f9;
+    top: 21px;
+    left: 43px;
+    transform: rotate(45deg);
+}
+
+.d4 {
+    background-color: #f5f7f9;
+    top: 34px;
+    left: 30px;
+    transform: rotate(-45deg);
+}
+
+@keyframes cubeScale {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+.diamond:nth-child(1) {
+    animation-delay: 0.5s;
+}
+
+.diamond:nth-child(2) {
+    animation-delay: 1.0s;
+}
+
+.diamond:nth-child(3) {
+    animation-delay: 1.5s;
+}
+
+.diamond:nth-child(4) {
+    animation-delay: 2.0s;
+}
